@@ -62,6 +62,7 @@ class ResponsiveGrid extends Component {
   }
 
   updateWindowDimensions() {
+    console.log("updateWindowDimensions", window.innerWidth, window.innerHeight)
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 

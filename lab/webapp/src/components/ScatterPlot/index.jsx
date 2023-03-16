@@ -423,7 +423,15 @@ else if (chartKey.includes('CVR')) {
 
   render() {
     return (
-      <div className={`ScatterPlot ${this.props.chartKey}`} />
+      // <div className={`ScatterPlot ${this.props.chartKey}`} />
+
+
+    <div >
+        
+        <svg className={`ScatterPlot ${this.props.chartKey}`} viewBox="0 0 500 400" preserveAspectRatio="xMinYMin meet" >
+            
+        </svg>
+    </div>
     );
   }
 }

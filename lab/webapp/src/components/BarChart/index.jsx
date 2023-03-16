@@ -223,7 +223,14 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`Bar ${this.props.chartKey}`} />
+      // <div className={`Bar ${this.props.chartKey}`} />
+
+      <div >
+        
+        <svg className={`Bar ${this.props.chartKey}`} viewBox="0 0 550 350" preserveAspectRatio="xMinYMin meet" >
+          
+      </svg>
+  </div>
     );
   }
 }

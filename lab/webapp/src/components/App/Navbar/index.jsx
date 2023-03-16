@@ -69,17 +69,7 @@ function checkAPIkey(e) {
 }
 
 function toggleChatGPT(e) {
-  // console.log("e_hello",e)
-  // e.target.style.color = "red";
-  // change backgound color for e.target
-
-  // e.target.style.backgroundColor = "red";
-  // make div class active
   
-  // console.log("e.target.className",e.target.className)
-  // parent element
-  // console.log("e.target.parentElement.className",e.target.parentElement.className)
-  // e.target.className = "active";
 
   console.log("e.target.className",e.target.className)
 
@@ -96,17 +86,42 @@ function toggleChatGPT(e) {
     // console.log("e.target.parentElement.style ",e.target.parentElement.style )
 
     
-    if (document.getElementById("chatgpt-space-candidate").style.display == "none")
+    if (document.getElementById("chatgpt-space").style.visibility == "hidden")
     {
-      // make chatgpt-space-candidate visible
-      document.getElementById("chatgpt-space-candidate").style.display = "block"
+      // document.getElementsByClassName("chartschat")[0].style.width = "100%";
+      // // make chatgpt-space visible
+      // console.log("make chatgpt-space hidden")
+      // document.getElementById("chatgpt-space").style.visibility = "visible"
+
+      var chartschat = document.getElementsByClassName("chartschat");
+
+      for (var i = 0; i < chartschat.length; i++) {
+        chartschat[i].style.width = "50%";
+      }
+
+
+      console.log("make chatgpt-space visible")
+      document.getElementById("chatgpt-space").style.visibility ="visible"
 
 
 
     }
     else
     {
-      document.getElementById("chatgpt-space-candidate").style.display ="none"
+
+
+      var chartschat = document.getElementsByClassName("chartschat");
+
+      for (var i = 0; i < chartschat.length; i++) {
+        chartschat[i].style.width = "100%";
+      }
+      // make chatgpt-space visible
+      console.log("make chatgpt-space hidden")
+      document.getElementById("chatgpt-space").style.visibility = "hidden"
+
+      // document.getElementsByClassName("chartschat")[0].style.width = "50%";
+      // console.log("make chatgpt-space visible")
+      // document.getElementById("chatgpt-space").style.visibility ="hidden"
     }
 
   }
@@ -120,17 +135,32 @@ function toggleChatGPT(e) {
     // console.log("e.target.parentElement.parentElement.style",e.target.parentElement.parentElement.style)
 
 
-    if (document.getElementById("chatgpt-space-candidate").style.display == "none")
+    if (document.getElementById("chatgpt-space").style.visibility == "hidden")
     {
-      // make chatgpt-space-candidate visible
-      document.getElementById("chatgpt-space-candidate").style.display = "block"
+      // document.getElementsByClassName("chartschat")[0].style.width = "100%";
+      var chartschat = document.getElementsByClassName("chartschat");
+
+      for (var i = 0; i < chartschat.length; i++) {
+        chartschat[i].style.width = "50%";
+      }
+      // make chatgpt-space visible
+      document.getElementById("chatgpt-space").style.visibility = "visible"
+
+
 
 
 
     }
     else
     {
-      document.getElementById("chatgpt-space-candidate").style.display ="none"
+      var chartschat = document.getElementsByClassName("chartschat");
+
+      for (var i = 0; i < chartschat.length; i++) {
+        chartschat[i].style.width = "100%";
+      }
+      document.getElementById("chatgpt-space").style.visibility ="hidden"
+      // chage width 100%
+      
     }
     
   }
@@ -190,54 +220,27 @@ function Navbar({ preferences }) {
   //     )
   // }, [])
 
-  const checkConnectionOpenAI = () => {
-    // POST http://localhost:5080/openai/v1/connections
+const checkConnectionOpenAI = () => {
+    // POST /openai/v1/connections
 
-    // fetch("http://localhost:8000/test",{
-    //   mode: 'no-cors',
-    //   method: "post",
-    //   headers: {
-    //        "Content-Type": "application/json"
-    //   }
-    //   })
-    //   // .then(res => res.json())
-    //   .then(res => console.log("res",res))
-    //   .then(
-    //     (result) => {
-    //       console.log("hey result",result)
-    //       setIsLoaded(true);
-    //       setItems(result);
-    //     },
-    //     // Note: it's important to handle errors here
-    //     // instead of a catch() block so that we don't swallow
-    //     // exceptions from actual bugs in components.
-    //     (error) => {
-    //       setIsLoaded(true);
-    //       setError(error);
-    //       console.log("hey failed",error);
-    //     }
-    //   )
+    fetch('/openai/v1/connections')
+        .then((response) => {
+            console.log("response.ok", response.ok)
+            if (!response.ok) {
+                // console.log("error!!!")
+                throw new Error(`HTTP error: ${response.status}`);
+            } else {
+                console.log("response", response)
+                return response.text();
+            }
 
-    // fetch('http://localhost:5080/openai/v1/connections')
-    fetch('http://localhost:8000/test')
-            .then((response) => {
-              console.log("response.ok",response.ok)
-                if (!response.ok) {
-                  console.log("error!!!")
-                    throw new Error(`HTTP error: ${response.status}`);
-                }
-                else{
-                  console.log("response",response)
-                  return response.text();
-                }
-                
-            })
-            .then((text) => {
-              let parsed = JSON.parse(text);
-              console.log("parsed",parsed)
-            });
+        })
+        .then((text) => {
+            let parsed = JSON.parse(text);
+            console.log("parsed", parsed)
+        });
 
-  }
+}
 
 
   const togglePop = (e) => {

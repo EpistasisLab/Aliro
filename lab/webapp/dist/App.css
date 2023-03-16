@@ -1477,12 +1477,14 @@ body {
 } */
 
 
-#chatgpt-space-candidate {
+#chatgpt-space {
   position: 'fixed';
-  overflowY: 'auto';
-  maxHeight: 'auto';
+  /* overflowY: 'auto';
+  maxHeight: 'auto'; */
+  visibility:hidden;
   display:'none';
-  backgroundColor: '#343541';
+  /* display:"hidden"; */
+  /* backgroundColor: '#343541'; */
 }
 
 
@@ -1525,7 +1527,8 @@ body {
 .containerChartsChats{
   /* background: beige; */
   /* width: 50%; */
-  height: 100vh;
+  height: 100%;
+  /* height: 100vh; */
   display: flex;
   
   flex-direction: row;
@@ -1542,7 +1545,8 @@ body {
 }
 
 .chartschat {
-  width: 50%;
+  /* width: 50%; */
+  width: 100%;
   height: 100vh;
 }
 

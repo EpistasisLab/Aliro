@@ -97,7 +97,13 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`gauge ${this.props.chartKey}`} />
+      // <div className={`gauge ${this.props.chartKey}`} />
+      <div >
+        {/* <svg className={`gauge ${this.props.chartKey}`} viewBox="-20 0 550 300" preserveAspectRatio="xMinYMin meet" > */}
+        <svg className={`gauge ${this.props.chartKey}`} viewBox="-20 0 550 200" preserveAspectRatio="xMinYMin meet" >
+            
+        </svg>
+      </div>
     );
   }
 }

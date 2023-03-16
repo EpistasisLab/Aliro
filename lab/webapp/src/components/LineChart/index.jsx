@@ -175,7 +175,13 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`LineChart ${this.props.chartKey}`} />
+      // <div className={`LineChart ${this.props.chartKey}`} />
+      <div >
+        
+        <svg className={`LineChart ${this.props.chartKey}`} viewBox="0 10 500 350" preserveAspectRatio="xMinYMin meet" >
+            
+        </svg>
+    </div>
     );
   }
 }

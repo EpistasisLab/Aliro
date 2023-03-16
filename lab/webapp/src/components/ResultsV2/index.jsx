@@ -51,7 +51,7 @@ import TSNE from './components/TSNE';
 import TSNEJSON from './components/TSNEJSON';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
-import NoScore from './components/NoScore';
+// import NoScore from './components/NoScore';
 import {Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import {formatDataset} from 'utils/formatter';
 import ClassRate from './components/ClassRate';
@@ -118,17 +118,17 @@ class Results extends Component {
         const {experiment, fetchExperiment} = this.props;
 
         if (experiment.isFetching || !experiment.data) {
-            return (<Loader
-                active="active"
-                inverted="inverted"
-                size="large"
-                content="Retrieving results..."/>);
+            return (
+                <Loader
+                    active="active"
+                    inverted="inverted"
+                    size="large"
+                    content="Retrieving results..."/>
+            );
         }
 
         if (experiment.error === 'Failed to fetch') {
-            return (
-                <FetchError message="The specified experiment does not exist."/>
-            );
+            return (<FetchError message="The specified experiment does not exist."/>);
         } else if (experiment.error) {
             return (
                 <FetchError message={experiment.error} onRetry={() => fetchExperiment()}/>
@@ -303,320 +303,251 @@ class Results extends Component {
             localStorage.setItem('class_percentage', JSON.stringify(class_percentage));
 
             return (
-                <div class = "containerChartsChats">
+                <div class="containerChartsChats">
                     <div class="chartschat chartsbaseleft">
-                    <Grid columns={2} stackable="stackable">
-                        <Grid.Row>
-                            <Grid.Column>
-                                <SceneHeader
-                                    header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-                                    subheader={`Experiment: #${experiment.data._id}`}/>
-                            </Grid.Column>
-                            <Grid.Column>
-                                <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
-                                    <Dropdown
-                                        text='Download'
-                                        simple="simple"
-                                        item="item"
-                                        disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
-                                        <Dropdown.Menu>
-                                            <Dropdown.Item
-                                                key="model"
-                                                icon="download"
-                                                text="Model"
-                                                onClick={() => downloadModel(experiment.data._id)}/>,
-                                            <Dropdown.Item
-                                                key="script"
-                                                icon="download"
-                                                text="Script"
-                                                onClick={() => downloadScript(experiment.data._id)}/>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </Menu>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                        <Grid columns={2} stackable="stackable">
+                            <Grid.Row>
+                                <Grid.Column>
+                                    <SceneHeader
+                                        header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
+                                        subheader={`Experiment: #${experiment.data._id}`}/>
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
+                                        <Dropdown
+                                            text='Download'
+                                            simple="simple"
+                                            item="item"
+                                            disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item
+                                                    key="model"
+                                                    icon="download"
+                                                    text="Model"
+                                                    onClick={() => downloadModel(experiment.data._id)}/>,
+                                                <Dropdown.Item
+                                                    key="script"
+                                                    icon="download"
+                                                    text="Script"
+                                                    onClick={() => downloadScript(experiment.data._id)}/>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </Menu>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
 
-                    <Grid columns={3} stackable="stackable">
-                        <Grid.Row>
-                            <Grid.Column>
-                                <AlgorithmDetails
-                                    algorithm={experiment.data.algorithm}
-                                    params={experiment.data.params}/>
-                                <RunDetails
-                                    startTime={experiment.data.started}
-                                    finishTime={experiment.data.finished}
-                                    launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore file={importanceScore} /> */}
-                                <ImportanceScoreJSON
-                                    scoreName="Feature Importance"
-                                    scoreValueList={experiment.data.feature_importances}
-                                    featureList={experiment.data.feature_names}
-                                    chartKey="importance_score"
-                                    chartColor="#55D6BE"
-                                    type="classification"/> {/* <LearningCurve file={learningCurve}/> */}
-                                <LearningCurveJSON
-                                    scoreName="Learning Curve"
-                                    train_sizes={experiment.data.train_sizes}
-                                    train_scores={experiment.data.train_scores}
-                                    test_scores={experiment.data.test_scores}
-                                    chartKey="learning_curve"
-                                    chartColor="#55D6BE"
-                                    type="classification"/> {/* <PCA file={pca}/> */}
-                                <PCAJSON
-                                    scoreName="PCA 2D"
-                                    Points={experiment.data.X_pca}
-                                    Labels={experiment.data.y_pca}
-                                    chartKey="pca_2d"
-                                    chartColor="#55D6BE"
-                                    type="classification"/> {/* <TSNE file={tsne}/> */}
-                                {/* <TSNEJSON file={tsne_json}/> */}
-                                {/* <TSNEJSON scoreName="TSNE 2D"
+                        <Grid columns={3} stackable="stackable">
+                            <Grid.Row>
+                                <Grid.Column>
+                                    <AlgorithmDetails
+                                        algorithm={experiment.data.algorithm}
+                                        params={experiment.data.params}/>
+                                    <RunDetails
+                                        startTime={experiment.data.started}
+                                        finishTime={experiment.data.finished}
+                                        launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore file={importanceScore} /> */}
+                                    <ImportanceScoreJSON
+                                        scoreName="Feature Importance"
+                                        scoreValueList={experiment.data.feature_importances}
+                                        featureList={experiment.data.feature_names}
+                                        chartKey="importance_score"
+                                        chartColor="#55D6BE"
+                                        type="classification"/> {/* <LearningCurve file={learningCurve}/> */}
+                                    <LearningCurveJSON
+                                        scoreName="Learning Curve"
+                                        train_sizes={experiment.data.train_sizes}
+                                        train_scores={experiment.data.train_scores}
+                                        test_scores={experiment.data.test_scores}
+                                        chartKey="learning_curve"
+                                        chartColor="#55D6BE"
+                                        type="classification"/> {/* <PCA file={pca}/> */}
+                                    <PCAJSON
+                                        scoreName="PCA 2D"
+                                        Points={experiment.data.X_pca}
+                                        Labels={experiment.data.y_pca}
+                                        chartKey="pca_2d"
+                                        chartColor="#55D6BE"
+                                        type="classification"/> {/* <TSNE file={tsne}/> */}
+                                    {/* <TSNEJSON file={tsne_json}/> */}
+                                    {/* <TSNEJSON scoreName="TSNE 2D"
                   Points={experiment.data.X_tsne}
                   Labels={experiment.data.y_tsne}
                   chartKey="tsne_2d"
                   chartColor="#55D6BE"
                   type="classification"
                 /> */
-                                }
-                            </Grid.Column>
-                            <Grid.Column>
-                                {/* <NoScore
+                                    }
+                                </Grid.Column>
+                                <Grid.Column>
+                                    {/* <NoScore
                   scoreName="Class Rate"
                   scoreValueList={class_percentage}
                   chartKey="test"
                   chartColor="#55D6BE"
                   type="classification"
                 /> */
-                                }
+                                    }
 
-                                <ClassRate
-                                    scoreName="Class Rate"
-                                    scoreValueList={class_percentage}
-                                    chartKey="test"
-                                    chartColor="#55D6BE"
-                                    type="classification"/> {/* <ConfusionMatrix file={confusionMatrix} /> */}
-                                {/* This TestChart is for interactive and responsive confusion matrix */}
-                                <ConfusionMatrixJSON
-                                    scoreName="Confusion Matrix"
-                                    cnf_data={experiment.data.cnf_matrix}
-                                    chartKey="test_chart"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
-                                <ROCCurve file={rocCurve}/>
-                                <ShapSummaryCurve
-                                    fileDict={shapSummaryCurveDict}
-                                    shap_explainer={shap_explainer}
-                                    shap_num_samples={shap_num_samples}/>
-                                <TSNEJSON
-                                    scoreName="TSNE 2D"
-                                    Points={experiment.data.X_tsne}
-                                    Labels={experiment.data.y_tsne}
-                                    chartKey="tsne_2d"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
-                            </Grid.Column>
-                            <Grid.Column>
-                                <Score
-                                    scoreName="Balanced Accuracy"
-                                    scoreValueList={balancedAccList}
-                                    chartKey="all"
-                                    chartColor="#7D5BA6"
-                                    type="classification"/>
-                                <Score
-                                    scoreName="AUC"
-                                    scoreValueList={aucList}
-                                    chartKey="auc_scores"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
-                                <Score
-                                    scoreName="Precision"
-                                    scoreValueList={precisionList}
-                                    chartKey="precision_scores"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
-                                <Score
-                                    scoreName="Recall"
-                                    scoreValueList={recallList}
-                                    chartKey="recall_scores"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
-                                <Score
-                                    scoreName="F1 Score"
-                                    scoreValueList={f1List}
-                                    chartKey="f1_scores"
-                                    chartColor="#55D6BE"
-                                    type="classification"/> {/* https://en.wikipedia.org/wiki/Confusion_matrix */}
+                                    <ClassRate
+                                        scoreName="Class Rate"
+                                        scoreValueList={class_percentage}
+                                        chartKey="test"
+                                        chartColor="#55D6BE"
+                                        type="classification"/> {/* <ConfusionMatrix file={confusionMatrix} /> */}
+                                    {/* This TestChart is for interactive and responsive confusion matrix */}
+                                    <ConfusionMatrixJSON
+                                        scoreName="Confusion Matrix"
+                                        cnf_data={experiment.data.cnf_matrix}
+                                        chartKey="test_chart"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+                                    <ROCCurve file={rocCurve}/>
+                                    <ShapSummaryCurve
+                                        fileDict={shapSummaryCurveDict}
+                                        shap_explainer={shap_explainer}
+                                        shap_num_samples={shap_num_samples}/>
+                                    <TSNEJSON
+                                        scoreName="TSNE 2D"
+                                        Points={experiment.data.X_tsne}
+                                        Labels={experiment.data.y_tsne}
+                                        chartKey="tsne_2d"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Score
+                                        scoreName="Balanced Accuracy"
+                                        scoreValueList={balancedAccList}
+                                        chartKey="all"
+                                        chartColor="#7D5BA6"
+                                        type="classification"/>
+                                    <Score
+                                        scoreName="AUC"
+                                        scoreValueList={aucList}
+                                        chartKey="auc_scores"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+                                    <Score
+                                        scoreName="Precision"
+                                        scoreValueList={precisionList}
+                                        chartKey="precision_scores"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+                                    <Score
+                                        scoreName="Recall"
+                                        scoreValueList={recallList}
+                                        chartKey="recall_scores"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+                                    <Score
+                                        scoreName="F1 Score"
+                                        scoreValueList={f1List}
+                                        chartKey="f1_scores"
+                                        chartColor="#55D6BE"
+                                        type="classification"/> {/* https://en.wikipedia.org/wiki/Confusion_matrix */}
 
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
                     </div>
-                    <div class="chartschat chatbaseright">
-                    <ChatGPT experiment={experiment}/>
+                    <div id="chatgpt-space" class="chartschat chatbaseright">
+                        <ChatGPT experiment={experiment}/>
                     </div>
                 </div>
 
-
-        //         <div>
-
-                    
-
-        //             <Grid columns={2} stackable="stackable">
-        //                 <Grid.Row>
-        //                     <Grid.Column>
-        //                         <SceneHeader
-        //                             header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-        //                             subheader={`Experiment: #${experiment.data._id}`}/>
-        //                     </Grid.Column>
-        //                     <Grid.Column>
-        //                         <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
-        //                             <Dropdown
-        //                                 text='Download'
-        //                                 simple="simple"
-        //                                 item="item"
-        //                                 disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
-        //                                 <Dropdown.Menu>
-        //                                     <Dropdown.Item
-        //                                         key="model"
-        //                                         icon="download"
-        //                                         text="Model"
-        //                                         onClick={() => downloadModel(experiment.data._id)}/>,
-        //                                     <Dropdown.Item
-        //                                         key="script"
-        //                                         icon="download"
-        //                                         text="Script"
-        //                                         onClick={() => downloadScript(experiment.data._id)}/>
-        //                                 </Dropdown.Menu>
-        //                             </Dropdown>
-        //                         </Menu>
-        //                     </Grid.Column>
-        //                 </Grid.Row>
-        //             </Grid>
-
-        //             <Grid columns={3} stackable="stackable">
-        //                 <Grid.Row>
-        //                     <Grid.Column>
-        //                         <AlgorithmDetails
-        //                             algorithm={experiment.data.algorithm}
-        //                             params={experiment.data.params}/>
-        //                         <RunDetails
-        //                             startTime={experiment.data.started}
-        //                             finishTime={experiment.data.finished}
-        //                             launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore file={importanceScore} /> */}
-        //                         <ImportanceScoreJSON
-        //                             scoreName="Feature Importance"
-        //                             scoreValueList={experiment.data.feature_importances}
-        //                             featureList={experiment.data.feature_names}
-        //                             chartKey="importance_score"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/> {/* <LearningCurve file={learningCurve}/> */}
-        //                         <LearningCurveJSON
-        //                             scoreName="Learning Curve"
-        //                             train_sizes={experiment.data.train_sizes}
-        //                             train_scores={experiment.data.train_scores}
-        //                             test_scores={experiment.data.test_scores}
-        //                             chartKey="learning_curve"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/> {/* <PCA file={pca}/> */}
-        //                         <PCAJSON
-        //                             scoreName="PCA 2D"
-        //                             Points={experiment.data.X_pca}
-        //                             Labels={experiment.data.y_pca}
-        //                             chartKey="pca_2d"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/> {/* <TSNE file={tsne}/> */}
-        //                         {/* <TSNEJSON file={tsne_json}/> */}
-        //                         {/* <TSNEJSON scoreName="TSNE 2D"
-        //           Points={experiment.data.X_tsne}
-        //           Labels={experiment.data.y_tsne}
-        //           chartKey="tsne_2d"
-        //           chartColor="#55D6BE"
-        //           type="classification"
-        //         /> */
-        //                         }
-        //                     </Grid.Column>
-        //                     <Grid.Column>
-        //                         {/* <NoScore
-        //           scoreName="Class Rate"
-        //           scoreValueList={class_percentage}
-        //           chartKey="test"
-        //           chartColor="#55D6BE"
-        //           type="classification"
-        //         /> */
-        //                         }
-
-        //                         <ClassRate
-        //                             scoreName="Class Rate"
-        //                             scoreValueList={class_percentage}
-        //                             chartKey="test"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/> {/* <ConfusionMatrix file={confusionMatrix} /> */}
-        //                         {/* This TestChart is for interactive and responsive confusion matrix */}
-        //                         <ConfusionMatrixJSON
-        //                             scoreName="Confusion Matrix"
-        //                             cnf_data={experiment.data.cnf_matrix}
-        //                             chartKey="test_chart"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/>
-        //                         <ROCCurve file={rocCurve}/>
-        //                         <ShapSummaryCurve
-        //                             fileDict={shapSummaryCurveDict}
-        //                             shap_explainer={shap_explainer}
-        //                             shap_num_samples={shap_num_samples}/>
-        //                         <TSNEJSON
-        //                             scoreName="TSNE 2D"
-        //                             Points={experiment.data.X_tsne}
-        //                             Labels={experiment.data.y_tsne}
-        //                             chartKey="tsne_2d"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/>
-        //                     </Grid.Column>
-        //                     <Grid.Column>
-        //                         <Score
-        //                             scoreName="Balanced Accuracy"
-        //                             scoreValueList={balancedAccList}
-        //                             chartKey="all"
-        //                             chartColor="#7D5BA6"
-        //                             type="classification"/>
-        //                         <Score
-        //                             scoreName="AUC"
-        //                             scoreValueList={aucList}
-        //                             chartKey="auc_scores"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/>
-        //                         <Score
-        //                             scoreName="Precision"
-        //                             scoreValueList={precisionList}
-        //                             chartKey="precision_scores"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/>
-        //                         <Score
-        //                             scoreName="Recall"
-        //                             scoreValueList={recallList}
-        //                             chartKey="recall_scores"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/>
-        //                         <Score
-        //                             scoreName="F1 Score"
-        //                             scoreValueList={f1List}
-        //                             chartKey="f1_scores"
-        //                             chartColor="#55D6BE"
-        //                             type="classification"/> {/* https://en.wikipedia.org/wiki/Confusion_matrix */}
-
-        //                     </Grid.Column>
-        //                 </Grid.Row>
-        //             </Grid>
-
-        //             {/* GPT Space */}
-        //             {/* <Grid columns={4} stackable="stackable">
-        //       <ChatGPT/>
-        //   </Grid> */
-        //             }
-
-        //             {/* GPT Space */}
-        //             <ChatGPT experiment={experiment}/>
-
-        //         </div>
+                // <div>             <Grid columns={2} stackable="stackable">
+                // <Grid.Row>                     <Grid.Column>
+                // <SceneHeader                             header={`Results:
+                // ${formatDataset(experiment.data.dataset_name)}`}
+                // subheader={`Experiment: #${experiment.data._id}`}/>
+                // </Grid.Column>                     <Grid.Column>
+                // <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
+                // <Dropdown                                 text='Download'
+                // simple="simple"                                 item="item"
+                // disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
+                // <Dropdown.Menu>                                     <Dropdown.Item
+                // key="model"                                         icon="download"
+                // text="Model"                                         onClick={() =>
+                // downloadModel(experiment.data._id)}/>,
+                // <Dropdown.Item                                         key="script"
+                // icon="download"                                         text="Script"
+                // onClick={() => downloadScript(experiment.data._id)}/>
+                // </Dropdown.Menu>                             </Dropdown>
+                // </Menu>                     </Grid.Column>                 </Grid.Row>
+                // </Grid>             <Grid columns={3} stackable="stackable">
+                // <Grid.Row>                     <Grid.Column>
+                // <AlgorithmDetails
+                // algorithm={experiment.data.algorithm}
+                // params={experiment.data.params}/>                         <RunDetails
+                // startTime={experiment.data.started}
+                // finishTime={experiment.data.finished}
+                // launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore
+                // file={importanceScore} /> */}                         <ImportanceScoreJSON
+                // scoreName="Feature Importance"
+                // scoreValueList={experiment.data.feature_importances}
+                // featureList={experiment.data.feature_names}
+                // chartKey="importance_score"                             chartColor="#55D6BE"
+                // type="classification"/> {/* <LearningCurve file={learningCurve}/> */}
+                // <LearningCurveJSON                             scoreName="Learning Curve"
+                // train_sizes={experiment.data.train_sizes}
+                // train_scores={experiment.data.train_scores}
+                // test_scores={experiment.data.test_scores}
+                // chartKey="learning_curve"                             chartColor="#55D6BE"
+                // type="classification"/> {/* <PCA file={pca}/> */}
+                // <PCAJSON                             scoreName="PCA 2D"
+                // Points={experiment.data.X_pca}
+                // Labels={experiment.data.y_pca}                             chartKey="pca_2d"
+                // chartColor="#55D6BE"                             type="classification"/> {/*
+                // <TSNE file={tsne}/> */}                         {/* <TSNEJSON
+                // file={tsne_json}/> */}                         {/* <TSNEJSON scoreName="TSNE
+                // 2D"           Points={experiment.data.X_tsne}
+                // Labels={experiment.data.y_tsne}           chartKey="tsne_2d"
+                // chartColor="#55D6BE"           type="classification"         /> */
+                // }                     </Grid.Column>                     <Grid.Column>
+                // {/* <NoScore           scoreName="Class Rate"
+                // scoreValueList={class_percentage}           chartKey="test"
+                // chartColor="#55D6BE"           type="classification"         /> */
+                // }                         <ClassRate
+                // scoreName="Class Rate"
+                // scoreValueList={class_percentage}                             chartKey="test"
+                // chartColor="#55D6BE"                             type="classification"/> {/*
+                // <ConfusionMatrix file={confusionMatrix} /> */}                         {/*
+                // This TestChart is for interactive and responsive confusion matrix */}
+                // <ConfusionMatrixJSON                             scoreName="Confusion Matrix"
+                // cnf_data={experiment.data.cnf_matrix}
+                // chartKey="test_chart"                             chartColor="#55D6BE"
+                // type="classification"/>                         <ROCCurve file={rocCurve}/>
+                // <ShapSummaryCurve                             fileDict={shapSummaryCurveDict}
+                // shap_explainer={shap_explainer}
+                // shap_num_samples={shap_num_samples}/>                         <TSNEJSON
+                // scoreName="TSNE 2D"
+                // Points={experiment.data.X_tsne}
+                // Labels={experiment.data.y_tsne}
+                // chartKey="tsne_2d"                             chartColor="#55D6BE"
+                // type="classification"/>                     </Grid.Column>
+                // <Grid.Column>                         <Score
+                // scoreName="Balanced Accuracy"
+                // scoreValueList={balancedAccList}                             chartKey="all"
+                // chartColor="#7D5BA6"                             type="classification"/>
+                // <Score                             scoreName="AUC"
+                // scoreValueList={aucList}                             chartKey="auc_scores"
+                // chartColor="#55D6BE"                             type="classification"/>
+                // <Score                             scoreName="Precision"
+                // scoreValueList={precisionList}
+                // chartKey="precision_scores"                             chartColor="#55D6BE"
+                // type="classification"/>                         <Score
+                // scoreName="Recall"                             scoreValueList={recallList}
+                // chartKey="recall_scores"                             chartColor="#55D6BE"
+                // type="classification"/>                         <Score
+                // scoreName="F1 Score"                             scoreValueList={f1List}
+                // chartKey="f1_scores"                             chartColor="#55D6BE"
+                // type="classification"/> {/* https://en.wikipedia.org/wiki/Confusion_matrix
+                // */}                     </Grid.Column>                 </Grid.Row>
+                // </Grid>             {/* GPT Space */}             {/* <Grid columns={4}
+                // stackable="stackable">       <ChatGPT/>   </Grid> */             }
+                // {/* GPT Space */}             <ChatGPT experiment={experiment}/>
+                // </div>
             );
         } else if (experiment.data.prediction_type == "regression") { // regression
             let importanceScore,
@@ -652,228 +583,176 @@ class Results extends Component {
 
             return (
 
-                <div class = "containerChartsChats">
+                <div class="containerChartsChats">
                     <div class="chartschat chartsbaseleft">
-                    <Grid columns={2} stackable="stackable">
-                        <Grid.Row>
-                            <Grid.Column>
-                                <SceneHeader
-                                    header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-                                    subheader={`Experiment: #${experiment.data._id}`}/>
-                            </Grid.Column>
-                            <Grid.Column>
-                                <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
-                                    <Dropdown
-                                        text='Download'
-                                        simple="simple"
-                                        item="item"
-                                        disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
-                                        <Dropdown.Menu>
-                                            <Dropdown.Item
-                                                key="model"
-                                                icon="download"
-                                                text="Model"
-                                                onClick={() => downloadModel(experiment.data._id)}/>,
-                                            <Dropdown.Item
-                                                key="script"
-                                                icon="download"
-                                                text="Script"
-                                                onClick={() => downloadScript(experiment.data._id)}/>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </Menu>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                    <Grid columns={3} stackable="stackable">
-                        <Grid.Row>
-                            <Grid.Column>
+                        <Grid columns={2} stackable="stackable">
+                            <Grid.Row>
+                                <Grid.Column>
+                                    <SceneHeader
+                                        header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
+                                        subheader={`Experiment: #${experiment.data._id}`}/>
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
+                                        <Dropdown
+                                            text='Download'
+                                            simple="simple"
+                                            item="item"
+                                            disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item
+                                                    key="model"
+                                                    icon="download"
+                                                    text="Model"
+                                                    onClick={() => downloadModel(experiment.data._id)}/>,
+                                                <Dropdown.Item
+                                                    key="script"
+                                                    icon="download"
+                                                    text="Script"
+                                                    onClick={() => downloadScript(experiment.data._id)}/>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </Menu>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                        <Grid columns={3} stackable="stackable">
+                            <Grid.Row>
+                                <Grid.Column>
 
-                                <AlgorithmDetails
-                                    algorithm={experiment.data.algorithm}
-                                    params={experiment.data.params}/>
-                                <RunDetails
-                                    startTime={experiment.data.started}
-                                    finishTime={experiment.data.finished}
-                                    launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore file={importanceScore} /> */}
-                                <ImportanceScoreJSON
-                                    scoreName="Feature Importance"
-                                    scoreValueList={experiment.data.feature_importances}
-                                    featureList={experiment.data.feature_names}
-                                    chartKey="importance_score"
-                                    chartColor="#55D6BE"
-                                    type="regression"/>
+                                    <AlgorithmDetails
+                                        algorithm={experiment.data.algorithm}
+                                        params={experiment.data.params}/>
+                                    <RunDetails
+                                        startTime={experiment.data.started}
+                                        finishTime={experiment.data.finished}
+                                        launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore file={importanceScore} /> */}
+                                    <ImportanceScoreJSON
+                                        scoreName="Feature Importance"
+                                        scoreValueList={experiment.data.feature_importances}
+                                        featureList={experiment.data.feature_names}
+                                        chartKey="importance_score"
+                                        chartColor="#55D6BE"
+                                        type="regression"/>
 
-                            </Grid.Column>
-                            <Grid.Column>
-                                {/* <RegFigure file={reg_cv_pred} /> */}
-                                {/* <RegFigure file={reg_cv_resi} /> */}
-                                {/* <RegFigure file={reg_cv_qq} /> */}
+                                </Grid.Column>
+                                <Grid.Column>
+                                    {/* <RegFigure file={reg_cv_pred} /> */}
+                                    {/* <RegFigure file={reg_cv_resi} /> */}
+                                    {/* <RegFigure file={reg_cv_qq} /> */}
 
-                                <PCAJSON
-                                    scoreName="Cross-Validated Predictions"
-                                    Points={experiment.data.CVP_2d}
-                                    Labels={experiment.data.CVP_2d_class}
-                                    chartKey="CVP"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
+                                    <PCAJSON
+                                        scoreName="Cross-Validated Predictions"
+                                        Points={experiment.data.CVP_2d}
+                                        Labels={experiment.data.CVP_2d_class}
+                                        chartKey="CVP"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
 
-                                <PCAJSON
-                                    scoreName="Cross-Validated Residuals"
-                                    Points={experiment.data.CVR_2d}
-                                    Labels={experiment.data.CVR_2d_class}
-                                    chartKey="CVR"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
+                                    <PCAJSON
+                                        scoreName="Cross-Validated Residuals"
+                                        Points={experiment.data.CVR_2d}
+                                        Labels={experiment.data.CVR_2d_class}
+                                        chartKey="CVR"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
 
-                                <PCAJSON
-                                    scoreName="Q-Q Plot for Normalized Residuals"
-                                    Points={experiment.data.QQNR_2d}
-                                    Labels={experiment.data.QQNR_2d_class}
-                                    chartKey="QQNR"
-                                    chartColor="#55D6BE"
-                                    type="classification"/>
+                                    <PCAJSON
+                                        scoreName="Q-Q Plot for Normalized Residuals"
+                                        Points={experiment.data.QQNR_2d}
+                                        Labels={experiment.data.QQNR_2d_class}
+                                        chartKey="QQNR"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
 
-                            </Grid.Column>
-                            <Grid.Column>
-                                <MSEMAEDetails scores={experiment.data.scores}/>
-                                <Score
-                                    scoreName="Coefficient of Determination"
-                                    scoreValueList={R2List}
-                                    chartKey="R2"
-                                    chartColor="#55D6BE"
-                                    type="r2_or_vaf"/>
-                                <Score
-                                    scoreName="Explained Variance"
-                                    scoreValueList={VAFList}
-                                    chartKey="VAF"
-                                    chartColor="#55D6BE"
-                                    type="r2_or_vaf"/>
-                                <Score
-                                    scoreName="Pearson's r"
-                                    scoreValueList={RList}
-                                    chartKey="pearsonr"
-                                    chartColor="#55D6BE"
-                                    type="pearsonr"/>
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <MSEMAEDetails scores={experiment.data.scores}/>
+                                    <Score
+                                        scoreName="Coefficient of Determination"
+                                        scoreValueList={R2List}
+                                        chartKey="R2"
+                                        chartColor="#55D6BE"
+                                        type="r2_or_vaf"/>
+                                    <Score
+                                        scoreName="Explained Variance"
+                                        scoreValueList={VAFList}
+                                        chartKey="VAF"
+                                        chartColor="#55D6BE"
+                                        type="r2_or_vaf"/>
+                                    <Score
+                                        scoreName="Pearson's r"
+                                        scoreValueList={RList}
+                                        chartKey="pearsonr"
+                                        chartColor="#55D6BE"
+                                        type="pearsonr"/>
 
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
                     </div>
-                    <div class="chartschat chatbaseright">
-                    <ChatGPT experiment={experiment}/>
+                    <div id="chatgpt-space" className="chartschat chatbaseright">
+                        <ChatGPT experiment={experiment}/>
                     </div>
                 </div>
 
-
-                // <div>
-                //     <Grid columns={2} stackable="stackable">
-                //         <Grid.Row>
-                //             <Grid.Column>
-                //                 <SceneHeader
-                //                     header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-                //                     subheader={`Experiment: #${experiment.data._id}`}/>
-                //             </Grid.Column>
-                //             <Grid.Column>
-                //                 <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
-                //                     <Dropdown
-                //                         text='Download'
-                //                         simple="simple"
-                //                         item="item"
-                //                         disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
-                //                         <Dropdown.Menu>
-                //                             <Dropdown.Item
-                //                                 key="model"
-                //                                 icon="download"
-                //                                 text="Model"
-                //                                 onClick={() => downloadModel(experiment.data._id)}/>,
-                //                             <Dropdown.Item
-                //                                 key="script"
-                //                                 icon="download"
-                //                                 text="Script"
-                //                                 onClick={() => downloadScript(experiment.data._id)}/>
-                //                         </Dropdown.Menu>
-                //                     </Dropdown>
-                //                 </Menu>
-                //             </Grid.Column>
-                //         </Grid.Row>
-                //     </Grid>
-                //     <Grid columns={3} stackable="stackable">
-                //         <Grid.Row>
-                //             <Grid.Column>
-
-                //                 <AlgorithmDetails
-                //                     algorithm={experiment.data.algorithm}
-                //                     params={experiment.data.params}/>
-                //                 <RunDetails
-                //                     startTime={experiment.data.started}
-                //                     finishTime={experiment.data.finished}
-                //                     launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore file={importanceScore} /> */}
-                //                 <ImportanceScoreJSON
-                //                     scoreName="Feature Importance"
-                //                     scoreValueList={experiment.data.feature_importances}
-                //                     featureList={experiment.data.feature_names}
-                //                     chartKey="importance_score"
-                //                     chartColor="#55D6BE"
-                //                     type="regression"/>
-
-                //             </Grid.Column>
-                //             <Grid.Column>
-                //                 {/* <RegFigure file={reg_cv_pred} /> */}
-                //                 {/* <RegFigure file={reg_cv_resi} /> */}
-                //                 {/* <RegFigure file={reg_cv_qq} /> */}
-
-                //                 <PCAJSON
-                //                     scoreName="Cross-Validated Predictions"
-                //                     Points={experiment.data.CVP_2d}
-                //                     Labels={experiment.data.CVP_2d_class}
-                //                     chartKey="CVP"
-                //                     chartColor="#55D6BE"
-                //                     type="classification"/>
-
-                //                 <PCAJSON
-                //                     scoreName="Cross-Validated Residuals"
-                //                     Points={experiment.data.CVR_2d}
-                //                     Labels={experiment.data.CVR_2d_class}
-                //                     chartKey="CVR"
-                //                     chartColor="#55D6BE"
-                //                     type="classification"/>
-
-                //                 <PCAJSON
-                //                     scoreName="Q-Q Plot for Normalized Residuals"
-                //                     Points={experiment.data.QQNR_2d}
-                //                     Labels={experiment.data.QQNR_2d_class}
-                //                     chartKey="QQNR"
-                //                     chartColor="#55D6BE"
-                //                     type="classification"/>
-
-                //             </Grid.Column>
-                //             <Grid.Column>
-                //                 <MSEMAEDetails scores={experiment.data.scores}/>
-                //                 <Score
-                //                     scoreName="Coefficient of Determination"
-                //                     scoreValueList={R2List}
-                //                     chartKey="R2"
-                //                     chartColor="#55D6BE"
-                //                     type="r2_or_vaf"/>
-                //                 <Score
-                //                     scoreName="Explained Variance"
-                //                     scoreValueList={VAFList}
-                //                     chartKey="VAF"
-                //                     chartColor="#55D6BE"
-                //                     type="r2_or_vaf"/>
-                //                 <Score
-                //                     scoreName="Pearson's r"
-                //                     scoreValueList={RList}
-                //                     chartKey="pearsonr"
-                //                     chartColor="#55D6BE"
-                //                     type="pearsonr"/>
-
-                //             </Grid.Column>
-                //         </Grid.Row>
-                //     </Grid>
-                //     <ChatGPT experiment={experiment}/>
-                // </div>
+                // <div>     <Grid columns={2} stackable="stackable">         <Grid.Row>
+                // <Grid.Column>                 <SceneHeader
+                // header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
+                // subheader={`Experiment: #${experiment.data._id}`}/>
+                // </Grid.Column>             <Grid.Column>                 <Menu
+                // compact="compact" inverted="inverted" floated='right' color='grey'>
+                // <Dropdown                         text='Download'
+                // simple="simple"                         item="item"
+                // disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
+                // <Dropdown.Menu>                             <Dropdown.Item
+                // key="model"                                 icon="download"
+                // text="Model"                                 onClick={() =>
+                // downloadModel(experiment.data._id)}/>,
+                // <Dropdown.Item                                 key="script"
+                // icon="download"                                 text="Script"
+                // onClick={() => downloadScript(experiment.data._id)}/>
+                // </Dropdown.Menu>                     </Dropdown>                 </Menu>
+                // </Grid.Column>         </Grid.Row>     </Grid>     <Grid columns={3}
+                // stackable="stackable">         <Grid.Row>             <Grid.Column>
+                // <AlgorithmDetails                     algorithm={experiment.data.algorithm}
+                // params={experiment.data.params}/>                 <RunDetails
+                // startTime={experiment.data.started}
+                // finishTime={experiment.data.finished}
+                // launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore
+                // file={importanceScore} /> */}                 <ImportanceScoreJSON
+                // scoreName="Feature Importance"
+                // scoreValueList={experiment.data.feature_importances}
+                // featureList={experiment.data.feature_names}
+                // chartKey="importance_score"                     chartColor="#55D6BE"
+                // type="regression"/>             </Grid.Column>             <Grid.Column>
+                // {/* <RegFigure file={reg_cv_pred} /> */}                 {/* <RegFigure
+                // file={reg_cv_resi} /> */}                 {/* <RegFigure file={reg_cv_qq} />
+                // */}                 <PCAJSON                     scoreName="Cross-Validated
+                // Predictions"                     Points={experiment.data.CVP_2d}
+                // Labels={experiment.data.CVP_2d_class}                     chartKey="CVP"
+                // chartColor="#55D6BE"                     type="classification"/>
+                // <PCAJSON                     scoreName="Cross-Validated Residuals"
+                // Points={experiment.data.CVR_2d}
+                // Labels={experiment.data.CVR_2d_class}                     chartKey="CVR"
+                // chartColor="#55D6BE"                     type="classification"/>
+                // <PCAJSON                     scoreName="Q-Q Plot for Normalized Residuals"
+                // Points={experiment.data.QQNR_2d}
+                // Labels={experiment.data.QQNR_2d_class}                     chartKey="QQNR"
+                // chartColor="#55D6BE"                     type="classification"/>
+                // </Grid.Column>             <Grid.Column>                 <MSEMAEDetails
+                // scores={experiment.data.scores}/>                 <Score
+                // scoreName="Coefficient of Determination"
+                // scoreValueList={R2List}                     chartKey="R2"
+                // chartColor="#55D6BE"                     type="r2_or_vaf"/>
+                // <Score                     scoreName="Explained Variance"
+                // scoreValueList={VAFList}                     chartKey="VAF"
+                // chartColor="#55D6BE"                     type="r2_or_vaf"/>
+                // <Score                     scoreName="Pearson's r"
+                // scoreValueList={RList}                     chartKey="pearsonr"
+                // chartColor="#55D6BE"                     type="pearsonr"/>
+                // </Grid.Column>         </Grid.Row>     </Grid>     <ChatGPT
+                // experiment={experiment}/> </div>
             );
         }
     }
