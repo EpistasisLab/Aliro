@@ -1,6 +1,6 @@
 import React from 'react'
 
-function test() {
+function testAPI() {
   fetch("/openai/v1/configs")
     .then(res => res.json())
     .then(data => {
@@ -30,7 +30,11 @@ const SideMenu = ({
         New Chat
     </div> */
     }
-    <div className="side-menu-button" onClick={test}>
+    {/* <div className="side-menu-button" onClick={testAPI}>
+        <span>+</span>
+        New Chat
+    </div> */}
+    <div className="side-menu-button" onClick={() => setChatTempId(chatTempId + 1)}>
         <span>+</span>
         New Chat
     </div>

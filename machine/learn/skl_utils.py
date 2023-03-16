@@ -1506,6 +1506,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     # combine y, pred_y
     # Cross-Validated Predictions
 
+
     CVP_2d = list(map(list, zip(y.tolist(), pred_y.tolist())))
     # same length as pred_y but it has 1
     CVP_2d_class = np.zeros(len(pred_y))
@@ -1519,6 +1520,9 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     # Q-Q Plot for Normalized Residuals
     QQNR_2d = list(map(list, zip(series1[0][0], series1[0][1])))
     QQNR_2d_class = np.zeros(len(series1[0][0]))
+
+
+
 
     reg_cv_pred_resi_qq = {
         'CVP_2d': CVP_2d,

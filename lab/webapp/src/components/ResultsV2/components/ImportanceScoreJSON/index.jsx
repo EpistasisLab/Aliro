@@ -59,11 +59,13 @@ function foldcheck(fold) {
   return [iconname, iconcolor, iconmsg];
 }
 
-function NoScore({ scoreName, scoreValueList, featureList, chartKey, chartColor,  type }) {
+function NoScore({ scoreName, scoreValueList, featureList, chartKey, chartColor,  type}) {
 
-  console.log('scoreName',scoreName);
-  console.log('scoreValueList',scoreValueList);
-  console.log('type',type);
+  // console.log('scoreName',scoreName);
+  // console.log('scoreValueList',scoreValueList);
+  // console.log('type',type);
+
+  // console.log("bar chart experiment.data", data);
   
 
   const getCardContent = () => {

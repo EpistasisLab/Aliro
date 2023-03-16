@@ -47,6 +47,7 @@ import LearningCurveJSON from './components/LearningCurveJSON';
 import TestChart from './components/TestChart';
 import PCA from './components/PCA';
 import PCAJSON from './components/PCAJSON';
+import PCAJSONV from './components/PCAJSONV';
 import TSNE from './components/TSNE';
 import TSNEJSON from './components/TSNEJSON';
 import RegFigure from './components/RegFigure';
@@ -56,6 +57,43 @@ import {Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import {formatDataset} from 'utils/formatter';
 import ClassRate from './components/ClassRate';
 import ChatGPT from '../ChatGPT';
+
+
+
+function moveSlidermakeBlack(e){
+
+let block = document.getElementsByClassName("chartsbaseleft")[0];
+let slider = document.getElementsByClassName("slider")[0];
+
+// make slider color black
+slider.style.backgroundColor = "black";
+
+// 
+// Remaining task: when 10% or 90% of the block is visible, move the slider to the left or right 
+if (block && slider) {
+
+    // console.log("block and slider exist");
+
+    slider.onmousedown = function dragMouseDown(e) {
+        let dragX = e.clientX;
+        document.onmousemove = function onMouseMove(e) {
+            block.style.width = block.offsetWidth + e.clientX - dragX + "px";
+            dragX = e.clientX;
+        }
+        // remove mouse-move listener on mouse-up
+        document.onmouseup = () => document.onmousemove = document.onmouseup = null;
+    }
+
+}
+}
+
+function makeOriginColor(e){
+    let slider = document.getElementsByClassName("slider")[0];
+
+    // make slider color black
+    slider.style.backgroundColor = "#1B1C1D;"
+}
+
 
 class Results extends Component {
     constructor(props) {
@@ -192,7 +230,7 @@ class Results extends Component {
                     } else if (filename.includes('roc_curve')) {
                         rocCurve = file;
                         // save to local storage
-                        localStorage.setItem('rocCurve', rocCurve);
+                        // localStorage.setItem('rocCurve', rocCurve);
                     } else if (filename.includes('imp_score')) {
                         importanceScore = file;
                     } else if (filename.includes('learning_curve')) {
@@ -223,12 +261,12 @@ class Results extends Component {
                         shap_num_samples = experiment.data.shap_num_samples;
 
                         // save to local storage
-                        localStorage.setItem(
-                            'shapSummaryCurveDict',
-                            JSON.stringify(shapSummaryCurveDict)
-                        );
-                        localStorage.setItem('shap_explainer', shap_explainer);
-                        localStorage.setItem('shap_num_samples', shap_num_samples);
+                        // localStorage.setItem(
+                        //     'shapSummaryCurveDict',
+                        //     JSON.stringify(shapSummaryCurveDict)
+                        // );
+                        // localStorage.setItem('shap_explainer', shap_explainer);
+                        // localStorage.setItem('shap_num_samples', shap_num_samples);
 
                     } else if (filename.includes('shap_summary_json')) {
                         console.log("shap_summary_json")
@@ -278,29 +316,29 @@ class Results extends Component {
 
                 });
 
-            console.log('balancedAccList', balancedAccList)
-            // save to local storage
-            localStorage.setItem('balancedAccList', JSON.stringify(balancedAccList));
+            // console.log('balancedAccList', balancedAccList)
+            // // save to local storage
+            // localStorage.setItem('balancedAccList', JSON.stringify(balancedAccList));
 
-            console.log('precisionList', precisionList)
-            // save to local storage
-            localStorage.setItem('precisionList', JSON.stringify(precisionList));
+            // console.log('precisionList', precisionList)
+            // // save to local storage
+            // localStorage.setItem('precisionList', JSON.stringify(precisionList));
 
-            // save to local storage
-            console.log('aucList', aucList)
-            localStorage.setItem('aucList', JSON.stringify(aucList));
+            // // save to local storage
+            // console.log('aucList', aucList)
+            // localStorage.setItem('aucList', JSON.stringify(aucList));
 
-            // save to local storage
-            console.log('recallList', recallList)
-            localStorage.setItem('recallList', JSON.stringify(recallList));
+            // // save to local storage
+            // console.log('recallList', recallList)
+            // localStorage.setItem('recallList', JSON.stringify(recallList));
 
-            // save to local storage
-            console.log('f1List', f1List)
-            localStorage.setItem('f1List', JSON.stringify(f1List));
+            // // save to local storage
+            // console.log('f1List', f1List)
+            // localStorage.setItem('f1List', JSON.stringify(f1List));
 
-            // save to local storage
-            console.log('class_percentage', class_percentage)
-            localStorage.setItem('class_percentage', JSON.stringify(class_percentage));
+            // // save to local storage
+            // console.log('class_percentage', class_percentage)
+            // localStorage.setItem('class_percentage', JSON.stringify(class_percentage));
 
             return (
                 <div class="containerChartsChats">
@@ -451,6 +489,14 @@ class Results extends Component {
                             </Grid.Row>
                         </Grid>
                     </div>
+                    <div className="slider" onMouseOver={moveSlidermakeBlack} onMouseOut={makeOriginColor}>
+                        "s"<br></br>
+                        "l"<br></br>
+                        "i"<br></br>
+                        "d"<br></br>
+                        "e"<br></br>
+                        "r"<br></br>
+                    </div>
                     <div id="chatgpt-space" class="chartschat chatbaseright">
                         <ChatGPT experiment={experiment}/>
                     </div>
@@ -583,8 +629,8 @@ class Results extends Component {
 
             return (
 
-                <div class="containerChartsChats">
-                    <div class="chartschat chartsbaseleft">
+                <div className="containerChartsChats">
+                    <div className="chartschat chartsbaseleft">
                         <Grid columns={2} stackable="stackable">
                             <Grid.Row>
                                 <Grid.Column>
@@ -633,7 +679,8 @@ class Results extends Component {
                                         featureList={experiment.data.feature_names}
                                         chartKey="importance_score"
                                         chartColor="#55D6BE"
-                                        type="regression"/>
+                                        type="regression"
+                                        data={experiment.data}/> 
 
                                 </Grid.Column>
                                 <Grid.Column>
@@ -641,14 +688,27 @@ class Results extends Component {
                                     {/* <RegFigure file={reg_cv_resi} /> */}
                                     {/* <RegFigure file={reg_cv_qq} /> */}
 
+
+                                    {experiment.data.CVP_2d===undefined?<div>CVP_2d is not defined.</div>:
                                     <PCAJSON
                                         scoreName="Cross-Validated Predictions"
                                         Points={experiment.data.CVP_2d}
                                         Labels={experiment.data.CVP_2d_class}
                                         chartKey="CVP"
                                         chartColor="#55D6BE"
-                                        type="classification"/>
+                                        type="classification"
+                                        />
+                                    }
 
+                                        {/* <PCAJSONV
+                                        scoreName="Cross-Validated Predictions"
+                                        Points={experiment.data.CVP_2d}
+                                        Labels={experiment.data.CVP_2d_class}
+                                        chartKey="CVP"
+                                        chartColor="#55D6BE"
+                                        type="classification"
+                                        data={experiment.data}/> */}
+                                    {experiment.data.CVR_2d===undefined?<div>CVR_2d is not defined.</div>:
                                     <PCAJSON
                                         scoreName="Cross-Validated Residuals"
                                         Points={experiment.data.CVR_2d}
@@ -656,7 +716,8 @@ class Results extends Component {
                                         chartKey="CVR"
                                         chartColor="#55D6BE"
                                         type="classification"/>
-
+                                    }
+                                    {experiment.data.QQNR_2d===undefined?<div>QQNR_2d is not defined.</div>:
                                     <PCAJSON
                                         scoreName="Q-Q Plot for Normalized Residuals"
                                         Points={experiment.data.QQNR_2d}
@@ -664,6 +725,7 @@ class Results extends Component {
                                         chartKey="QQNR"
                                         chartColor="#55D6BE"
                                         type="classification"/>
+                                    }
 
                                 </Grid.Column>
                                 <Grid.Column>
@@ -691,68 +753,20 @@ class Results extends Component {
                             </Grid.Row>
                         </Grid>
                     </div>
+                    <div className="slider" onMouseOver={moveSlidermakeBlack} onMouseOut={makeOriginColor}>
+                        "s"<br></br>
+                        "l"<br></br>
+                        "i"<br></br>
+                        "d"<br></br>
+                        "e"<br></br>
+                        "r"<br></br>
+                    </div>
                     <div id="chatgpt-space" className="chartschat chatbaseright">
                         <ChatGPT experiment={experiment}/>
                     </div>
                 </div>
 
-                // <div>     <Grid columns={2} stackable="stackable">         <Grid.Row>
-                // <Grid.Column>                 <SceneHeader
-                // header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-                // subheader={`Experiment: #${experiment.data._id}`}/>
-                // </Grid.Column>             <Grid.Column>                 <Menu
-                // compact="compact" inverted="inverted" floated='right' color='grey'>
-                // <Dropdown                         text='Download'
-                // simple="simple"                         item="item"
-                // disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
-                // <Dropdown.Menu>                             <Dropdown.Item
-                // key="model"                                 icon="download"
-                // text="Model"                                 onClick={() =>
-                // downloadModel(experiment.data._id)}/>,
-                // <Dropdown.Item                                 key="script"
-                // icon="download"                                 text="Script"
-                // onClick={() => downloadScript(experiment.data._id)}/>
-                // </Dropdown.Menu>                     </Dropdown>                 </Menu>
-                // </Grid.Column>         </Grid.Row>     </Grid>     <Grid columns={3}
-                // stackable="stackable">         <Grid.Row>             <Grid.Column>
-                // <AlgorithmDetails                     algorithm={experiment.data.algorithm}
-                // params={experiment.data.params}/>                 <RunDetails
-                // startTime={experiment.data.started}
-                // finishTime={experiment.data.finished}
-                // launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore
-                // file={importanceScore} /> */}                 <ImportanceScoreJSON
-                // scoreName="Feature Importance"
-                // scoreValueList={experiment.data.feature_importances}
-                // featureList={experiment.data.feature_names}
-                // chartKey="importance_score"                     chartColor="#55D6BE"
-                // type="regression"/>             </Grid.Column>             <Grid.Column>
-                // {/* <RegFigure file={reg_cv_pred} /> */}                 {/* <RegFigure
-                // file={reg_cv_resi} /> */}                 {/* <RegFigure file={reg_cv_qq} />
-                // */}                 <PCAJSON                     scoreName="Cross-Validated
-                // Predictions"                     Points={experiment.data.CVP_2d}
-                // Labels={experiment.data.CVP_2d_class}                     chartKey="CVP"
-                // chartColor="#55D6BE"                     type="classification"/>
-                // <PCAJSON                     scoreName="Cross-Validated Residuals"
-                // Points={experiment.data.CVR_2d}
-                // Labels={experiment.data.CVR_2d_class}                     chartKey="CVR"
-                // chartColor="#55D6BE"                     type="classification"/>
-                // <PCAJSON                     scoreName="Q-Q Plot for Normalized Residuals"
-                // Points={experiment.data.QQNR_2d}
-                // Labels={experiment.data.QQNR_2d_class}                     chartKey="QQNR"
-                // chartColor="#55D6BE"                     type="classification"/>
-                // </Grid.Column>             <Grid.Column>                 <MSEMAEDetails
-                // scores={experiment.data.scores}/>                 <Score
-                // scoreName="Coefficient of Determination"
-                // scoreValueList={R2List}                     chartKey="R2"
-                // chartColor="#55D6BE"                     type="r2_or_vaf"/>
-                // <Score                     scoreName="Explained Variance"
-                // scoreValueList={VAFList}                     chartKey="VAF"
-                // chartColor="#55D6BE"                     type="r2_or_vaf"/>
-                // <Score                     scoreName="Pearson's r"
-                // scoreValueList={RList}                     chartKey="pearsonr"
-                // chartColor="#55D6BE"                     type="pearsonr"/>
-                // </Grid.Column>         </Grid.Row>     </Grid>     <ChatGPT
-                // experiment={experiment}/> </div>
+                
             );
         }
     }
@@ -773,3 +787,10 @@ export {
     Results
 };
 export default connect(mapStateToProps, actions)(Results);
+
+
+
+
+
+
+

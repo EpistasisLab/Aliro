@@ -69,7 +69,7 @@ function foldcheck(fold) {
 
 
 // function NoScore({ scoreName, train_sizes, Points, test_scores, chartKey, chartColor, type }) {
-  function NoScore({ scoreName, Points, Labels, chartKey, chartColor, type }) {
+  function NoScore({ scoreName, Points, Labels, chartKey, chartColor, type  }) {
   const getCardContent = () => {
     // if(typeof(Labels) !== 'number' && !LabelsList.length) 
     // {
@@ -83,9 +83,14 @@ function foldcheck(fold) {
     //     );
     //   }
     // } 
+    // console.log("pca component", data)
+    // console.log('scoreName', scoreName)
+    // console.log('Points', Points);
+    // console.log('Labels', Labels);
+    // console.log('type', type);
     
     if (Points && Labels && type == "classification") {
-
+      
       // console.log("i am here in no score");
       // console.log('labels', Labels);
 

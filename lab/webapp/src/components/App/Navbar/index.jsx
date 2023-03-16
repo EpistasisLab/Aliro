@@ -96,12 +96,27 @@ function toggleChatGPT(e) {
       var chartschat = document.getElementsByClassName("chartschat");
 
       for (var i = 0; i < chartschat.length; i++) {
-        chartschat[i].style.width = "50%";
+        chartschat[i].style.width = "49%";
+      }
+
+
+
+      var sliders = document.getElementsByClassName("slider");
+
+      for (var i = 0; i < sliders.length; i++) {
+        sliders[i].style.width = "1%";
+
       }
 
 
       console.log("make chatgpt-space visible")
       document.getElementById("chatgpt-space").style.visibility ="visible"
+
+      var sliders = document.getElementsByClassName("slider");
+
+      for (var i = 0; i < sliders.length; i++) {
+        sliders[i].style.visibility ="visible";
+      } 
 
 
 
@@ -118,6 +133,14 @@ function toggleChatGPT(e) {
       // make chatgpt-space visible
       console.log("make chatgpt-space hidden")
       document.getElementById("chatgpt-space").style.visibility = "hidden"
+
+      var sliders = document.getElementsByClassName("slider");
+
+      for (var i = 0; i < sliders.length; i++) {
+        sliders[i].style.visibility ="hidden";
+      }
+
+      
 
       // document.getElementsByClassName("chartschat")[0].style.width = "50%";
       // console.log("make chatgpt-space visible")
@@ -141,10 +164,23 @@ function toggleChatGPT(e) {
       var chartschat = document.getElementsByClassName("chartschat");
 
       for (var i = 0; i < chartschat.length; i++) {
-        chartschat[i].style.width = "50%";
+        chartschat[i].style.width = "49%";
       }
+
+      var sliders = document.getElementsByClassName("slider");
+
+      for (var i = 0; i < sliders.length; i++) {
+        sliders[i].style.width = "1%";
+      }
+      
       // make chatgpt-space visible
       document.getElementById("chatgpt-space").style.visibility = "visible"
+
+      var sliders = document.getElementsByClassName("slider");
+
+      for (var i = 0; i < sliders.length; i++) {
+        sliders[i].style.visibility ="visible";
+      }
 
 
 
@@ -157,6 +193,12 @@ function toggleChatGPT(e) {
 
       for (var i = 0; i < chartschat.length; i++) {
         chartschat[i].style.width = "100%";
+      }
+
+      var sliders = document.getElementsByClassName("slider");
+
+      for (var i = 0; i < sliders.length; i++) {
+        sliders[i].style.visibility ="hidden";
       }
       document.getElementById("chatgpt-space").style.visibility ="hidden"
       // chage width 100%
