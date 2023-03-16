@@ -1556,4 +1556,26 @@ body {
 
 .chatbaseright {
   /* background: #ce93d8; */
+  flex: 1; /* adjust automatically */
+  min-width: 0; /* allow flexing beyond auto width */
+  overflow: hidden; /* hide overflow on small width */
+}
+
+.slider {
+  line-height: 1050%;
+  /* width: 1px; */
+  /* height: 1000%; */
+  /*  */
+  /* background-color: #1B1C1D; */
+  background-color: black;
+  border: none;
+  cursor: col-resize;
+  user-select: none;
+  text-align: center;
+  /* make padding left and right 5px */
+  padding-left: 5px;
+  padding-right: 5px;
+  /* locate in the center */
+
+  
 }
