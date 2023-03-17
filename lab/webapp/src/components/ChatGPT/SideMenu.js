@@ -30,17 +30,20 @@ const SideMenu = ({
         New Chat
     </div> */
     }
+    
     {/* <div className="side-menu-button" onClick={testAPI}>
         <span>+</span>
         New Chat
     </div> */}
+
     <div className="side-menu-button" onClick={() => setChatTempId(chatTempId + 1)}>
         <span>+</span>
         New Chat
     </div>
+    
     {
         Array(chatTempId).fill().map((_, i) => <div className="side-menu-button" key={i}>
-            <span>+</span>
+            <span>ChatBox</span>
             {i}
         </div>)
     }      

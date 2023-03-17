@@ -65,8 +65,10 @@ function moveSlidermakeBlack(e){
 let block = document.getElementsByClassName("chartsbaseleft")[0];
 let slider = document.getElementsByClassName("slider")[0];
 
+let chatbox = document.getElementsByClassName("chatbaseright")[0];
+
 // make slider color black
-slider.style.backgroundColor = "black";
+// slider.style.backgroundColor = "black";
 
 // 
 // Remaining task: when 10% or 90% of the block is visible, move the slider to the left or right 
@@ -75,10 +77,47 @@ if (block && slider) {
     // console.log("block and slider exist");
 
     slider.onmousedown = function dragMouseDown(e) {
+        // get width of window
+        let windowWidth = window.innerWidth;
+        console.log("windowWidth", windowWidth);
         let dragX = e.clientX;
+        // console.log("e.clientX", e.clientX);
         document.onmousemove = function onMouseMove(e) {
-            block.style.width = block.offsetWidth + e.clientX - dragX + "px";
-            dragX = e.clientX;
+
+
+            if(block.offsetWidth > 0.8 * windowWidth ){
+                console.log("bigger than 0.8")
+                block.style.width = windowWidth + "px";
+                dragX = e.clientX;
+                chatbox.style.visibility = "hidden";
+            }
+            else if(block.offsetWidth < 0.3 * windowWidth){
+                console.log("smaller than 0.2")
+                block.style.width = 0 + "px";
+                block.style.visibility = "hidden";
+                slider.style.visibility = "hidden";
+                dragX = e.clientX;
+
+            }
+            else{
+                block.style.visibility = "block";
+                slider.style.visibility = "block";
+
+                // origin
+                block.style.width = block.offsetWidth + e.clientX - dragX + "px";
+                dragX = e.clientX;
+            }
+
+
+            // console.log("before block.offsetWidth", block.offsetWidth);
+
+            // origin
+            // block.style.width = block.offsetWidth + e.clientX - dragX + "px";
+            // dragX = e.clientX;
+
+            console.log("block.style.width", block.style.width)
+            console.log("after block.offsetWidth", block.offsetWidth);
+            console.log("e.clientX", e.clientX);
         }
         // remove mouse-move listener on mouse-up
         document.onmouseup = () => document.onmousemove = document.onmouseup = null;

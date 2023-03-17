@@ -29,7 +29,7 @@ export default function ChatGPT({experiment}) {
         }
     ]);
 
-    const [chatTempId, setChatTempId] = useState(0);
+    const [chatTempId, setChatTempId] = useState(1);
 
     // clear chats
     function clearChat() {

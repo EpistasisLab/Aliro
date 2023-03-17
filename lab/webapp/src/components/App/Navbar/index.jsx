@@ -287,6 +287,15 @@ const checkConnectionOpenAI = () => {
 
   const togglePop = (e) => {
 
+    let block = document.getElementsByClassName("chartsbaseleft")[0];
+    let slider = document.getElementsByClassName("slider")[0];
+
+    if (block && slider) {
+
+      block.style.visibility = "visible";
+      slider.style.visibility = "visible";
+    }
+
     checkConnectionOpenAI();
 
     // test
@@ -386,9 +395,6 @@ const checkConnectionOpenAI = () => {
             <div></div>
 
           }
-
-          
-
 
         </Menu.Menu>
       }
