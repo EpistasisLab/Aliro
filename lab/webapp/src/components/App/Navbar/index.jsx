@@ -227,10 +227,16 @@ function Navbar({ preferences }) {
     );
   };
 
-  const [openaiApiState, setopenaiApiState] = useState(false);
+  const [openaiApiState, setopenaiApiState] = useState(0);
 
 
   const [error, setError] = useState(null);
+
+
+  useEffect(() => {
+    checkConnectionOpenAI();
+    console.log('openaiApiState in useEffect',openaiApiState);
+  }, []);
 
   // useEffect(() => {
   //   console.log("useEffect in Navbar!")
@@ -264,22 +270,31 @@ function Navbar({ preferences }) {
 
 const checkConnectionOpenAI = () => {
     // POST /openai/v1/connections
-
-    fetch('/openai/v1/connections')
+    fetch('openai/v1/configs')
+    // fetch('/openai/v1/connections')
         .then((response) => {
             console.log("response.ok", response.ok)
             if (!response.ok) {
-                // console.log("error!!!")
-                throw new Error(`HTTP error: ${response.status}`);
+                console.log("error!!!")
+                // throw new Error(`HTTP error: ${response.status}`);
+                return 0;
+                // setopenaiApiState(0);
             } else {
-                console.log("response", response)
+                console.log("response_checkConnectionOpenAI", response)
                 return response.text();
+                
             }
 
         })
         .then((text) => {
             let parsed = JSON.parse(text);
             console.log("parsed", parsed)
+            // return 1;
+
+            // make openaiApiState === 1 using setopenaiApiState
+            setopenaiApiState(1);
+
+            console.log("openaiApiState in checkConnectionOpenAI", openaiApiState)
         });
 
 }
@@ -287,23 +302,29 @@ const checkConnectionOpenAI = () => {
 
   const togglePop = (e) => {
 
-    let block = document.getElementsByClassName("chartsbaseleft")[0];
-    let slider = document.getElementsByClassName("slider")[0];
-
-    if (block && slider) {
-
-      block.style.visibility = "visible";
-      slider.style.visibility = "visible";
-    }
-
     checkConnectionOpenAI();
 
-    // test
-    // console.log("togglePop")
-    setopenaiApiState(!openaiApiState);
     console.log('openaiApiState',openaiApiState);
 
-    toggleChatGPT(e);
+    if (openaiApiState === 1)
+    {
+      console.log("openaiApiState === 1")
+      
+
+      let block = document.getElementsByClassName("chartsbaseleft")[0];
+      let slider = document.getElementsByClassName("slider")[0];
+
+      if (block && slider) {
+
+        console.log("in block && slider")
+
+        block.style.visibility = "visible";
+        slider.style.visibility = "visible";
+      }
+
+      
+      toggleChatGPT(e);
+    }
   
   };
 
@@ -346,7 +367,11 @@ const checkConnectionOpenAI = () => {
             
 
             <div>
-              {openaiApiState ? <PopUpAPI toggle={togglePop} /> : null}
+              {/* if openaiApiState===1, show null */}
+              {/* if ===0, show popup */}
+              {/* {openaiApiState ? null : <PopUpAPI toggle={togglePop} />} */}
+
+              
             </div>
           
 

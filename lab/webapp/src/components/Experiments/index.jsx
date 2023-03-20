@@ -196,7 +196,7 @@ class Experiments extends Component {
 
                     }}
                    
-                    className='table-sticky-header file-upload-table'>
+                    className='table-sticky-header file-upload-table temp-chatgpt-location-cand'>
                     <p>GPT</p>
                 </div>
 

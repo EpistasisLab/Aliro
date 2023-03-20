@@ -790,6 +790,7 @@ a#addNewDatasetBtnCross i {
     position: relative;
     overflow-y: scroll;
     padding-bottom: 95px;
+    border-radius: 5px;
   }
   
   .App-logo {
@@ -803,6 +804,7 @@ a#addNewDatasetBtnCross i {
     }
   }
   
+  /* original version of chat submit window location */
   .chat-input-holder {
     padding: 24px;
     position: absolute;
@@ -810,6 +812,17 @@ a#addNewDatasetBtnCross i {
     left: 0;
     right: 0;
   }
+
+  /* jay's idea of chat sumbit window location */
+  /* .chat-input-holder {
+    padding: 24px;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    right: 0;
+    width: 48%;
+  } */
+
   .chat-input-textarea {
     background-color: #40414f;
     width: 90%;
@@ -1485,6 +1498,7 @@ body {
   display:'none';
   /* display:"hidden"; */
   /* backgroundColor: '#343541'; */
+  overflow-y: scroll;
 }
 
 
@@ -1562,12 +1576,15 @@ body {
 }
 
 .slider {
-  line-height: 1050%;
+  line-height: 1200%;
   /* width: 1px; */
   /* height: 1000%; */
   /*  */
   /* background-color: #1B1C1D; */
-  background-color: black;
+  /* background-color: black; */
+  /* when mouseover  */
+  
+
   border: none;
   cursor: col-resize;
   user-select: none;
@@ -1577,5 +1594,29 @@ body {
   padding-right: 5px;
   /* locate in the center */
 
+  /* make transparent charachters in slider */
+  color: transparent;
+
+  border-radius: 10px;
+
   
+}
+
+.slider {
+  /* background-color: #FFFFFF; */
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.slider:hover {
+  background-color: black;
+}
+
+
+/* ====================== blocks and slider ====================================*/
+
+
+
+
+.temp-chatgpt-location-cand{
+  color:transparent;
 }

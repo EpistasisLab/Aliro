@@ -2,8 +2,12 @@ import React, { Component } from "react";
 
 export default class PopUpAPI extends Component {
   handleClick = () => {
-    this.props.toggle();
-    // console.log("clicked");
+    // this.props.toggle();
+    console.log("clicked");
+  };
+
+  handleSubmit = () => {
+    console.log("submit!!!");
   };
 
   render() {
@@ -21,7 +25,7 @@ export default class PopUpAPI extends Component {
               <input ype="text" name="name" />
             </label>
             {/* <br /> */}
-            <input className="popupAPI" type="submit" />
+            <input className="popupAPI" type="submit" onClick={this.handleSubmit}/>
           </form>
         </div>
       </div>

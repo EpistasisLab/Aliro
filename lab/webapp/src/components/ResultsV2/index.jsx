@@ -58,81 +58,70 @@ import {formatDataset} from 'utils/formatter';
 import ClassRate from './components/ClassRate';
 import ChatGPT from '../ChatGPT';
 
+function moveSlidermakeBlack(e) {
 
+    let block = document.getElementsByClassName("chartsbaseleft")[0];
+    let slider = document.getElementsByClassName("slider")[0];
 
-function moveSlidermakeBlack(e){
+    let chatbox = document.getElementsByClassName("chatbaseright")[0];
 
-let block = document.getElementsByClassName("chartsbaseleft")[0];
-let slider = document.getElementsByClassName("slider")[0];
+    // make slider color black slider.style.backgroundColor = "black";
 
-let chatbox = document.getElementsByClassName("chatbaseright")[0];
+    
+    if (block && slider) {
 
-// make slider color black
-// slider.style.backgroundColor = "black";
+        // console.log("block and slider exist");
 
-// 
-// Remaining task: when 10% or 90% of the block is visible, move the slider to the left or right 
-if (block && slider) {
+        slider.onmousedown = function dragMouseDown(e) {
+            // get width of window
+            let windowWidth = window.innerWidth;
+            // console.log("windowWidth", windowWidth);
+            let dragX = e.clientX;
+            // console.log("e.clientX", e.clientX);
+            document.onmousemove = function onMouseMove(e) {
 
-    // console.log("block and slider exist");
+                if (block.offsetWidth > 0.8 * windowWidth) {
+                    console.log("bigger than 0.8")
+                    block.style.width = windowWidth + "px";
+                    dragX = e.clientX;
+                    chatbox.style.visibility = "hidden";
+                } else if (block.offsetWidth < 0.3 * windowWidth) {
+                    console.log("smaller than 0.2")
+                    block.style.width = 0 + "px";
+                    block.style.visibility = "hidden";
+                    slider.style.visibility = "hidden";
+                    dragX = e.clientX;
 
-    slider.onmousedown = function dragMouseDown(e) {
-        // get width of window
-        let windowWidth = window.innerWidth;
-        console.log("windowWidth", windowWidth);
-        let dragX = e.clientX;
-        // console.log("e.clientX", e.clientX);
-        document.onmousemove = function onMouseMove(e) {
+                } else {
+                    block.style.visibility = "block";
+                    slider.style.visibility = "block";
 
+                    // origin
+                    block.style.width = block.offsetWidth + e.clientX - dragX + "px";
+                    dragX = e.clientX;
+                }
 
-            if(block.offsetWidth > 0.8 * windowWidth ){
-                console.log("bigger than 0.8")
-                block.style.width = windowWidth + "px";
-                dragX = e.clientX;
-                chatbox.style.visibility = "hidden";
+                // console.log("before block.offsetWidth", block.offsetWidth); origin
+                // block.style.width = block.offsetWidth + e.clientX - dragX + "px"; dragX =
+                // e.clientX;
+
+                // console.log("block.style.width", block.style.width)
+                // console.log("after block.offsetWidth", block.offsetWidth);
+                // console.log("e.clientX", e.clientX);
             }
-            else if(block.offsetWidth < 0.3 * windowWidth){
-                console.log("smaller than 0.2")
-                block.style.width = 0 + "px";
-                block.style.visibility = "hidden";
-                slider.style.visibility = "hidden";
-                dragX = e.clientX;
-
-            }
-            else{
-                block.style.visibility = "block";
-                slider.style.visibility = "block";
-
-                // origin
-                block.style.width = block.offsetWidth + e.clientX - dragX + "px";
-                dragX = e.clientX;
-            }
-
-
-            // console.log("before block.offsetWidth", block.offsetWidth);
-
-            // origin
-            // block.style.width = block.offsetWidth + e.clientX - dragX + "px";
-            // dragX = e.clientX;
-
-            console.log("block.style.width", block.style.width)
-            console.log("after block.offsetWidth", block.offsetWidth);
-            console.log("e.clientX", e.clientX);
+            // remove mouse-move listener on mouse-up
+            document.onmouseup = () => document.onmousemove = document.onmouseup = null;
         }
-        // remove mouse-move listener on mouse-up
-        document.onmouseup = () => document.onmousemove = document.onmouseup = null;
+
     }
-
-}
 }
 
-function makeOriginColor(e){
+function makeOriginColor(e) {
     let slider = document.getElementsByClassName("slider")[0];
 
     // make slider color black
     slider.style.backgroundColor = "#1B1C1D;"
 }
-
 
 class Results extends Component {
     constructor(props) {
@@ -268,8 +257,7 @@ class Results extends Component {
                         confusionMatrix = file;
                     } else if (filename.includes('roc_curve')) {
                         rocCurve = file;
-                        // save to local storage
-                        // localStorage.setItem('rocCurve', rocCurve);
+                        // save to local storage localStorage.setItem('rocCurve', rocCurve);
                     } else if (filename.includes('imp_score')) {
                         importanceScore = file;
                     } else if (filename.includes('learning_curve')) {
@@ -299,11 +287,8 @@ class Results extends Component {
                         shap_explainer = experiment.data.shap_explainer;
                         shap_num_samples = experiment.data.shap_num_samples;
 
-                        // save to local storage
-                        // localStorage.setItem(
-                        //     'shapSummaryCurveDict',
-                        //     JSON.stringify(shapSummaryCurveDict)
-                        // );
+                        // save to local storage localStorage.setItem(     'shapSummaryCurveDict',
+                        // JSON.stringify(shapSummaryCurveDict) );
                         // localStorage.setItem('shap_explainer', shap_explainer);
                         // localStorage.setItem('shap_num_samples', shap_num_samples);
 
@@ -355,27 +340,16 @@ class Results extends Component {
 
                 });
 
-            // console.log('balancedAccList', balancedAccList)
-            // // save to local storage
+            // console.log('balancedAccList', balancedAccList)  save to local storage
             // localStorage.setItem('balancedAccList', JSON.stringify(balancedAccList));
-
-            // console.log('precisionList', precisionList)
-            // // save to local storage
-            // localStorage.setItem('precisionList', JSON.stringify(precisionList));
-
-            // // save to local storage
-            // console.log('aucList', aucList)
-            // localStorage.setItem('aucList', JSON.stringify(aucList));
-
-            // // save to local storage
-            // console.log('recallList', recallList)
-            // localStorage.setItem('recallList', JSON.stringify(recallList));
-
-            // // save to local storage
-            // console.log('f1List', f1List)
-            // localStorage.setItem('f1List', JSON.stringify(f1List));
-
-            // // save to local storage
+            // console.log('precisionList', precisionList)  save to local storage
+            // localStorage.setItem('precisionList', JSON.stringify(precisionList));  save
+            // to local storage console.log('aucList', aucList)
+            // localStorage.setItem('aucList', JSON.stringify(aucList));  save to local
+            // storage console.log('recallList', recallList)
+            // localStorage.setItem('recallList', JSON.stringify(recallList));  save to
+            // local storage console.log('f1List', f1List) localStorage.setItem('f1List',
+            // JSON.stringify(f1List));  save to local storage
             // console.log('class_percentage', class_percentage)
             // localStorage.setItem('class_percentage', JSON.stringify(class_percentage));
 
@@ -522,117 +496,102 @@ class Results extends Component {
                                         scoreValueList={f1List}
                                         chartKey="f1_scores"
                                         chartColor="#55D6BE"
-                                        type="classification"/> {/* https://en.wikipedia.org/wiki/Confusion_matrix */}
+                                        type="classification"/> 
 
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
                     </div>
-                    <div className="slider" onMouseOver={moveSlidermakeBlack} onMouseOut={makeOriginColor}>
-                        "s"<br></br>
-                        "l"<br></br>
-                        "i"<br></br>
-                        "d"<br></br>
-                        "e"<br></br>
-                        "r"<br></br>
+                    <div
+                        className="slider"
+                        onMouseOver={moveSlidermakeBlack}
+                        onMouseOut={makeOriginColor}>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
                     </div>
                     <div id="chatgpt-space" class="chartschat chatbaseright">
                         <ChatGPT experiment={experiment}/>
                     </div>
                 </div>
 
-                // <div>             <Grid columns={2} stackable="stackable">
-                // <Grid.Row>                     <Grid.Column>
-                // <SceneHeader                             header={`Results:
-                // ${formatDataset(experiment.data.dataset_name)}`}
-                // subheader={`Experiment: #${experiment.data._id}`}/>
-                // </Grid.Column>                     <Grid.Column>
+                // <div>             <Grid columns={2} stackable="stackable"> <Grid.Row>
+                // <Grid.Column> <SceneHeader                             header={`Results:
+                // ${formatDataset(experiment.data.dataset_name)}`} subheader={`Experiment:
+                // #${experiment.data._id}`}/> </Grid.Column>                     <Grid.Column>
                 // <Menu compact="compact" inverted="inverted" floated='right' color='grey'>
-                // <Dropdown                                 text='Download'
-                // simple="simple"                                 item="item"
-                // disabled={['cancelled', 'fail'].includes(experiment.data.status)}>
-                // <Dropdown.Menu>                                     <Dropdown.Item
-                // key="model"                                         icon="download"
-                // text="Model"                                         onClick={() =>
-                // downloadModel(experiment.data._id)}/>,
-                // <Dropdown.Item                                         key="script"
-                // icon="download"                                         text="Script"
-                // onClick={() => downloadScript(experiment.data._id)}/>
-                // </Dropdown.Menu>                             </Dropdown>
-                // </Menu>                     </Grid.Column>                 </Grid.Row>
-                // </Grid>             <Grid columns={3} stackable="stackable">
-                // <Grid.Row>                     <Grid.Column>
-                // <AlgorithmDetails
-                // algorithm={experiment.data.algorithm}
+                // <Dropdown                                 text='Download' simple="simple"
+                // item="item" disabled={['cancelled',
+                // 'fail'].includes(experiment.data.status)}> <Dropdown.Menu>
+                // <Dropdown.Item key="model"
+                // icon="download" text="Model"
+                // onClick={() => downloadModel(experiment.data._id)}/>, <Dropdown.Item
+                // key="script" icon="download"
+                // text="Script" onClick={() => downloadScript(experiment.data._id)}/>
+                // </Dropdown.Menu>                             </Dropdown> </Menu>
+                // </Grid.Column>                 </Grid.Row> </Grid>             <Grid
+                // columns={3} stackable="stackable"> <Grid.Row>
+                // <Grid.Column> <AlgorithmDetails algorithm={experiment.data.algorithm}
                 // params={experiment.data.params}/>                         <RunDetails
-                // startTime={experiment.data.started}
-                // finishTime={experiment.data.finished}
+                // startTime={experiment.data.started} finishTime={experiment.data.finished}
                 // launchedBy={experiment.data.launched_by}/> {/* <ImportanceScore
                 // file={importanceScore} /> */}                         <ImportanceScoreJSON
                 // scoreName="Feature Importance"
                 // scoreValueList={experiment.data.feature_importances}
-                // featureList={experiment.data.feature_names}
-                // chartKey="importance_score"                             chartColor="#55D6BE"
-                // type="classification"/> {/* <LearningCurve file={learningCurve}/> */}
-                // <LearningCurveJSON                             scoreName="Learning Curve"
-                // train_sizes={experiment.data.train_sizes}
+                // featureList={experiment.data.feature_names} chartKey="importance_score"
+                // chartColor="#55D6BE" type="classification"/> {/* <LearningCurve
+                // file={learningCurve}/> */} <LearningCurveJSON
+                // scoreName="Learning Curve" train_sizes={experiment.data.train_sizes}
                 // train_scores={experiment.data.train_scores}
-                // test_scores={experiment.data.test_scores}
-                // chartKey="learning_curve"                             chartColor="#55D6BE"
-                // type="classification"/> {/* <PCA file={pca}/> */}
+                // test_scores={experiment.data.test_scores} chartKey="learning_curve"
+                // chartColor="#55D6BE" type="classification"/> {/* <PCA file={pca}/> */}
                 // <PCAJSON                             scoreName="PCA 2D"
-                // Points={experiment.data.X_pca}
-                // Labels={experiment.data.y_pca}                             chartKey="pca_2d"
-                // chartColor="#55D6BE"                             type="classification"/> {/*
-                // <TSNE file={tsne}/> */}                         {/* <TSNEJSON
-                // file={tsne_json}/> */}                         {/* <TSNEJSON scoreName="TSNE
-                // 2D"           Points={experiment.data.X_tsne}
+                // Points={experiment.data.X_pca} Labels={experiment.data.y_pca}
+                // chartKey="pca_2d" chartColor="#55D6BE"
+                // type="classification"/> {/* <TSNE file={tsne}/> */}
+                // {/* <TSNEJSON file={tsne_json}/> */}                         {/* <TSNEJSON
+                // scoreName="TSNE 2D"           Points={experiment.data.X_tsne}
                 // Labels={experiment.data.y_tsne}           chartKey="tsne_2d"
-                // chartColor="#55D6BE"           type="classification"         /> */
-                // }                     </Grid.Column>                     <Grid.Column>
-                // {/* <NoScore           scoreName="Class Rate"
-                // scoreValueList={class_percentage}           chartKey="test"
-                // chartColor="#55D6BE"           type="classification"         /> */
-                // }                         <ClassRate
-                // scoreName="Class Rate"
+                // chartColor="#55D6BE"           type="classification"         /> */ }
+                // </Grid.Column>                     <Grid.Column> {/* <NoScore
+                // scoreName="Class Rate" scoreValueList={class_percentage}
+                // chartKey="test" chartColor="#55D6BE"           type="classification"
+                // /> */ }                         <ClassRate scoreName="Class Rate"
                 // scoreValueList={class_percentage}                             chartKey="test"
                 // chartColor="#55D6BE"                             type="classification"/> {/*
                 // <ConfusionMatrix file={confusionMatrix} /> */}                         {/*
                 // This TestChart is for interactive and responsive confusion matrix */}
                 // <ConfusionMatrixJSON                             scoreName="Confusion Matrix"
-                // cnf_data={experiment.data.cnf_matrix}
-                // chartKey="test_chart"                             chartColor="#55D6BE"
-                // type="classification"/>                         <ROCCurve file={rocCurve}/>
-                // <ShapSummaryCurve                             fileDict={shapSummaryCurveDict}
-                // shap_explainer={shap_explainer}
+                // cnf_data={experiment.data.cnf_matrix} chartKey="test_chart"
+                // chartColor="#55D6BE" type="classification"/>
+                // <ROCCurve file={rocCurve}/> <ShapSummaryCurve
+                // fileDict={shapSummaryCurveDict} shap_explainer={shap_explainer}
                 // shap_num_samples={shap_num_samples}/>                         <TSNEJSON
-                // scoreName="TSNE 2D"
-                // Points={experiment.data.X_tsne}
-                // Labels={experiment.data.y_tsne}
-                // chartKey="tsne_2d"                             chartColor="#55D6BE"
-                // type="classification"/>                     </Grid.Column>
-                // <Grid.Column>                         <Score
-                // scoreName="Balanced Accuracy"
-                // scoreValueList={balancedAccList}                             chartKey="all"
-                // chartColor="#7D5BA6"                             type="classification"/>
-                // <Score                             scoreName="AUC"
+                // scoreName="TSNE 2D" Points={experiment.data.X_tsne}
+                // Labels={experiment.data.y_tsne} chartKey="tsne_2d"
+                // chartColor="#55D6BE" type="classification"/>
+                // </Grid.Column> <Grid.Column>                         <Score
+                // scoreName="Balanced Accuracy" scoreValueList={balancedAccList}
+                // chartKey="all" chartColor="#7D5BA6"
+                // type="classification"/> <Score                             scoreName="AUC"
                 // scoreValueList={aucList}                             chartKey="auc_scores"
                 // chartColor="#55D6BE"                             type="classification"/>
                 // <Score                             scoreName="Precision"
-                // scoreValueList={precisionList}
-                // chartKey="precision_scores"                             chartColor="#55D6BE"
-                // type="classification"/>                         <Score
+                // scoreValueList={precisionList} chartKey="precision_scores"
+                // chartColor="#55D6BE" type="classification"/>                         <Score
                 // scoreName="Recall"                             scoreValueList={recallList}
                 // chartKey="recall_scores"                             chartColor="#55D6BE"
-                // type="classification"/>                         <Score
-                // scoreName="F1 Score"                             scoreValueList={f1List}
-                // chartKey="f1_scores"                             chartColor="#55D6BE"
-                // type="classification"/> {/* https://en.wikipedia.org/wiki/Confusion_matrix
-                // */}                     </Grid.Column>                 </Grid.Row>
-                // </Grid>             {/* GPT Space */}             {/* <Grid columns={4}
-                // stackable="stackable">       <ChatGPT/>   </Grid> */             }
-                // {/* GPT Space */}             <ChatGPT experiment={experiment}/>
-                // </div>
+                // type="classification"/>                         <Score scoreName="F1 Score"
+                // scoreValueList={f1List} chartKey="f1_scores"
+                // chartColor="#55D6BE" type="classification"/> {/*
+                // https://en.wikipedia.org/wiki/Confusion_matrix
+                // */}                     </Grid.Column>                 </Grid.Row> </Grid>
+                // {/* GPT Space */}             {/* <Grid columns={4} stackable="stackable">
+                // <ChatGPT/>   </Grid> */             } {/* GPT Space */}             <ChatGPT
+                // experiment={experiment}/> </div>
             );
         } else if (experiment.data.prediction_type == "regression") { // regression
             let importanceScore,
@@ -719,7 +678,7 @@ class Results extends Component {
                                         chartKey="importance_score"
                                         chartColor="#55D6BE"
                                         type="regression"
-                                        data={experiment.data}/> 
+                                        data={experiment.data}/>
 
                                 </Grid.Column>
                                 <Grid.Column>
@@ -727,43 +686,48 @@ class Results extends Component {
                                     {/* <RegFigure file={reg_cv_resi} /> */}
                                     {/* <RegFigure file={reg_cv_qq} /> */}
 
+                                    {
+                                        experiment.data.CVP_2d === undefined
+                                            ? <div>CVP_2d is not defined.</div>
+                                            : <PCAJSON
+                                                    scoreName="Cross-Validated Predictions"
+                                                    Points={experiment.data.CVP_2d}
+                                                    Labels={experiment.data.CVP_2d_class}
+                                                    chartKey="CVP"
+                                                    chartColor="#55D6BE"
+                                                    type="classification"/>
+                                    }
 
-                                    {experiment.data.CVP_2d===undefined?<div>CVP_2d is not defined.</div>:
-                                    <PCAJSON
+                                    {/* <PCAJSONV
                                         scoreName="Cross-Validated Predictions"
                                         Points={experiment.data.CVP_2d}
                                         Labels={experiment.data.CVP_2d_class}
                                         chartKey="CVP"
                                         chartColor="#55D6BE"
                                         type="classification"
-                                        />
+                                        data={experiment.data}/> */
                                     }
-
-                                        {/* <PCAJSONV
-                                        scoreName="Cross-Validated Predictions"
-                                        Points={experiment.data.CVP_2d}
-                                        Labels={experiment.data.CVP_2d_class}
-                                        chartKey="CVP"
-                                        chartColor="#55D6BE"
-                                        type="classification"
-                                        data={experiment.data}/> */}
-                                    {experiment.data.CVR_2d===undefined?<div>CVR_2d is not defined.</div>:
-                                    <PCAJSON
-                                        scoreName="Cross-Validated Residuals"
-                                        Points={experiment.data.CVR_2d}
-                                        Labels={experiment.data.CVR_2d_class}
-                                        chartKey="CVR"
-                                        chartColor="#55D6BE"
-                                        type="classification"/>
+                                    {
+                                        experiment.data.CVR_2d === undefined
+                                            ? <div>CVR_2d is not defined.</div>
+                                            : <PCAJSON
+                                                    scoreName="Cross-Validated Residuals"
+                                                    Points={experiment.data.CVR_2d}
+                                                    Labels={experiment.data.CVR_2d_class}
+                                                    chartKey="CVR"
+                                                    chartColor="#55D6BE"
+                                                    type="classification"/>
                                     }
-                                    {experiment.data.QQNR_2d===undefined?<div>QQNR_2d is not defined.</div>:
-                                    <PCAJSON
-                                        scoreName="Q-Q Plot for Normalized Residuals"
-                                        Points={experiment.data.QQNR_2d}
-                                        Labels={experiment.data.QQNR_2d_class}
-                                        chartKey="QQNR"
-                                        chartColor="#55D6BE"
-                                        type="classification"/>
+                                    {
+                                        experiment.data.QQNR_2d === undefined
+                                            ? <div>QQNR_2d is not defined.</div>
+                                            : <PCAJSON
+                                                    scoreName="Q-Q Plot for Normalized Residuals"
+                                                    Points={experiment.data.QQNR_2d}
+                                                    Labels={experiment.data.QQNR_2d_class}
+                                                    chartKey="QQNR"
+                                                    chartColor="#55D6BE"
+                                                    type="classification"/>
                                     }
 
                                 </Grid.Column>
@@ -792,20 +756,22 @@ class Results extends Component {
                             </Grid.Row>
                         </Grid>
                     </div>
-                    <div className="slider" onMouseOver={moveSlidermakeBlack} onMouseOut={makeOriginColor}>
-                        "s"<br></br>
-                        "l"<br></br>
-                        "i"<br></br>
-                        "d"<br></br>
-                        "e"<br></br>
-                        "r"<br></br>
+                    <div
+                        className="slider"
+                        onMouseOver={moveSlidermakeBlack}
+                        onMouseOut={makeOriginColor}>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
+                        ""<br></br>
                     </div>
                     <div id="chatgpt-space" className="chartschat chatbaseright">
                         <ChatGPT experiment={experiment}/>
                     </div>
                 </div>
 
-                
             );
         }
     }
@@ -826,10 +792,3 @@ export {
     Results
 };
 export default connect(mapStateToProps, actions)(Results);
-
-
-
-
-
-
-
