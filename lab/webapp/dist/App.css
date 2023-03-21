@@ -1495,7 +1495,6 @@ body {
   /* overflowY: 'auto';
   maxHeight: 'auto'; */
   visibility:hidden;
-  display:'none';
   /* display:"hidden"; */
   /* backgroundColor: '#343541'; */
   overflow-y: scroll;

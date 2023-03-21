@@ -151,15 +151,12 @@ function toggleChatGPT(e) {
 
   else{
 
-    console.log("e.target.parentElement.parentElement", e.target.parentElement.parentElement)
-    // grand parent element
-    // e.target.parentElement.parentElement.style.backgroundColor = "rgba(0,0,0,0.1)";
-    // e.target.parentElement.parentElement.className = "link active";
-    // console.log("e.target.parentElement.parentElement.style",e.target.parentElement.parentElement.style)
 
-
-    if (document.getElementById("chatgpt-space").style.visibility == "hidden")
+    
+    if (document.getElementById("chatgpt-space").style.visibility === "" || document.getElementById("chatgpt-space").style.visibility === "hidden")
+    // if (document.getElementById("chatgpt-space").style.visibility === "")
     {
+      console.log("if-part")
       // document.getElementsByClassName("chartschat")[0].style.width = "100%";
       var chartschat = document.getElementsByClassName("chartschat");
 
@@ -189,6 +186,7 @@ function toggleChatGPT(e) {
     }
     else
     {
+      console.log("else-part")
       var chartschat = document.getElementsByClassName("chartschat");
 
       for (var i = 0; i < chartschat.length; i++) {
@@ -234,39 +232,12 @@ function Navbar({ preferences }) {
 
 
   useEffect(() => {
+  
     checkConnectionOpenAI();
-    console.log('openaiApiState in useEffect',openaiApiState);
+    // console.log('openaiApiState in useEffect',openaiApiState);
   }, []);
 
-  // useEffect(() => {
-  //   console.log("useEffect in Navbar!")
-
-
-  //   fetch("http://localhost:5080/openai/v1/connections",{
-  //     mode: 'no-cors',
-  //     method: "post",
-  //     headers: {
-  //          "Content-Type": "application/json"
-  //     }
-  //     })
-  //     // .then(res => res.json())
-  //     .then(res => console.log("res",res))
-  //     .then(
-  //       (result) => {
-  //         console.log("hey result",result)
-  //         setIsLoaded(true);
-  //         setItems(result);
-  //       },
-  //       // Note: it's important to handle errors here
-  //       // instead of a catch() block so that we don't swallow
-  //       // exceptions from actual bugs in components.
-  //       (error) => {
-  //         setIsLoaded(true);
-  //         setError(error);
-  //         console.log("hey failed",error);
-  //       }
-  //     )
-  // }, [])
+  
 
 const checkConnectionOpenAI = () => {
     // POST /openai/v1/connections
@@ -292,24 +263,25 @@ const checkConnectionOpenAI = () => {
             // return 1;
 
             // make openaiApiState === 1 using setopenaiApiState
-            setopenaiApiState(1);
+            // setopenaiApiState(openaiApiState => openaiApiState + 1);
 
-            console.log("openaiApiState in checkConnectionOpenAI", openaiApiState)
+
         });
 
 }
 
 
-  const togglePop = (e) => {
+  const checkConnShowGPT = (e) => {
+
+    // console.log("checkConnShowGPT")
 
     checkConnectionOpenAI();
 
     console.log('openaiApiState',openaiApiState);
 
-    if (openaiApiState === 1)
-    {
-      console.log("openaiApiState === 1")
-      
+    // if openaiApiState >=1
+    if (openaiApiState >= 1)
+    {      
 
       let block = document.getElementsByClassName("chartsbaseleft")[0];
       let slider = document.getElementsByClassName("slider")[0];
@@ -324,6 +296,20 @@ const checkConnectionOpenAI = () => {
 
       
       toggleChatGPT(e);
+      // alert("Connection to OpenAI is established")
+    }
+    else
+    {
+
+      console.log("openaiApiState === 0")
+      // alert("Please check your API key and connection to OpenAI")
+
+      // get className modal
+      var modal = document.getElementsByClassName("modal")[0];
+      // make it visible
+      modal.style.display = "block";
+
+      // alert("Please provide your OpenAI API key.")
     }
   
   };
@@ -353,9 +339,9 @@ const checkConnectionOpenAI = () => {
           </Link>
 
 
-          { window.location.href.includes('results') ? <Link to="" className="link" activeClassName="active" onClick = {togglePop}>
+          { window.location.href.includes('results') ? <Link to="" className="link" activeClassName="active" onClick = {checkConnShowGPT}>
             {/* <Link to="" className="link" activeClassName="active" onClick = {checkAPIkey}> */}
-            {/* <Link to="" className="link" activeClassName="active" onClick = {toggleChatGPT}> */}
+            
               <Menu.Item name="Expert">
                 <Icon name="chat" />
                 
@@ -369,7 +355,9 @@ const checkConnectionOpenAI = () => {
             <div>
               {/* if openaiApiState===1, show null */}
               {/* if ===0, show popup */}
-              {/* {openaiApiState ? null : <PopUpAPI toggle={togglePop} />} */}
+              {/* {console.log("openaiApiState-div",openaiApiState)}
+              {console.log("window.location.href.includes('results')",window.location.href.includes('results') === false)} */}
+              {openaiApiState ===0 && window.location.href.includes('results') === true ? <PopUpAPI toggle={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null}
 
               
             </div>
