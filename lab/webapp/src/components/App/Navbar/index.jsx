@@ -357,7 +357,7 @@ const checkConnectionOpenAI = () => {
               {/* if ===0, show popup */}
               {/* {console.log("openaiApiState-div",openaiApiState)}
               {console.log("window.location.href.includes('results')",window.location.href.includes('results') === false)} */}
-              {openaiApiState ===0 && window.location.href.includes('results') === true ? <PopUpAPI toggle={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null}
+              {openaiApiState ===0 && window.location.href.includes('results') === true ? <PopUpAPI checkConnShowGPT={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null}
 
               
             </div>
