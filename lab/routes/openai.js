@@ -191,11 +191,12 @@ router.post('/connections', async (req, res) => {
         }
         
         // open the connection
-        openai = new OpenAIApi(configuration, (err) => {
-            if (err) {
-                return res.status(400).json({ message: 'Connection failed' });
-            }
-        });
+        // openai = new OpenAIApi(configuration, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({ message: 'Connection failed' });
+        //     }
+        // });
+        openai = new OpenAIApi(configuration);
         // test the connection
         let response = await openai.listModels();
         if (response == null) {
