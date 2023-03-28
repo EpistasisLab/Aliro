@@ -37,6 +37,21 @@ async function logOpenAIRequest(params, response) {
 async function getChatById(req, res, next) {
     let chat;
     try {
+        chat = await Chat.findById(req.params.id)
+        if (chat == null) {
+            return res.status(404).json({ message: 'Cannot find chat: ' + req.params.id });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
+    res.chat = chat;
+    next();
+}
+
+async function getFullChatById(req, res, next) {
+    let chat;
+    try {
         // chat = await Chat.findById(req.params.id);
         chat = await Chat.findById(req.params.id).populate('chatlogs');
         if (chat == null) {
@@ -101,6 +116,7 @@ module.exports = {
     getConfigById,
     logOpenAIRequest,
     getChatById,
+    getFullChatById,
     getChatlogById,
     getChatsByExperimentId,
     getChatsByDatasetId

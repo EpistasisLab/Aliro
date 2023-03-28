@@ -33,7 +33,7 @@ types:
         body:
           application/json:
             type: Chat
-            example: !include Examples/Chats/GetOneChat.raml
+            example: !include Examples/Chats/GetChat.raml
       400:
         body:
           application/json:
@@ -47,7 +47,7 @@ types:
           body:
             application/json:
               type: object
-              example: !include Examples/Chats/GetOneChat.raml
+              example: !include Examples/Chats/GetFullChat.raml
         404:
           body:
             application/json:
@@ -69,7 +69,7 @@ types:
           body:
             application/json:
               type: Chat
-              example: !include Examples/Chats/GetOneChat.raml
+              example: !include Examples/Chats/GetChat.raml
         400:
           body:
             application/json:

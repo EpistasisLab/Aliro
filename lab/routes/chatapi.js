@@ -7,6 +7,7 @@ const ChatLog = require('../models/chatlog');
 const db = require('../dbgoose').db;
 const { 
     getChatById,
+    getFullChatById,
     getChatlogById,
     getChatsByExperimentId,
     getChatsByDatasetId
@@ -134,7 +135,7 @@ router.get('/chats', async (req, res) => {
 });
 
 // Get one chat
-router.get('/chats/:id', getChatById, (req, res) => {
+router.get('/chats/:id', getFullChatById, (req, res) => {
     res.send(res.chat);
 });
 
