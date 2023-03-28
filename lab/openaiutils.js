@@ -1,10 +1,9 @@
 
 const OpenAILog = require('./models/openailog');
-const OpenAIConfig = require('./models/openaiconfig');7
-const db = require('./dbgoose').db;
+const OpenAIConfig = require('./models/openaiconfig');
 const Chat = require('./models/chat');
 const Chatlog = require('./models/chatlog');
-
+const db = require('./dbgoose').db;
 
 async function getConfigById(req, res, next) {
     let config;
@@ -69,8 +68,8 @@ async function getChatlogById(req, res, next) {
 async function getChatsByExperimentId(req, res, next) {
     let chats;
     try {
-        // find all chats with this experiment id
-        chats = await Chat.find({ experiment_id: req.params.id }).populate('chatlogs');
+        // find all chats with this experiment id, do not populate the chatlogs
+        chats = await Chat.find({ experiment_id: req.params.id })//.populate('chatlogs');
         if (chats == null) {
             return res.status(404).json({ message: 'Cannot find chats by experiment id: ' + req.params.id });
         }
@@ -85,8 +84,8 @@ async function getChatsByExperimentId(req, res, next) {
 async function getChatsByDatasetId(req, res, next) {
     let chats;
     try {
-        // find all chats with this experiment id
-        chats = await Chat.find({ dataset_id: req.params.id }).populate('chatlogs');
+        // find all chats with this experiment id, do not populate the chatlogs
+        chats = await Chat.find({ dataset_id: req.params.id })//.populate('chatlogs');
         if (chats == null) {
             return res.status(404).json({ message: 'Cannot find chats by dataset id: ' + req.params.id });
         }

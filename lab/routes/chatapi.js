@@ -5,10 +5,12 @@ const Chat = require('../models/chat');
 const chatlog = require('../models/chatlog');
 const ChatLog = require('../models/chatlog');
 const db = require('../dbgoose').db;
-const getChatById = require('../openaiutils').getChatById;
-const getChatlogById = require('../openaiutils').getChatlogById;
-const getChatsByExperimentId = require('../openaiutils').getChatsByExperimentId;
-const getChatsByDatasetId = require('../openaiutils').getChatsByDatasetId;
+const { 
+    getChatById,
+    getChatlogById,
+    getChatsByExperimentId,
+    getChatsByDatasetId
+} = require('../openaiutils');
 
 /* 
 ** Chat Logs API 
