@@ -2,11 +2,12 @@ const { Configuration, OpenAIApi } = require('openai');
 const express = require('express');
 const router = express.Router();
 const db = require('../dbgoose').db;
-const getConfigById = require('../openaiutils').getConfigById;
-const logOpenAIRequest = require('../openaiutils').logOpenAIRequest;
+const { getConfigById, logOpenAIRequest } = require('../openaiutils');
 const OpenAIConfig = require('../models/openaiconfig');
+
 let openai;
 let configuration;
+
 // const configuration = new Configuration({
 //     // the organization is not required, so we need to decide if we require it from the user
 //     // this may become useful for our logs.
