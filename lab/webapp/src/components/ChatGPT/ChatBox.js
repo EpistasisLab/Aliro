@@ -15,7 +15,7 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput}) => <section c
         }
     </div>
     <div className="chat-input-holder">
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="chatSubmitForm" onSubmit={handleSubmit}>
             <input
                 rows="1"
                 value={chatInput}
