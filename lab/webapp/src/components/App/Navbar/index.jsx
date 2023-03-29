@@ -52,21 +52,7 @@ import PopUpAPI from '../../PopUpAPI'
 
 
 
-function checkAPIkey(e) {
 
-  console.log("checkAPIkey")
-  let testBoolean = true;
-  // if true, call 
-  if(testBoolean)
-  {
-    toggleChatGPT(e)
-  }
-  // else
-  {
-    // show popup window to ask users to put api key
-
-  }
-}
 
 function toggleChatGPT(e) {
   
@@ -230,28 +216,23 @@ function Navbar({ preferences }) {
 
   const [error, setError] = useState(null);
 
-
-  useEffect(() => {
-  
-    checkConnectionOpenAI();
-    // console.log('openaiApiState in useEffect',openaiApiState);
-  }, []);
-
-  
-
-const checkConnectionOpenAI = () => {
+  const checkConnectionOpenAI = () => {
     // POST /openai/v1/connections
     fetch('openai/v1/configs')
     // fetch('/openai/v1/connections')
         .then((response) => {
             console.log("response.ok", response.ok)
             if (!response.ok) {
-                console.log("error!!!")
+                // console.log("error!!!")
                 // throw new Error(`HTTP error: ${response.status}`);
                 return 0;
                 // setopenaiApiState(0);
             } else {
-                console.log("response_checkConnectionOpenAI", response)
+                // console.log("response_checkConnectionOpenAI", response)
+                // console.log("response['status']", response['status'])
+
+                // setopenaiApiState(openaiApiState => openaiApiState + 1);
+                
                 return response.text();
                 
             }
@@ -268,10 +249,11 @@ const checkConnectionOpenAI = () => {
 
         });
 
-}
-
+  }
 
   const checkConnShowGPT = (e) => {
+
+    boldUnderline();
 
     // console.log("checkConnShowGPT")
 
@@ -311,8 +293,53 @@ const checkConnectionOpenAI = () => {
 
       // alert("Please provide your OpenAI API key.")
     }
-  
+
   };
+
+
+// This function is used to make the last element in chatbox tap bold and underlined.
+function boldUnderline() {
+
+  //get div with class name sidemenu
+  var sidemenu = document.getElementsByClassName("chatboxtap");
+
+  // sidemenu is a html collection. I want to see all elements in the collection. Please print out each element in the collection.
+
+  console.log("sidemenu", sidemenu)
+  console.log("sidemenu length", sidemenu.length)
+  
+  for (var i = 0; i < sidemenu.length-1; i++) {
+      sidemenu[i].style.fontWeight = "normal";
+      sidemenu[i].style.textDecoration = "none";
+  }
+
+
+  sidemenu[sidemenu.length-1].style.fontWeight = "bold";
+  sidemenu[sidemenu.length-1].style.textDecoration = "underline";
+  
+  
+
+
+
+
+}
+
+
+  useEffect(() => {
+  
+    checkConnectionOpenAI();
+    console.log("useEffect in Navbar")
+    // console.log('openaiApiState in useEffect',openaiApiState);
+  }, []);
+
+  
+
+
+
+
+
+
+
 
 
 
@@ -339,7 +366,7 @@ const checkConnectionOpenAI = () => {
           </Link>
 
 
-          { window.location.href.includes('results') ? <Link to="" className="link" activeClassName="active" onClick = {checkConnShowGPT}>
+          { window.location.href.includes('results') ? <Link to="" id= "expertChatGPT" className="link" activeClassName="active" onClick = {checkConnShowGPT}>
             {/* <Link to="" className="link" activeClassName="active" onClick = {checkAPIkey}> */}
             
               <Menu.Item name="Expert">
@@ -353,11 +380,10 @@ const checkConnectionOpenAI = () => {
             
 
             <div>
-              {/* if openaiApiState===1, show null */}
-              {/* if ===0, show popup */}
-              {/* {console.log("openaiApiState-div",openaiApiState)}
-              {console.log("window.location.href.includes('results')",window.location.href.includes('results') === false)} */}
-              {openaiApiState ===0 && window.location.href.includes('results') === true ? <PopUpAPI checkConnShowGPT={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null}
+              
+              {/* {openaiApiState ===0 && window.location.href.includes('results') === true ? <PopUpAPI checkConnShowGPT={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null} */}
+
+              {window.location.href.includes('results') === true ? <PopUpAPI checkConnShowGPT={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null}
 
               
             </div>
