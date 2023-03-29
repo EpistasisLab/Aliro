@@ -5,10 +5,13 @@ const Chat = require('../models/chat');
 const chatlog = require('../models/chatlog');
 const ChatLog = require('../models/chatlog');
 const db = require('../dbgoose').db;
-const getChatById = require('../openaiutils').getChatById;
-const getChatlogById = require('../openaiutils').getChatlogById;
-const getChatsByExperimentId = require('../openaiutils').getChatsByExperimentId;
-const getChatsByDatasetId = require('../openaiutils').getChatsByDatasetId;
+const { 
+    getChatById,
+    getFullChatById,
+    getChatlogById,
+    getChatsByExperimentId,
+    getChatsByDatasetId
+} = require('../openaiutils');
 
 /* 
 ** Chat Logs API 
@@ -143,7 +146,7 @@ router.get('/chats', async (req, res) => {
 });
 
 // Get one chat
-router.get('/chats/:id', getChatById, (req, res) => {
+router.get('/chats/:id', getFullChatById, (req, res) => {
     res.send(res.chat);
 });
 
