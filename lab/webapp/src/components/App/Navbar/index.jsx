@@ -310,12 +310,12 @@ function boldUnderline() {
   
   for (var i = 0; i < sidemenu.length-1; i++) {
       sidemenu[i].style.fontWeight = "normal";
-      sidemenu[i].style.textDecoration = "none";
+      // sidemenu[i].style.textDecoration = "none";
   }
 
 
   sidemenu[sidemenu.length-1].style.fontWeight = "bold";
-  sidemenu[sidemenu.length-1].style.textDecoration = "underline";
+  // sidemenu[sidemenu.length-1].style.textDecoration = "underline";
   
   
 

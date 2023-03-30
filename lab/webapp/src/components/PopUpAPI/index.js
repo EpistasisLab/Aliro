@@ -66,7 +66,7 @@ export default function PopUpAPI(
         var openaiKey = document
             .getElementById("openaikey")
             .value;
-        // var dbconnection = false;
+
 
         let parsed;
 

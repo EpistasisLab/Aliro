@@ -1,4 +1,3 @@
-// Nick's ChatBox component
 import AISVGLogo from './AISVGLogo'
 import React from 'react';
 import {useState, useEffect} from "react";
@@ -28,6 +27,7 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput}) => <section c
 
 // Individual Chat Message
 const ChatMessage = ({message}) => {
+    console.log("message-ChatMessage", message)
     return (
         <div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
             <div className="chat-message-center">
@@ -38,9 +38,24 @@ const ChatMessage = ({message}) => {
                             : <div>You</div>
                     }
                 </div>
+                
                 <div className="message">
                     {message.message}
                 </div>
+
+                {/* if message.message includes python code  */}
+                {/* message.message.includes("```") && <div className="message">
+                    <pre>
+                        <code>
+                            {message.message}
+                        </code>
+                    </pre>
+                </div> */}
+
+                
+
+                    
+
             </div>
         </div>
     )

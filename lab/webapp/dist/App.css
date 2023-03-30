@@ -1700,3 +1700,18 @@ cursor: pointer;
 
 
 }
+
+.side-menu-button-trash {
+  padding: 12px;
+  /* border: 1px solid white; */
+  border-top: 1px solid rgb(0, 0, 0) !important;
+  border-left: 1px solid rgb(0, 0, 0)!important;
+  border-right: 1px solid rgb(0, 0, 0)!important;
+
+  /* border-radius: 5px; */
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  text-align: left;
+  transition: ease 0.25s all;
+  cursor: pointer;
+}

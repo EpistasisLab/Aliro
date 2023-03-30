@@ -43,6 +43,8 @@ import FetchError from '../FetchError';
 import {Header, Loader, Popup, Icon, Button} from 'semantic-ui-react';
 import {AddNewDatasetCard} from './components/AddNewDatasetCard';
 
+import ChatGPT from '../ChatGPT';
+
 // import styled from 'styled-components';
 
 /**
@@ -175,6 +177,9 @@ class Datasets extends Component {
                     className='table-sticky-header file-upload-table temp-chatgpt-location-cand'>
                     <p>GPT</p>
                 </div>
+                {/* <div id="chatgpt-space" class="chartschat chatbaseright">
+                        <ChatGPT />
+                </div> */}
 
             </div>
 

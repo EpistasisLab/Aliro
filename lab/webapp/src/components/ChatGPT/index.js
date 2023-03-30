@@ -13,11 +13,29 @@ import { locales } from 'moment';
 // GPT!!!</p>                 </div>     ); }
 
 export default function ChatGPT({experiment}) {
+    
     // readdatafromlocalstorage();
+
+
 
     var limitNumChatBox = 5;
 
     useEffect(() => {
+
+
+        console.log("useEffect in ChatGPT.js");
+
+
+
+
+
+
+        
+
+
+
+
+
 
 
 
@@ -26,7 +44,9 @@ export default function ChatGPT({experiment}) {
         var urlSplit = url.split("/");
         var experimentId = urlSplit[urlSplit.length - 1];
 
-        getEngines();
+        // getEngines();
+
+
         // postChats();
         // getAllChats();
 
@@ -35,16 +55,8 @@ export default function ChatGPT({experiment}) {
         
         getAllChatsFilterbyExpIdSetChatbox();
 
-        console.log("chatCurrentTempId-useEffect", chatCurrentTempId);
-
-        console.log("numChatBox-useEffect", numChatBox);
-
-        // Promise.then(() => {
-        //     console.log("Promise.then");
-        //     con
-
-
-
+        setLanModelReset(true);
+       
         // getSpecificChat("641e954eb2663354ec5d62ab");
         
         // getSpecificChat(`${experimentId}`);
@@ -56,15 +68,14 @@ export default function ChatGPT({experiment}) {
 
 
 
-        // postInChatlogs();
-        // patchChatlog();
-        // getChatMessage();
+
     }, 
     // make useEffect run when numChatBox changes or when experimentId changes
     // [numChatBox],
     [window.location.href],
     // [chatBoxTrigger]
     // [chatLog]
+    // [chatCurrentTempId],
     // []
     )
 
@@ -99,6 +110,11 @@ export default function ChatGPT({experiment}) {
     // getSpecificChat(chatId);
 
     // console.log("testID", testID);
+
+    // language model reset
+    // This is a boolean value that indicates whether the language model should
+    // when user moves to a new experiment or new chat box, the lanModelReset should be true
+    const [lanModelReset, setLanModelReset] = useState(false);
 
     // 
 
@@ -761,12 +777,16 @@ export default function ChatGPT({experiment}) {
                 console.log("lastMessageFromUser", lastMessageFromUser);
 
                 
+            // in the case where need to reset the chatbox
+
+            console.log("lanModelReset", lanModelReset);
+
+            // setLanModelReset(false);
 
 
-
-                
+            // in the case where no need to reset the chatbox
             
-            // jay's api
+            // jay's api 
             fetch("openai/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -777,10 +797,14 @@ export default function ChatGPT({experiment}) {
                         "model": currentModel,
                         // "messages": [{"role": "user", "content": "Say this is a test!"},{"role": "user", "content": "Say this is a test!"}],
                         "messages": [{"role": "user", "content": lastMessageFromUser}],
+                        // "messages": [{"role": "user", "content": messages}],
                         // "temperature": 0.7
+                        // "reset_context": "true"
                     }
                 )
             })
+
+             
             
 
                 
@@ -885,7 +909,7 @@ export default function ChatGPT({experiment}) {
             })
 
 
-
+            setLanModelReset(false);
 
         // setChatInput("");
         // setChatLog(chatLogNew)
@@ -987,6 +1011,9 @@ export default function ChatGPT({experiment}) {
                     
                     numChatBox={numChatBox}
                     setNumChatBox={setNumChatBox}
+
+                    lanModelReset = {lanModelReset}
+                    setLanModelReset = {setLanModelReset}
 
                     limitNumChatBox={limitNumChatBox}
                 />

@@ -22,6 +22,9 @@ export default function SideMenu({
     numChatBox,
     setNumChatBox,
 
+    lanModelReset, 
+    setLanModelReset,
+
     limitNumChatBox
 
 }
@@ -33,7 +36,8 @@ export default function SideMenu({
         checkNumChatBox();
         console.log("window.location.href", window.location.href)
 
-        boldUnderline();
+
+        setBoldUnderlineAndInitTraIc();
         
 
     }, [window.location.href, numChatBox]);
@@ -42,164 +46,164 @@ export default function SideMenu({
 
 
 
-    async function getAllChatsAndGetSpecificChat(clickedChatBoxNum, setChatLog) {
+    // async function getAllChatsAndGetSpecificChat(clickedChatBoxNum, setChatLog) {
 
-        // GET http://localhost:5080/chatapi/v1/chats
-        await fetch("/chatapi/v1/chats", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log("clickedChatBoxNum",clickedChatBoxNum)
-                console.log("data--best--getAllChatsAndGetSpecificChat-sidemenu", data);
-                // console.log("data[clickedChatBoxNum][_id]", data[clickedChatBoxNum]['_id'])
+    //     // GET http://localhost:5080/chatapi/v1/chats
+    //     await fetch("/chatapi/v1/chats", {
+    //         method: "GET",
+    //         headers: {
+    //             "Content-Type": "application/json"
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             console.log("clickedChatBoxNum",clickedChatBoxNum)
+    //             console.log("data--best--getAllChatsAndGetSpecificChat-sidemenu", data);
+    //             // console.log("data[clickedChatBoxNum][_id]", data[clickedChatBoxNum]['_id'])
 
-                if (data[clickedChatBoxNum] == undefined) {
-                    console.log("data[clickedChatBoxNum]['_id'] is undefined, which means it is new chatbox.")
-
-
-                    // POST http://localhost:5080/chatapi/v1/chats
-                    // Content-Type: application/json
-
-                    // {
-                    //     "title" : "Chat with experiment id 2",
-                    //     "_experiment_id": "641e7a67c3386b002e521705",
-                    //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
-                    // }
-
-                    // current url 
-                    let url = window.location.href;
-                    // split url by '/' 
-                    let urlSplit = url.split('/');
-                    // get the last element of the array
-                    let experimentID = urlSplit[urlSplit.length - 1];
+    //             if (data[clickedChatBoxNum] == undefined) {
+    //                 console.log("data[clickedChatBoxNum]['_id'] is undefined, which means it is new chatbox.")
 
 
-                    fetch("/chatapi/v1/chats", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            "title": "Chat with experiment id 2",
-                            "_experiment_id": `${experimentID}`,
-                            "_dataset_id": `${experimentID}`
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        // console.log("data-newchat", data);
+    //                 // POST http://localhost:5080/chatapi/v1/chats
+    //                 // Content-Type: application/json
+
+    //                 // {
+    //                 //     "title" : "`${experimentID}`",
+    //                 //     "_experiment_id": "641e7a67c3386b002e521705",
+    //                 //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
+    //                 // }
+
+    //                 // current url 
+    //                 let url = window.location.href;
+    //                 // split url by '/' 
+    //                 let urlSplit = url.split('/');
+    //                 // get the last element of the array
+    //                 let experimentID = urlSplit[urlSplit.length - 1];
 
 
-                        // POST http://localhost:5080/chatapi/v1/chatlogs
-                        // Content-Type: application/json
-
-                        // {
-                        //     "_chat_id" : "641f26a1b2663354ec5d634f",
-                        //     "message" : "Hello there from my desk!!!!!!b",
-                        //     "message_type" : "text",
-                        //     "who" : "user"
-                        // }
-
-                        fetch("/chatapi/v1/chatlogs", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                "_chat_id": `${data['_id']}`,
-                                "message": "How can I help you today?",
-                                "message_type": "text",
-                                "who": "gpt"
-                            })
-                        })
+    //                 fetch("/chatapi/v1/chats", {
+    //                     method: "POST",
+    //                     headers: {
+    //                         "Content-Type": "application/json"
+    //                     },
+    //                     body: JSON.stringify({
+    //                         "title": "`${experimentID}`",
+    //                         "_experiment_id": `${experimentID}`,
+    //                         "_dataset_id": `${experimentID}`
+    //                     })
+    //                 })
+    //                 .then(res => res.json())
+    //                 .then(data => {
+    //                     // console.log("data-newchat", data);
 
 
+    //                     // POST http://localhost:5080/chatapi/v1/chatlogs
+    //                     // Content-Type: application/json
 
+    //                     // {
+    //                     //     "_chat_id" : "641f26a1b2663354ec5d634f",
+    //                     //     "message" : "Hello there from my desk!!!!!!b",
+    //                     //     "message_type" : "text",
+    //                     //     "who" : "user"
+    //                     // }
 
-
-                        let chatLogNew = [
-                            {
-                                user: "gpt",
-                                message: "How can I help you today?"
-                            }
-                        ]
-
-                        // console.log("new-chatbox")
-                        setChatLog(chatLogNew);
+    //                     fetch("/chatapi/v1/chatlogs", {
+    //                         method: "POST",
+    //                         headers: {
+    //                             "Content-Type": "application/json"
+    //                         },
+    //                         body: JSON.stringify({
+    //                             "_chat_id": `${data['_id']}`,
+    //                             "message": "How can I help you today?",
+    //                             "message_type": "text",
+    //                             "who": "gpt"
+    //                         })
+    //                     })
 
 
 
 
-                    }) 
 
-                    .catch(err => {
-                        console.log("err", err);
-                    }
-                    )
+    //                     let chatLogNew = [
+    //                         {
+    //                             user: "gpt",
+    //                             message: "How can I help you today?"
+    //                         }
+    //                     ]
+
+    //                     // console.log("new-chatbox")
+    //                     setChatLog(chatLogNew);
+
+
+
+
+    //                 }) 
+
+    //                 .catch(err => {
+    //                     console.log("err", err);
+    //                 }
+    //                 )
 
 
                     
-                }
-                else{
+    //             }
+    //             else{
 
-                    console.log("data[clickedChatBoxNum]['_id'] is defined, which means it is existing chatbox.")
+    //                 console.log("data[clickedChatBoxNum]['_id'] is defined, which means it is existing chatbox.")
                 
 
-                    // Get existing chatlogs
-                    // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
+    //                 // Get existing chatlogs
+    //                 // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
 
-                    fetch(`/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}`, {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log("data['chatlogs']", data['chatlogs']);
+    //                 fetch(`/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}`, {
+    //                     method: "GET",
+    //                     headers: {
+    //                         "Content-Type": "application/json"
+    //                     }
+    //                 })
+    //                 .then(res => res.json())
+    //                 .then(data => {
+    //                     console.log("data['chatlogs']", data['chatlogs']);
 
-                        let chatLogNew = [
-                            {
-                                user: "gpt",
-                                message: "How can I help you today?"
-                            }
-                        ]
+    //                     let chatLogNew = [
+    //                         {
+    //                             user: "gpt",
+    //                             message: "How can I help you today?"
+    //                         }
+    //                     ]
             
 
-                        for (let i = 0; i < data["chatlogs"].length; i++) {
+    //                     for (let i = 0; i < data["chatlogs"].length; i++) {
             
-                            chatLogNew = [
-                                ...chatLogNew, {
-                                    user: data["chatlogs"][i]["who"],
-                                    message: data["chatlogs"][i]["message"]
-                                }
-                            ]
+    //                         chatLogNew = [
+    //                             ...chatLogNew, {
+    //                                 user: data["chatlogs"][i]["who"],
+    //                                 message: data["chatlogs"][i]["message"]
+    //                             }
+    //                         ]
             
-                        }
-                        console.log("chatLogNew-clicked",chatLogNew)
+    //                     }
+    //                     console.log("chatLogNew-clicked",chatLogNew)
 
-                        setChatLog(chatLogNew);
+    //                     setChatLog(chatLogNew);
                         
-                    })
-                    .catch(err => {
-                        console.log("err--best--getAllChatsAndGetSpecificChat-sidemenu", err);
-                    });
-                }
+    //                 })
+    //                 .catch(err => {
+    //                     console.log("err--best--getAllChatsAndGetSpecificChat-sidemenu", err);
+    //                 });
+    //             }
 
 
                 
                 
     
-            })
-            .catch(err => {
-                console.log("err--best--getAllChatsAndGetSpecificChat-sidemenu", err);
-            });
+    //         })
+    //         .catch(err => {
+    //             console.log("err--best--getAllChatsAndGetSpecificChat-sidemenu", err);
+    //         });
     
-    }
+    // }
 
     async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
 
@@ -220,8 +224,8 @@ export default function SideMenu({
         })
             .then(res => res.json())
             .then(data => {
-                console.log("clickedChatBoxNum",clickedChatBoxNum)
-                console.log("data--best--getAllChatsAndGetSpecificChatBasedOnExpID", data);
+                // console.log("clickedChatBoxNum",clickedChatBoxNum)
+                // console.log("data--best--getAllChatsAndGetSpecificChatBasedOnExpID", data);
                 // console.log("data[clickedChatBoxNum][_id]", data[clickedChatBoxNum]['_id'])
 
                 // filter data based on experiment id
@@ -229,7 +233,7 @@ export default function SideMenu({
                     return el._experiment_id == experimentID;
                 });
 
-                console.log("dataFiltered", dataFiltered);
+                // console.log("dataFiltered", dataFiltered);
 
                 data=dataFiltered;
 
@@ -238,12 +242,16 @@ export default function SideMenu({
                 if (data[clickedChatBoxNum] == undefined) {
                     console.log("data[clickedChatBoxNum]['_id'] is undefined, which means it is new chatbox.")
 
+                    
+
+
+
 
                     // POST http://localhost:5080/chatapi/v1/chats
                     // Content-Type: application/json
 
                     // {
-                    //     "title" : "Chat with experiment id 2",
+                    //     "title" : "`${experimentID}`",
                     //     "_experiment_id": "641e7a67c3386b002e521705",
                     //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
                     // }
@@ -262,7 +270,7 @@ export default function SideMenu({
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            "title": "Chat with experiment id 2",
+                            "title": `${experimentID}`,
                             "_experiment_id": `${experimentID}`,
                             "_dataset_id": `${experimentID}`
                         })
@@ -311,9 +319,85 @@ export default function SideMenu({
 
 
 
+                        
+                        
+                        
+                        // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] == undefined,
+                        // clear the context of the chat completions endpoint. And then, post with "How can I help you today?" to the openai api (chat/completions).
+
+                        // clear the context of the chat completions endpoint.
+
+                        
+                    
+                        // console.log("hey-if")
+                        
+                        
+                        // fetch("openai/v1/chat/completions", {
+                        //     method: "POST",
+                        //     headers: {
+                        //         "Content-Type": "application/json",
+                        //     },
+                        //     body: JSON.stringify(
+                        //         {
+                        //             "model": "gpt-3.5-turbo",
+                        //             // "messages": [{"role": "user", "content": "Say this is a test!"},{"role": "user", "content": "Say this is a test!"}],
+                        //             "messages": [{"role": "gpt", "content": "How can I help you today?"}],
+                        //             "temperature": 0.7
+                        //             // "reset": true
+                        //         }
+                        //     )
+                        // })
+                        // .then(res => res.json())
+                        // .then(data => {
+                        //     console.log("reset-model", data);
+                        // })
+                        // .catch(err => {
+                        //     console.log("err--best--openai/v1/chat/completions", err);
+                        // });
+
+
+
+                        //test
+                        // fetch(`/chatapi/v1/chats/experiment/${experimentID}`, {
+                        //     method: "GET",
+                        //     headers: {
+                        //         "Content-Type": "application/json"
+                        //     }
+                        // })
+                        //     .then(res => res.json())
+                        //     .then(data => {
+                        //         console.log("data--best--getAllChatsAndGetSpecificChatBasedOnExpID", data);
+                        //     })
+
+
+
+                        // another test (It works!)
+                        // fetch("/openai/v1/connections", {
+                        //     method: "POST",
+                        //     headers: {
+                        //         "Content-Type": "application/json"
+                        //     }
+                        // })
+                        // .then((response) => {
+                        //     console.log("response.ok", response.ok);
+                        //     return response.json();
+                        // })
+                        // .then((data) => {
+                        //     console.log("data-response.json()", data);
+                        // })
+
+
+
+
+
+
+
+
+
+
+
 
                     }) 
-
                     .catch(err => {
                         console.log("err", err);
                     }
@@ -363,6 +447,71 @@ export default function SideMenu({
                         console.log("chatLogNew-clicked",chatLogNew)
 
                         setChatLog(chatLogNew);
+
+                        console.log("hey!!!!!")
+
+
+
+                        // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] != undefined, // clear the context of the chat completions endpoint. And then, post with chatlog of clicked chatbox to the openai api (chat/completions).
+
+                        // fetch("openai/v1/chat/completions", {
+                        //     method: "POST",
+                        //     headers: {
+                        //         "Content-Type": "application/json",
+                        //     },
+                        //     body: JSON.stringify(
+                        //         {
+                        //             "model": currentModel,
+                        //             // "messages": [{"role": "user", "content": "Say this is a test!"},{"role": "user", "content": "Say this is a test!"}],
+                        //             "messages": [{"role": "gpt", "content": "How can I help you today?"}],
+                        //             // "temperature": 0.7
+                        //             // "reset": true
+                        //         }
+                        //     )
+                        // })
+                        // .then(res => res.json())
+                        // .then(data => {
+                        //     console.log("reset-model", data);
+                        // })
+                        // .catch(err => {
+                        //     console.log("err--best--openai/v1/chat/completions", err);
+                        // });
+
+
+
+
+
+                        // test
+                        // fetch(`chatapi/v1/chats/experiment/${experimentID}`, {
+                        //     method: "GET",
+                        //     headers: {
+                        //         "Content-Type": "application/json"
+                        //     }
+                        // })
+                        // .then(res => res.json())
+                        // .then(data => {
+                        //     console.log("data--best--getAllChatsAndGetSpecificChatBasedOnExpID", data);
+                        // })
+
+
+
+                        // another test (It works!)
+                        // fetch("/openai/v1/connections", {
+                        //     method: "POST",
+                        //     headers: {
+                        //         "Content-Type": "application/json"
+                        //     }
+                        // })
+                        // .then((response) => {
+                        //     console.log("response.ok", response.ok);
+                        //     return response.json();
+                        // })
+                        // .then((data) => {
+                        //     console.log("data-response.json()", data);
+                        // })
+
+
+
                         
                     })
                     .catch(err => {
@@ -383,23 +532,36 @@ export default function SideMenu({
 
 
     async function checkClickedChatboxTab(e) {
-        console.log("e.target", e.target)
-        console.log(
-            "e.target.childNodes[1].nodeValue",
-            e.target.childNodes[1].nodeValue
-        )
-
-        console.log(
-            "e.target.parentNode", e.target.parentNode
-        )
 
 
+        // 
+        // first, clear the context of the chat completions endpoint. (refer to the jay's message on slack)
+            // in the openai api, is there a way to clear the context of the chat completions endpoint?
+            // Yes, in the OpenAI API, you can clear the context of the chat completions endpoint by sending an empty string as the value for the context parameter.
+            // For example, if you're using the Python client, you can make a request to the completions method with an empty string as the context parameter like this:
+            
+                
+                // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] == undefined,
+                // clear the context of the chat completions endpoint. And then, post with "How can I help you today?" to the openai api (chat/completions).
+        
+        // second, feed current chatlog of clicked chatbox to the chat completions endpoint. 
+
+                
+                // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] != undefined, // clear the context of the chat completions endpoint. And then, post with chatlog of clicked chatbox to the openai api (chat/completions).
 
 
-    
 
         
+        
+        // console.log("e.target", e.target)
+        // console.log(
+        //     "e.target.childNodes[1].nodeValue",
+        //     e.target.childNodes[1].nodeValue
+        // )
 
+        // console.log(
+        //     "e.target.parentNode", e.target.parentNode
+        // )
 
 
 
@@ -442,11 +604,11 @@ export default function SideMenu({
 
                 if (e.target.parentNode === siblings[i]) {
                     siblings[i].style.fontWeight = "bold";
-                    siblings[i].style.textDecoration = "underline";
+                    // siblings[i].style.textDecoration = "underline";
                 }
                 else{
                     siblings[i].style.fontWeight = "normal";
-                    siblings[i].style.textDecoration = "none";
+                    // siblings[i].style.textDecoration = "none";
                 }
             }
 
@@ -467,10 +629,6 @@ export default function SideMenu({
         // first chatbox is 1, second chatbox is 2, third chatbox is 3, etc.
         setChatCurrentTempId(countClickedChatBoxID)
 
-        
-        
-        
-
         // console.log("chatCurrentTempId-checkClickedChatboxTab",chatCurrentTempId)
 
 
@@ -485,9 +643,33 @@ export default function SideMenu({
         getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog);
 
 
+        // lanModelReset, 
+        // setLanModelReset,
+
+        // make lanModelReset true
+        setLanModelReset(lanModelReset=true)
 
 
-    
+        
+
+
+    }
+
+    function clearAllTrashIcons (nodes) {
+
+        // console.log("nodes",nodes)
+        // console.log("nodes.childNodes",nodes.childNodes)
+        // console.log("nodes.childNodes[1]",nodes.childNodes[1])
+        // console.log("nodes.childNodes[1].childNodes",nodes.childNodes[1].childNodes)
+        // console.log("nodes.childNodes[1].childNodes[1]",nodes.childNodes[1].childNodes[1])
+
+        for (var i = 1; i < nodes.childNodes.length-1; i++) {
+            // console.log("nodes.childNodes[i].childNodes[1]",nodes.childNodes[i].childNodes[1])
+
+            nodes.childNodes[i].childNodes[1].style.display = "none";
+
+            nodes.childNodes[i].childNodes[1].innerHTML = "🗑️";
+        }
     }
 
 
@@ -504,41 +686,89 @@ export default function SideMenu({
     }
 
 
+    function changeTrashCheck(node) {
+
+        // extract the trash emoji from the node 
+        // node is div
+
+        node.innerHTML = "✔︎";
+
+        // 👩‍⚖️
+        // console.log("trashIcon",trashIcon)
+
+    }
+
     function removeCorChat(e) {
+        // console.log("e.target.parentNode.childNodes[1]", e.target.parentNode.childNodes[1])
+
+        // console.log("window.location.href-removeCorChat",window.location.href)
+
+        
+        console.log("e.target", e.target)
+
+        console.log("e.target.parentNode", e.target.parentNode)
+
+        console.log("e.target.parentNode.childNodes[0]", e.target.parentNode.childNodes[0])
+
         console.log("e.target.parentNode.childNodes[1]", e.target.parentNode.childNodes[1])
 
+        changeTrashCheck(e.target.parentNode.childNodes[1])
 
-        // var currentClickedChatBoxID = parseInt(e.target.parentNode.childNodes[1].nodeValue);
-        // console.log("currentClickedChatBoxID",currentClickedChatBoxID)
+        console.log("e.target.parentNode.childNodes", e.target.parentNode.childNodes)
 
-        // // Add 1 to currentClickedChatBoxID
-        // var countClickedChatBoxID = currentClickedChatBoxID + 1;
-        // console.log("countClickedChatBoxID",countClickedChatBoxID)
 
-        // // first chatbox is 1, second chatbox is 2, third chatbox is 3, etc.
-        // setChatCurrentTempId(countClickedChatBoxID)
+        console.log("e.target.parentNode.childNodes[0].childNodes", e.target.parentNode.childNodes[0].childNodes)
 
-        // // the current number of chatboxes
-        // setNumChatBox(numChatBox - 1)
+        console.log("e.target.parentNode.childNodes[0].childNodes[2]", e.target.parentNode.childNodes[0].childNodes[2])
 
-        // // make id newchatbutton is clickable
-        // document.getElementById("newchatbutton").style.pointerEvents = "auto";
+        console.log("e.target.parentNode.childNodes[0].childNodes[1]", e.target.parentNode.childNodes[0].childNodes[1])
+
+        console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes", e.target.parentNode.childNodes[0].childNodes[2].childNodes)
+
+        console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0]", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0])
+
+
+        console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent)
+
+        var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent;
+
+        console.log("textClickedChatBox",textClickedChatBox)
+
+
+        console.log("chatCurrentTempId",chatCurrentTempId)
+
+        
+        // remove the clicked chatbox tap from DB
+        // To do this, first get the experiment id from the url
+        // After that, get the all chats from the DB using the experiment id
+        // Then, remove the chat using the textClickedChatBox
+
+
+        // if the chatbox tap was only one, when user remove the chat, it will remove from the DB, but the chatbox will show "How can I help you today?"
+
+        // if the chatbox tap was more than one, when user remove the chat, it will remove from the DB, and the chatbox will show the left chatbox tap or the right chatbox tap.
+
+
+
+
+
+
     }
 
 
-    function boldUnderline() {
+    function setBoldUnderlineAndInitTraIc() {
 
-        console.log("boldUnderline()")
+        // console.log("setBoldUnderlineAndInitTraIc()")
 
         //get div with class name sidemenu
         var sidemenu = document.getElementsByClassName("chatboxtap");
 
-        console.log("sidemenu-boldUnderline()",sidemenu)
+        // console.log("sidemenu-setBoldUnderlineAndInitTraIc()",sidemenu)
 
         // length of sidemenu
         var sidemenuLength = sidemenu.length;
 
-        console.log("sidemenuLength-boldUnderline()",sidemenuLength)
+        // console.log("sidemenuLength-setBoldUnderlineAndInitTraIc()",sidemenuLength)
 
         if (sidemenuLength>0) {
 
@@ -551,12 +781,32 @@ export default function SideMenu({
         
         for (var i = 0; i < sidemenu.length-1; i++) {
             sidemenu[i].style.fontWeight = "normal";
-            sidemenu[i].style.textDecoration = "none";
+            // sidemenu[i].style.textDecoration = "none";
         }
       
       
         sidemenu[sidemenu.length-1].style.fontWeight = "bold";
-        sidemenu[sidemenu.length-1].style.textDecoration = "underline";
+        // sidemenu[sidemenu.length-1].style.textDecoration = "underline";
+
+
+        // console.log("sidemenu[sidemenu.length-1]",sidemenu[sidemenu.length-1])
+
+        for (var i = 0; i < sidemenu.length; i++) {
+            // sidemenu[i].chidNodes[1].style.display = "none";
+
+            // console.log("sidemenu[i]",sidemenu[i])
+            console.log("sidemenu[i].chidNodes[1]",sidemenu[i].childNodes[1])
+
+            
+            sidemenu[i].childNodes[1].style.display = "none";
+            
+            
+        }
+
+        sidemenu[sidemenu.length-1].childNodes[1].style.display = "block";
+        
+        // console.log("sidemenu[sidemenu.length-1].chidNodes[1]",sidemenu[sidemenu.length-1].chidNodes[1])
+        // sidemenu[sidemenu.length-1].chidNodes[1].style.display = "block";
 
     }
         
@@ -595,8 +845,52 @@ export default function SideMenu({
                         .map(
                             (_, i) =>
                             <div className="sidemenu chatboxtap"> 
-                                <div className="side-menu-button" key={i} onClick={checkClickedChatboxTab}>
-                                ChatBox_{i}
+                                <div className="side-menu-button" 
+                                key={i} 
+                                onClick={
+                                    
+                                    (e)=>{
+                                        checkClickedChatboxTab(e)
+                                        
+
+                                        clearAllTrashIcons(e.target.parentNode.parentNode)
+
+                                        
+                                        e.target.parentNode.childNodes[1].style.display = 'block'
+                                    
+                                    }
+
+                                    
+
+                                }
+
+                            //     onMouseEnter={
+                            //         (e) => {
+                            //         console.log("[e.target.parentNode.childNodes[1]",e.target.parentNode.childNodes[1])
+                            //         // e.target.style.display = 'block'
+
+                                    
+                            //         e.target.parentNode.childNodes[1].style.display = 'block'
+                                    
+                            //     }
+                            
+                            // }
+
+                                // onMouseLeave={(e) => {
+                                //     console.log("[e.target.parentNode.childNodes[1]",e.target.parentNode.childNodes[1])
+                                //     // e.target.style.display = 'block'
+
+                                    
+                                //     e.target.parentNode.childNodes[1].style.display = 'none'
+                                    
+                                // }}
+                                
+                                >
+                                    ChatBox_{i}
+                                    <div style={{display: 'none'}}>
+                                        <span>ChatBox_{i}</span>
+                                    </div>
+                                
 
                                 {/* <span className="trash"
                                 key ={i}
@@ -604,11 +898,15 @@ export default function SideMenu({
                                 >🗑</span> */}
                                
                                 </div>
-                                {/* <div className="side-menu-button trash" 
-                                key ={i} 
-                                onClick={removeCorChat}
 
-                                >🗑</div> */}
+                                
+
+
+                                <div className="side-menu-button-trash trash" 
+                                    key ={i} 
+                                    onClick={removeCorChat}
+                                    style={{display: 'none'}}
+                                    >🗑</div>
                             </div>
                         )
                 }
