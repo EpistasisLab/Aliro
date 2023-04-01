@@ -116,6 +116,9 @@ export default function ChatGPT({experiment}) {
     // when user moves to a new experiment or new chat box, the lanModelReset should be true
     const [lanModelReset, setLanModelReset] = useState(false);
 
+    // current experiment id
+    const [currentExpId, setCurrentExpId] = useState("");
+
     // 
 
     // clear chats
@@ -1016,6 +1019,9 @@ export default function ChatGPT({experiment}) {
                     setLanModelReset = {setLanModelReset}
 
                     limitNumChatBox={limitNumChatBox}
+
+                    currentExpId={currentExpId}
+                    setCurrentExpId={setCurrentExpId}
                 />
             }
             <ChatBox
