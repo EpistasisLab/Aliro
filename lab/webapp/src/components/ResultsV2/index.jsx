@@ -60,12 +60,11 @@ import ChatGPT from '../ChatGPT';
 
 function moveSlidermakeBlack(e) {
 
+    
+
     let block = document.getElementsByClassName("chartsbaseleft")[0];
     let slider = document.getElementsByClassName("slider")[0];
-
     let chatbox = document.getElementsByClassName("chatbaseright")[0];
-
-    // make slider color black slider.style.backgroundColor = "black";
 
     
     if (block && slider) {
@@ -80,34 +79,114 @@ function moveSlidermakeBlack(e) {
             // console.log("e.clientX", e.clientX);
             document.onmousemove = function onMouseMove(e) {
 
+
+                // 0.2 --0.3 --0.4 --0.8 --
+
+                console.log("block.offsetWidth", block.offsetWidth)
+
+                // shift the result block to the right, and make the chatbox invisible
                 if (block.offsetWidth > 0.8 * windowWidth) {
-                    console.log("bigger than 0.8")
+                    console.log("range-bigger than 0.8")
                     block.style.width = windowWidth + "px";
                     dragX = e.clientX;
                     chatbox.style.visibility = "hidden";
-                } else if (block.offsetWidth < 0.3 * windowWidth) {
-                    console.log("smaller than 0.2")
+                } 
+
+                // shift the chatbox to the left, and make the result block invisible
+                else if (block.offsetWidth < 0.2 * windowWidth) {
+                    console.log("range-smaller than 0.2")
                     block.style.width = 0 + "px";
                     block.style.visibility = "hidden";
                     slider.style.visibility = "hidden";
                     dragX = e.clientX;
 
-                } else {
+                    
+                } 
+
+                // else 
+                // {
+                //     console.log("range-bigger than or equal to 0.5 and smaller than or equal to 0.8")
+                //     block.style.visibility = "block";
+                //     slider.style.visibility = "block";
+
+                //     // origin
+                //     block.style.width = block.offsetWidth + e.clientX - dragX + "px";
+                //     dragX = e.clientX;
+
+
+                   
+                // }
+
+                
+
+                else if (block.offsetWidth >= 0.4 * windowWidth && block.offsetWidth <= 0.8 * windowWidth)
+                {
+                    console.log("range-bigger than or equal to 0.4 and smaller than or equal to 0.8")
                     block.style.visibility = "block";
                     slider.style.visibility = "block";
 
                     // origin
                     block.style.width = block.offsetWidth + e.clientX - dragX + "px";
                     dragX = e.clientX;
+
+
+                    if (e.target.parentElement.childNodes[0].childNodes[1].className === "ui stackable two column grid") {
+
+                        e.target.parentElement.childNodes[0].childNodes[1].className = "ui stackable three column grid"
+                    }
+
+                    else if (e.target.parentElement.childNodes[0].childNodes[1].className === "ui stackable one column grid") {
+
+                        e.target.parentElement.childNodes[0].childNodes[1].className = "ui stackable three column grid"
+                    }
+                }
+               
+                
+                
+                else if (block.offsetWidth >= 0.3 * windowWidth && block.offsetWidth < 0.4 * windowWidth)
+                {
+                    console.log("range-bigger than or equal to 0.3 and smaller than 0.4")
+                    block.style.visibility = "block";
+                    slider.style.visibility = "block";
+
+                    // origin
+                    block.style.width = block.offsetWidth + e.clientX - dragX + "px";
+                    dragX = e.clientX;
+
+
+                    if (e.target.parentElement.childNodes[0].childNodes[1].className === "ui stackable three column grid") {
+
+                        e.target.parentElement.childNodes[0].childNodes[1].className = "ui stackable two column grid"
+                    }
+
+                    else if (e.target.parentElement.childNodes[0].childNodes[1].className === "ui stackable one column grid") {
+
+                        e.target.parentElement.childNodes[0].childNodes[1].className = "ui stackable two column grid"
+                    }
                 }
 
-                // console.log("before block.offsetWidth", block.offsetWidth); origin
-                // block.style.width = block.offsetWidth + e.clientX - dragX + "px"; dragX =
-                // e.clientX;
+                else if (block.offsetWidth >= 0.2 * windowWidth && block.offsetWidth < 0.3 * windowWidth)
+                {
+                    console.log("range-bigger than or equal to 0.2 and smaller than 0.3")
+                    block.style.visibility = "block";
+                    slider.style.visibility = "block";
 
-                // console.log("block.style.width", block.style.width)
-                // console.log("after block.offsetWidth", block.offsetWidth);
-                // console.log("e.clientX", e.clientX);
+                    // origin
+                    block.style.width = block.offsetWidth + e.clientX - dragX + "px";
+                    dragX = e.clientX;
+
+                    if (e.target.parentElement.childNodes[0].childNodes[1].className === "ui stackable three column grid") {
+
+                        e.target.parentElement.childNodes[0].childNodes[1].className = "ui stackable one column grid"
+                    }
+
+                    else if (e.target.parentElement.childNodes[0].childNodes[1].className === "ui stackable two column grid") {
+
+                        e.target.parentElement.childNodes[0].childNodes[1].className = "ui stackable one column grid"
+                    }
+                }
+
+                
             }
             // remove mouse-move listener on mouse-up
             document.onmouseup = () => document.onmousemove = document.onmouseup = null;

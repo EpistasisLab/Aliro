@@ -67,6 +67,7 @@ class ResponsiveGrid extends Component {
   }
 
   calcCols() {
+
     const { width } = this.state;
     const { mobile, tablet, desktop, lgscreen } = this.props;
     const breakpoints = this.constructor.getBreakpoints();
@@ -92,3 +93,6 @@ class ResponsiveGrid extends Component {
 }
 
 export default ResponsiveGrid;
+
+
+

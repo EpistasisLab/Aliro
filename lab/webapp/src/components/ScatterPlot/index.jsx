@@ -79,16 +79,69 @@ class ScatterPlot extends Component {
       }
     }
 
+    // // make axis tick values like this 30000-> 3 units 10000
+    // axis: {
+    //   x: {
+    //     tick: {
+    //       format: d3.format("s")
+    //     }
+    //   }
+    // },
+
     else if (chartKey.includes('CVP')) {
+      var i=0;
       var axis= {
         x: {
             label: 'Observed Values',
             tick: {
                 fit: false
-            }
+                
+
+                // format: d3.format(".2s"),
+                // make only three ticks on x axis except for the first and last tick
+                // format: d3.format(".2s")
+
+                // remove the first and last tick
+
+                // format: function (d) {
+                //   console.log('d: ', d)
+                //   if (d === 0 || d === 1) {
+                //     return null;
+                //   }
+                //   return d;
+                // },
+                // d and index
+
+                // format: function (d) {
+                //   d3.format(".2s")
+                //   console.log('d: ', d)
+                //   console.log('i: ', i)
+                //   if (i === 0 || i === 1) {
+                //     i++;
+                //     return null;
+                //   }
+                //   i++;
+                //   return d;
+                // },
+
+                
+                // count: 3
+
+            },
+            // make only three ticks on x axis except for the first and last tick
+            // tick: {
+            //   values: [0, 0.5, 1],
+            //   count: 3
+
+
+            
         },
         y: {
-            label: 'Predicted Values'
+            label: 'Predicted Values',
+            tick: {
+              // fit: false
+              format: d3.format(".2s")
+          },
         }
       }
     }
@@ -98,7 +151,8 @@ class ScatterPlot extends Component {
         x: {
             label: 'Predicted Values',
             tick: {
-                fit: false
+                // fit: false
+                format: d3.format(".1s")
             }
         },
         y: {
@@ -112,7 +166,8 @@ class ScatterPlot extends Component {
         x: {
             label: 'Theoretical Quantiles',
             tick: {
-                fit: false
+                // fit: false
+                format: d3.format(".1s")
             }
         },
         y: {
@@ -293,7 +348,10 @@ if (chartKey.includes('pca') || chartKey.includes('tsne')) {
       // }
       // do not show tooltip
       show: false
-    }
+    },
+    legend: {
+      show: false
+    },
   });
 }
 
@@ -364,6 +422,9 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
       }
     },
     axis: axis,
+    
+
+
     // set tooltip based on your setting 
     tooltip: {
       // format: {
@@ -372,7 +433,15 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
       // }
       // do not show tooltip
       show: false
+    },
+
+    legend: {
+      item: { onclick: function () {
+        console.log('legend item clicked')
+      } }
     }
+
+
   });
 }
 
@@ -380,6 +449,7 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
 else if (chartKey.includes('CVR')) {
 
   var chart = c3.generate({
+      
     bindto: `.${chartKey}`,
     data: {
         
@@ -411,6 +481,17 @@ else if (chartKey.includes('CVR')) {
       // }
       // do not show tooltip
       show: false
+    },
+    legend: {
+      
+      item: { onclick: function (id) {
+
+        console.log('id: ', id)
+
+        
+        
+        console.log('legend item clicked')
+      } }
     }
   });
 }
@@ -426,11 +507,28 @@ else if (chartKey.includes('CVR')) {
       // <div className={`ScatterPlot ${this.props.chartKey}`} />
 
 
+      
+
+
+
+
     <div >
         
-        <svg className={`ScatterPlot ${this.props.chartKey}`} viewBox="0 0 500 400" preserveAspectRatio="xMinYMin meet" >
+        {/* <svg className={`ScatterPlot ${this.props.chartKey}`} viewBox="0 0 520 400" preserveAspectRatio="xMinYMin meet" >
             
-        </svg>
+        </svg> */}
+
+        
+
+        {/* set viewBox based on window.innerWidth and window.innerHeight  */}
+        {/* <svg className={`ScatterPlot ${this.props.chartKey}`} viewBox={`0 0 ${window.innerWidth*0.3} ${window.innerHeight*0.3}`} preserveAspectRatio="xMinYMin meet" > */}
+        
+        <svg 
+        className={`ScatterPlot ${this.props.chartKey}`} 
+        // make viewPort responsive
+        
+        viewBox={`0 0 ${window.innerWidth*0.3} ${window.innerHeight*0.3}`} preserveAspectRatio="xMinYMin meet" >
+          </svg>
     </div>
     );
   }

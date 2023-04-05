@@ -30,7 +30,8 @@ export default function PopUpAPI(
 
                 } else {
 
-                  document.getElementById("expertChatGPT").style.backgroundColor = "red";
+                //   document.getElementById("expertChatGPT").style.backgroundColor = "red";
+                document.getElementById("expertChatGPT").style.backgroundColor = "#1056c0";
 
                   var modal = document.getElementsByClassName("modal")[0];
                   // make it unvisible
@@ -142,7 +143,9 @@ export default function PopUpAPI(
                             modal.style.display = "none";
 
 
-                            document.getElementById("expertChatGPT").style.backgroundColor = "red";
+                            // document.getElementById("expertChatGPT").style.backgroundColor = "red";
+
+                            document.getElementById("expertChatGPT").style.backgroundColor = "#1056c0";
 
 
                             // alert("Connection to OpenAI is established")

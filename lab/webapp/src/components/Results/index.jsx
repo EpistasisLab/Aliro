@@ -55,7 +55,7 @@ import NoScore from './components/NoScore';
 import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 import ClassRate from './components/ClassRate';
-import ChatGPT from '../ChatGPT';
+// import ChatGPT from '../ChatGPT';
 
 class Results extends Component {
   constructor(props) {

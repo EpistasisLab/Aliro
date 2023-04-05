@@ -5,86 +5,37 @@ import SideMenu from "./SideMenu";
 import ChatBox from "./ChatBox";
 import { locales } from 'moment';
 
-// export default function ChatGPT() {     return (         <div
-// style={{                         overflowY: 'auto',
-// maxHeight: '350px',                           red color
-// backgroundColor: '#ff0000'                     }}
-// className='table-sticky-header file-upload-table'>                     <p>new
-// GPT!!!</p>                 </div>     ); }
+
 
 export default function ChatGPT({experiment}) {
-    
-    // readdatafromlocalstorage();
-
-
 
     var limitNumChatBox = 5;
 
     useEffect(() => {
-
-
-        console.log("useEffect in ChatGPT.js");
-
-
-
-
-
-
         
-
-
-
-
-
-
-
-
-
-        var url = window.location.href;
-        var urlSplit = url.split("/");
-        var experimentId = urlSplit[urlSplit.length - 1];
-
+        
         // getEngines();
 
-
-        // postChats();
-        // getAllChats();
-
-
         initailChatBoxSetting();
-        
         getAllChatsFilterbyExpIdSetChatbox();
-
         setLanModelReset(true);
        
-        // getSpecificChat("641e954eb2663354ec5d62ab");
-        
-        // getSpecificChat(`${experimentId}`);
-        // patchSpecificChat("641e2fc2b2663354ec5d5276", "Choi's chat", "63f6e4947c5f93004a3e3ca7", "63f6e4947c5f93004a3e3ca7")
-        // deleteSpecificChat("641e31ddb2663354ec5d52b8");
-
-
-
-
-
-
-
     }, 
     // make useEffect run when numChatBox changes or when experimentId changes
     // [numChatBox],
     [window.location.href],
-    // [chatBoxTrigger]
-    // [chatLog]
-    // [chatCurrentTempId],
-    // []
+    // [experimentId],
     )
 
 
     const [chatInput, setChatInput] = useState("");
     const [models, setModels] = useState([]);
     const [temperature, setTemperature] = useState(0.5);
+    // language model
     // const [currentModel, setCurrentModel] = useState("text-davinci-003");
     const [currentModel, setCurrentModel] = useState("gpt-3.5-turbo");
+
+    // initial chat box setting
     const [chatLog, setChatLog] = useState([
         {
             user: "gpt",
@@ -96,30 +47,30 @@ export default function ChatGPT({experiment}) {
 
     // this is the number of chat boxes in the result page
     const [numChatBox, setNumChatBox] = useState(1);
-    // const [numChatBox, setNumChatBox] = useState([0]);
 
     // this is the current chat box id where user is typing
     const [chatCurrentTempId, setChatCurrentTempId] = useState(1);
 
     // const [testID, setTestID] = useState(0);
     // true or false trigger for chat box
-    // const [chatBoxTrigger, setChatBoxTrigger] = useState(false);
 
-    // get chatlogs from db 
-    // let chatId = localStorage.getItem("chatId");
-    // getSpecificChat(chatId);
-
-    // console.log("testID", testID);
 
     // language model reset
-    // This is a boolean value that indicates whether the language model should
+    // This is a boolean value that indicates whether the language model should be reset
     // when user moves to a new experiment or new chat box, the lanModelReset should be true
     const [lanModelReset, setLanModelReset] = useState(false);
 
     // current experiment id
     const [currentExpId, setCurrentExpId] = useState("");
 
-    // 
+    // modeforchatorcoderuning
+    const [modeForChatOrCodeRunning, setModeForChatOrCodeRunning] = useState("chat");
+
+    // extractedCode
+    const [extractedCode, setExtractedCode] = useState({
+        code: ""
+      });
+
 
     // clear chats
     function clearChat() {
@@ -128,7 +79,7 @@ export default function ChatGPT({experiment}) {
 
 
 
-
+    // load all the models
     async function getEngines() {
         // fetch("http://localhost:3080/models")
         await fetch("openai/v1/models")
@@ -152,6 +103,75 @@ export default function ChatGPT({experiment}) {
                 // console.log("models", data.models.data)
             })
     }
+
+
+    function checkIfCode(messageFromOpenai) {
+
+            // check if the messageFromOpenai contains python code. for example the messageFromOpenai looks like this: 
+
+            // ```
+            // def get_links(soup):
+            //     links = []
+            //     for link in soup.find_all('a'):
+            //         url = link.get('href')
+            //         if url.startswith('http'):
+            //             links.append(url)
+            //     return links
+            // ```
+
+            // that is, the messageFromOpenai contains ``` at the beginning and at the end
+            
+            let booleanCode = false;
+            messageFromOpenai.split("\n").forEach(line => {
+                console.log("line", line)
+                if (line.includes("```")) {
+                    booleanCode = true;
+                }
+            })
+
+            console.log("booleanCode", booleanCode);
+
+            return booleanCode;
+
+    }
+
+
+    function extractCode(messageFromOpenai) {
+
+
+
+        const regex = /```([\s\S]+?)```/;
+        const match = regex.exec(messageFromOpenai);
+        const code = match[1];
+
+        console.log("extractCode",code);
+
+        console.log("match", match);
+
+        return code;
+
+
+
+
+        /* Step 1: Import the required modules
+
+        You will need the urllib and beautifulSoup modules to crawl and parse web pages, respectively. You can use the following code to import these modules:
+
+        ```
+        import urllib.request
+        from bs4 import BeautifulSoup
+        ```
+
+        Step 2: Define the website to crawl */
+
+        
+
+ 
+    }
+
+
+
+
 
 
 
@@ -240,15 +260,9 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                // console.log("allChat", data);
-
-                
-
                 // get the experiment id from the url
                 let url = window.location.href;
-                // split url by /
                 let urlSplit = url.split("/");
-                // console.log("urlSplit", urlSplit);
                 let experimentId = urlSplit[urlSplit.length - 1];
 
 
@@ -263,14 +277,10 @@ export default function ChatGPT({experiment}) {
                     }
                 })
 
-
-
                 // remove null from filteredChats
                 let filteredChatsWithoutNull = filteredChats.filter((chat) => {
                     return chat !== null;
                 })
-
-                console.log("filteredChatsWithoutNull.length", filteredChatsWithoutNull.length);
 
                 setNumChatBox(filteredChatsWithoutNull.length);
                 setChatCurrentTempId(filteredChatsWithoutNull.length);
@@ -282,7 +292,6 @@ export default function ChatGPT({experiment}) {
                 }
 
 
-                
                 fetch(`/chatapi/v1/chats/${filteredChatsWithoutNull[filteredChatsWithoutNull.length-1]['_id']}`, {
                     method: "GET",
                     headers: {
@@ -291,38 +300,37 @@ export default function ChatGPT({experiment}) {
                 })
                 .then(res => res.json())
                 .then(data => {
-                    
-                    // console.log("allSpecificChat", data);
-
-                    // let chatLogNew =[
-                    //     {
-                    //         user: "gpt",
-                    //         message: "How can I help you today?"
-                    //     }
-                    // ]
-
+            
                     let chatLogNew = [];
-    
+                    
+                    // need to change
                     for (let i = 0; i < data["chatlogs"].length; i++) {
                         
-                        chatLogNew = [
-                            ...chatLogNew, {
-                                user: data["chatlogs"][i]["who"],
-                                message: data["chatlogs"][i]["message"]
-                            }
-                        ]
-    
-    
+                            if (data["chatlogs"][i]["who"]=="user"){
+                            chatLogNew = [
+                                ...chatLogNew, {
+                                    user: data["chatlogs"][i]["who"],
+                                    message: data["chatlogs"][i]["message"]
+                                }
+                            ]
+                        }
+
+                        else if (data["chatlogs"][i]["who"]=="gpt"){
+                            chatLogNew =[
+                                ...chatLogNew, {
+                                    user: data["chatlogs"][i]["who"],
+                                    // message: `${messageFromOpenai}`
+                                    message: data["chatlogs"][i]["message"].split(/\n/).map(line => <div key={line}>{line}</div>)
+                                }
+                            ]
+                        }
                     }
-    
-                    // console.log("chatLogNew-loop", chatLogNew);
-    
+
                     setChatLog(chatLogNew);
                     
-                    // console.log("success2")
                 })
                 .catch(err => {
-                    console.log("err--best--getSpecificChat",err);
+                    console.log("err--getSpecificChat",err);
                 })
             
                 
@@ -332,7 +340,7 @@ export default function ChatGPT({experiment}) {
                 
             })
             .catch(err => {
-                console.log("err--best--getAllChats",err);
+                console.log("err--getAllChats",err);
             })
 
     }
@@ -483,10 +491,10 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("data--best--postInChatlogs", data);
+                console.log("data--postInChatlogs", data);
             })
             .catch(err => {
-                console.log("err--best--postInChatlogs",err);
+                console.log("err--postInChatlogs",err);
             })
 
 
@@ -559,141 +567,110 @@ export default function ChatGPT({experiment}) {
     // This function post initial chat message (How can I help you?, GPT) to DB
     function initailChatBoxSetting()
     {
+        // the experiment id from the url
+        let url = window.location.href;
+        let urlSplit = url.split("/");
+        let experimentId = urlSplit[urlSplit.length - 1];
+
+        // GET http://localhost:5080/chatapi/v1/chats
+
+        fetch("/chatapi/v1/chats", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                // filter the data by experiment id
+                let dataFiltered = data.filter((item) => item._experiment_id === experimentId);
+
+                // any chat id does not exist.
+                // there are not any chatbox for this experiment id
+                if (dataFiltered.length === 0){
+                
+                    // POST http://localhost:5080/chatapi/v1/chats
+                    // Content-Type: application/json
+
+                    // {
+                    //     "title" : "Chat with experiment id 2",
+                    //     "_experiment_id": experimentId,
+                    //     "_dataset_id": experimentId
+                    // }
+                    
+                    fetch("/chatapi/v1/chats", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            title: "Chat with experiment id " + experimentId,
+                            _experiment_id: experimentId,
+                            _dataset_id: experimentId
+                        })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            // there are no chatlogs
+                            if (data['chatlogs'].length === 0){
+
+                                // POST http://localhost:5080/chatapi/v1/chatlogs
+                                // Content-Type: application/json
+                                // {
+                                //     "_chat_id" : "642076d7262c19d0be23448b",
+                                //     "message" : "How are you?",
+                                //     "message_type" : "text",
+                                //     "who" : "gpt"
+                                // }
+                                
+                                    fetch("/chatapi/v1/chatlogs", {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            _chat_id: data._id,
+                                            "message": "How can I help you today?",
+                                            "message_type": "text",
+                                            "who": "gpt"
+                                        })
+                                    })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        // console.log("success1")
+                                        // get all chats for this experiment id to frontend
+                                        getAllChatsFilterbyExpIdSetChatbox();
+                                    })
+                                    .catch(err => {
+                                        console.log("err--postChat",err);
+                                    })
+                                
 
 
-            console.log("initailChatBoxSetting");
-          
-
-                // get the experiment id from the url
-                let url = window.location.href;
-                // split url by /
-                let urlSplit = url.split("/");
-                // console.log("urlSplit", urlSplit);
-                let experimentId = urlSplit[urlSplit.length - 1];
-
-
-                // GET http://localhost:5080/chatapi/v1/chats
-
-                fetch("/chatapi/v1/chats", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-
-                        // filter the data by experiment id
-                        let dataFiltered = data.filter((item) => item._experiment_id === experimentId);
-
-
-                        // any chat id does not exist.
-                        // there are not any chatbox for this experiment id
-                        if (dataFiltered.length === 0){
-                        
-                            // POST http://localhost:5080/chatapi/v1/chats
-                            // Content-Type: application/json
-
-                            // {
-                            //     "title" : "Chat with experiment id 2",
-                            //     "_experiment_id": experimentId,
-                            //     "_dataset_id": experimentId
-                            // }
-                            
-                            
-
-                            fetch("/chatapi/v1/chats", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    title: "Chat with experiment id " + experimentId,
-                                    _experiment_id: experimentId,
-                                    _dataset_id: experimentId
-                                })
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    // there are no chatlogs
-                                    if (data['chatlogs'].length === 0){
-
-                                        // POST http://localhost:5080/chatapi/v1/chatlogs
-                                        // Content-Type: application/json
-                                        // {
-                                        //     "_chat_id" : "642076d7262c19d0be23448b",
-                                        //     "message" : "How are you?",
-                                        //     "message_type" : "text",
-                                        //     "who" : "gpt"
-                                        // }
-                                        
-                                            fetch("/chatapi/v1/chatlogs", {
-                                                method: "POST",
-                                                headers: {
-                                                    "Content-Type": "application/json"
-                                                },
-                                                body: JSON.stringify({
-                                                    _chat_id: data._id,
-                                                    "message": "How can I help you today?",
-                                                    "message_type": "text",
-                                                    "who": "gpt"
-                                                })
-                                            })
-                                            .then(res => res.json())
-                                            .then(data => {
-                                                console.log("success1")
-                                                // get all chats for this experiment id to frontend
-                                                getAllChatsFilterbyExpIdSetChatbox();
-                                            })
-                                            .catch(err => {
-                                                console.log("err--best--postChat",err);
-                                            })
-                                        
-
-
-                                    }
-                                })
-                            
-                        
-                        }
+                            }
+                        })
+                    
+                
+                }
 
 
 
-                    })
-                    .catch(err => {
-                        console.log("err--initailChatBoxSetting",err);
-                    })  
+            })
+            .catch(err => {
+                console.log("err--initailChatBoxSetting",err);
+            })  
 
                 
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
     async function handleSubmit(e) {
         // prevent page from refreshing
         e.preventDefault();
-        
+
         let url = window.location.href;
-        // split url by /
         let urlSplit = url.split("/");
-        // console.log("urlSplit", urlSplit);
         let experimentId = urlSplit[urlSplit.length - 1];
 
 
@@ -717,80 +694,50 @@ export default function ChatGPT({experiment}) {
         setChatInput("");
         setChatLog(chatLogNew)
 
-        
-        // var chatCurrentId=chatCurrentTempId-1;
-        // var chatCurrentId=chatCurrentTempId;
-
-        
-
-        console.log("experimentId", experimentId);
-
-
-        
-
-        // find chat_id "641e954eb2663354ec5d62ab" using experiment_id experimentId 642075a730975a002cef29b5
 
         // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
 
-        fetch(`/chatapi/v1/chats/experiment/${experimentId}`, {
+        await fetch(`/chatapi/v1/chats/experiment/${experimentId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             },
             })
             .then(res => res.json())
-            .then(data => {
-                console.log("data--best--experiment", data);
+            .then(async data => {
+                // console.log("data--best--experiment", data);
                 // filter the data using _experiment_id
                 var filteredData= data.filter((item) => item._experiment_id === experimentId)
 
-                console.log("filteredData", filteredData);
+                if (chatCurrentTempId === 0){
 
-                console.log("chatCurrentTempId-han", chatCurrentTempId-1);
-
-                console.log("filteredData[chatCurrentTempId",filteredData[chatCurrentTempId-1])
-
-                console.log("filteredData[chatCurrentTempId]['_id']",filteredData[chatCurrentTempId-1]['_id'])
+                    setChatCurrentTempId(1);
+                }
 
                 if (chatInput !== undefined || chatInput !== ""){
                     postInChatlogs(filteredData[chatCurrentTempId-1]['_id'], chatInput, "text", "user");
-
-                    // console.log("chatInput", chatInput);
                 }
 
-
-                console.log("after-filteredData[chatCurrentTempId",filteredData[chatCurrentTempId-1])
-
-
-
-
-
-
-                // fetch response to the api combining the chat log array of messages and
-                // seinding it as a message to localhost:3000 as a post
                 const messages = chatLogNew
                 .map((message) => message.message)
                 .join("\n")
 
-                console.log("chatLogNew", chatLogNew)
-
                 // get the last message from the chatLogNew array
                 let lastMessageFromUser = chatLogNew[chatLogNew.length - 1].message;
 
-                console.log("lastMessageFromUser", lastMessageFromUser);
+                // if (modeForChatOrCodeRunning === "code"){
+                //     lastMessageFromUser += " Please give me the python code script. Please put the python code script between ``` and ```. For example, ```print('hello world')```"
+                // }
 
-                
-            // in the case where need to reset the chatbox
+            var feature_importances = {};
+            for (var i = 0; i < experiment.data.feature_importances.length; i++) {
+                feature_importances[experiment.data.feature_names[i]] = experiment.data.feature_importances[i];
+            }
 
-            console.log("lanModelReset", lanModelReset);
-
-            // setLanModelReset(false);
-
-
-            // in the case where no need to reset the chatbox
+            let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv to /data/lab/`+experiment.data._dataset_id;
             
             // jay's api 
-            fetch("openai/v1/chat/completions", {
+            await fetch("openai/v1/chat/completions", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -799,76 +746,38 @@ export default function ChatGPT({experiment}) {
                     {
                         "model": currentModel,
                         // "messages": [{"role": "user", "content": "Say this is a test!"},{"role": "user", "content": "Say this is a test!"}],
-                        "messages": [{"role": "user", "content": lastMessageFromUser}],
+                        // original
+                        "messages": [{"role": "user", "content":preSet+lastMessageFromUser}],
+
                         // "messages": [{"role": "user", "content": messages}],
                         // "temperature": 0.7
                         // "reset_context": "true"
                     }
                 )
             })
-
-             
-            
-
-                
-
-            
-            // original
-            // fetch("http://localhost:3080/", {
-              
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify({message: messages, currentModel})
-            // })
-
-
-
-
-
-            // to use current below, i need to use the below code in the openai.js file
-            // chat completions to use text-davinci-003 models
-            // router.post('/chat/completions', async (req, res) => {
-            // 	const { message, currentModel, temperature } = req.body;
-            // 	const response = await openai.createCompletion({
-            // 		model: `${currentModel}`,// "text-davinci-003",
-            // 		prompt: `${message}`,
-            // 		max_tokens: 100, 
-            // 		temperature,
-            // 	  });
-            // 	res.json({
-            // 		message: response.data.choices[0].text,
-            // 	})
-            // });
-
-            // current
-            // fetch("openai/v1/chat/completions/", {
-              
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify({message: messages, currentModel})
-            // })
-
-
-
             .then(res => res.json())
             .then(data => {
-
-                // console.log("data--best--openai", data);
-                // console.log("data--best--openai--data.choices", data.choices);
-
-                console.log("data--best--openai--data.choices.message[0]", data.choices[0].message['content']);
-
+                
                 var messageFromOpenai = data.choices[0].message['content'];
                 
+                // process the messageFromOpenai based on...
+                // check if the messageFromOpenai contains python code.
+                // if yes, then add "Do you want to run the code on Aliro?" to the messageFromOpenai in next line
+                // if no, then do nothing
+                
+                let booleanPythonCode = checkIfCode(messageFromOpenai);
 
+                if (booleanPythonCode){
+                    let extractedCodeTemp = extractCode(messageFromOpenai);
+                    // messageFromOpenai = "Running the below code on Aliro..." + "\n" + messageFromOpenai;
+                    messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
 
+                    // function for running the code on aliro
+                    // runCodeOnAliro(extractedCode);
+                    setExtractedCode({...extractedCode, code: extractedCodeTemp});
+                }
 
                 // postInChatlogs(filteredData[chatCurrentTempId-1]['_id'], data.message, "text", "gpt");
-
                 postInChatlogs(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
                 
                 // setChatLog([
@@ -878,10 +787,33 @@ export default function ChatGPT({experiment}) {
                 //     }
                 // ])
 
+
+                const regex = /```([^`]*)```/g;
+                const matches = messageFromOpenai.matchAll(regex);
+        
+                for (const match of matches) {
+                    //check if the first 6 characters are python
+                    if(match[1].substring(0,6) === "python"){
+                        //remove the first 6 characters
+                        match[1] = match[1].substring(6);
+                    }
+                    console.log("python code:",match[1]);
+            
+                }
+
+                // setChatLog([
+                //     ...chatLogNew, {
+                //         user: "assistant",
+                //         messageType: "text",
+                //         message: data.content.split(/\n/).map(line => <div key={line}>{line}</div>)
+                //     }
+                // ]);
+
                 setChatLog([
                     ...chatLogNew, {
                         user: "gpt",
-                        message: `${messageFromOpenai}`
+                        // message: `${messageFromOpenai}`
+                        message: messageFromOpenai.split(/\n/).map(line => <div key={line}>{line}</div>)
                     }
                 ])
 
@@ -889,16 +821,6 @@ export default function ChatGPT({experiment}) {
 
                 var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
                 scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
-
-
-                // let newChat =[
-                //     ...chatLogNew, {
-                //         user: "gpt",
-                //         message: `${data.message}`
-                //     }
-                // ]
-
-                // console.log("chatLogNew--best", newChat);
             })
 
 
@@ -917,57 +839,6 @@ export default function ChatGPT({experiment}) {
         // setChatInput("");
         // setChatLog(chatLogNew)
 
-
-
-
-        
-
-        // // fetch response to the api combining the chat log array of messages and
-        // // seinding it as a message to localhost:3000 as a post
-        // const messages = chatLogNew
-        //     .map((message) => message.message)
-        //     .join("\n")
-
-        // const response = await fetch("http://localhost:3080/", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     },
-        //     body: JSON.stringify({message: messages, currentModel})
-        // });
-        // const data = await response.json();
-
-
-        // postInChatlogs("641e954eb2663354ec5d62ab", data.message, "text", "gpt");
-        
-        // setChatLog([
-        //     ...chatLogNew, {
-        //         user: "gpt",
-        //         message: `${data.message}`
-        //     }
-        // ])
-
-
-
-        // var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
-        // scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
-
-
-        // let newChat =[
-        //     ...chatLogNew, {
-        //         user: "gpt",
-        //         message: `${data.message}`
-        //     }
-        // ]
-
-        // console.log("chatLogNew--best", newChat);
-
-
-
-        
-
-
-
     }
 
     function handleTemp(temp) {
@@ -984,19 +855,7 @@ export default function ChatGPT({experiment}) {
     return (
         <div className="ChatGPT">
             {
-                // <SideMenu
-                // currentModel={currentModel}
-                // setCurrentModel={setCurrentModel}
-                // models={models}
-                // setTemperature={handleTemp}
-                // temperature={temperature}
-                // clearChat={clearChat}
-                // chatInput={chatInput}
-                // chatLog={chatLog}
-                // setChatLog = {setChatLog}
-                // setChatInput={setChatInput}
-                // handleSubmit={handleSubmit}
-                // /> 
+                
                 <SideMenu
                     currentModel={currentModel} 
                     setCurrentModel={setCurrentModel} 
@@ -1024,18 +883,26 @@ export default function ChatGPT({experiment}) {
                     setCurrentExpId={setCurrentExpId}
                 />
             }
+
+            {/* chatLog, setChatInput, handleSubmit, chatInput */}
             <ChatBox
                 chatInput={chatInput}
                 chatLog={chatLog}
-                setChatLog={setChatLog}
+                // setChatLog={setChatLog}
                 setChatInput={setChatInput}
                 handleSubmit={handleSubmit}
-                experiment={experiment}/>
 
-            {/* <button onClick={()=>setNumChatBox(chatTempId + 1)} >click</button> */}
-            
-            {/* chatBoxTrigger, setChatBoxTrigger */}
-            {/* <button onClick = {()=>setChatBoxTrigger(!chatBoxTrigger)} >click</button> */}
+                // experiment={experiment}
+
+                modeForChatOrCodeRunning = {modeForChatOrCodeRunning}
+                setModeForChatOrCodeRunning = {setModeForChatOrCodeRunning}
+
+                extractedCode = {extractedCode}
+
+                
+            />
+
+
         </div>
     );
 }
