@@ -214,7 +214,7 @@ function Navbar({ preferences }) {
   const [openaiApiState, setopenaiApiState] = useState(0);
 
 
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
 
   const checkConnectionOpenAI = () => {
     // POST /openai/v1/connections
@@ -251,12 +251,30 @@ function Navbar({ preferences }) {
 
   }
 
+  const resetClassNameForResults = (e) => {
+    // console.log("resetClassNameForResults",e.target.className)
+
+    // find all elements with className "chartschat"
+    var chartschat = document.getElementsByClassName("chartschat");
+
+    // second child of chartschat[0]
+    var secondChild = chartschat[0].children[1];
+    // className of secondChild
+    var className = secondChild.className;
+
+    // console.log("secondChild-className", className)
+    if (className!="ui stackable three column grid")
+    {
+      chartschat[0].children[1].className = "ui stackable three column grid";
+    }
+
+  }
+
   const checkConnShowGPT = (e) => {
-
-    boldUnderline();
-
     // console.log("checkConnShowGPT")
 
+    resetClassNameForResults(e);
+    boldUnderline();
     checkConnectionOpenAI();
 
     console.log('openaiApiState',openaiApiState);
@@ -298,7 +316,7 @@ function Navbar({ preferences }) {
 
 
 // This function is used to make the last element in chatbox tap bold and underlined.
-function boldUnderline() {
+ const boldUnderline = () => {
 
   //get div with class name sidemenu
   var sidemenu = document.getElementsByClassName("chatboxtap");
@@ -316,11 +334,6 @@ function boldUnderline() {
 
   sidemenu[sidemenu.length-1].style.fontWeight = "bold";
   // sidemenu[sidemenu.length-1].style.textDecoration = "underline";
-  
-  
-
-
-
 
 }
 

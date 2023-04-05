@@ -681,6 +681,8 @@ text{
 
 .c3-legend-item {
   cursor:default !important;
+  /* not clicable */
+  /* pointer-events: none !important; */
 }
 
 /* .c3 line {
@@ -779,6 +781,10 @@ text{
   cursor: pointer;
 }
 
+#newchatbutton{
+  margin-right : 10px;
+}
+
 
 .side-menu-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
@@ -817,6 +823,7 @@ text{
 /* original version of chat submit window location */
 .chat-input-holder {
   padding: 24px;
+  /* padding: 12px; */
   position: absolute;
   bottom: 0;
   left: 0;
@@ -1632,6 +1639,8 @@ height: 100vh;
 
 .chartsbaseleft{
 /* background: #ef9a9a; */
+overflow-y: scroll;
+
 }
 
 .chatbaseright {
@@ -1639,6 +1648,7 @@ height: 100vh;
 flex: 1; /* adjust automatically */
 min-width: 0; /* allow flexing beyond auto width */
 overflow: hidden; /* hide overflow on small width */
+overflow-y: scroll;
 }
 
 .slider {
@@ -1704,9 +1714,9 @@ cursor: pointer;
 .side-menu-button-trash {
   padding: 12px;
   /* border: 1px solid white; */
-  border-top: 1px solid rgb(0, 0, 0) !important;
-  border-left: 1px solid rgb(0, 0, 0)!important;
-  border-right: 1px solid rgb(0, 0, 0)!important;
+  border-top: 1px solid rgb(0, 0, 0, 0)!important;
+  border-left: 1px solid rgb(0, 0, 0, 0)!important;
+  border-right: 1px solid rgb(0, 0, 0, 0)!important;
 
   /* border-radius: 5px; */
   border-top-right-radius: 5px;
@@ -1714,4 +1724,67 @@ cursor: pointer;
   text-align: left;
   transition: ease 0.25s all;
   cursor: pointer;
+}
+
+
+
+
+
+
+.toggle-button-chat-code{
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+
+  /* padding-top: 5px; */
+  font: inherit;
+  /* cursor: pointer; */
+  outline: inherit;
+  background: #2185D0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 5px 12px; */
+  font-size: 14px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  /* make align with form left */
+
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+
+
+.togglechatcode {
+  background: none;
+  color: inherit;
+  border: none;
+
+  /* padding-top: 5px; */
+  font: inherit;
+  /* cursor: pointer; */
+  outline: inherit;
+  background: #ae5211;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 5px 12px; */
+  font-size: 14px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  /* make align with form left */
+
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+
+}
+.togglechatcode:hover {
+  background: #066d55;
 }
