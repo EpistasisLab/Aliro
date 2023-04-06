@@ -1,8 +1,6 @@
 const express = require('express');
-const chat = require('../models/chat');
 const router = express.Router();
 const Chat = require('../models/chat');
-const chatlog = require('../models/chatlog');
 const ChatLog = require('../models/chatlog');
 const db = require('../dbgoose').db;
 const { 
