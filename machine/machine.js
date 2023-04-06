@@ -452,13 +452,11 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 // run code execution
 app.post("/code/run", jsonParser, (req, res) => {
 
-    console.log('in machine:', req.body);
-
     let args = [
         'machine/pyutils/run_code.py',
         '--code', req.body.src_code,
-        '--file_id', req.body.file_id,
-        '--experiment', req.body.experiment_id
+        '--dataset_file_id', req.body.dataset_file_id,
+        '--experiment_id', req.body.experiment_id
     ]
 
     let pyProc = spawn('python', args, { cwd: process.env.PROJECT_ROOT });
@@ -471,14 +469,13 @@ app.post("/code/run", jsonParser, (req, res) => {
     });
 
     pyProc.stderr.on('data', (data) => {
+        // console.log(`stderr: ${data}`);
         try {
             result.exec_results = JSON.parse(data.toString());
         }
         catch (e) {
             console.log(e);
         }
-        // const jsonStr = JSON.stringify(result.exec_results);
-        // result.exec_results = jsonStr;
     });
 
     pyProc.on('close', (code) => {

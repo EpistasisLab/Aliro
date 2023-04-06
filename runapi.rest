@@ -1,11 +1,9 @@
 ###
 
-POST http://localhost:5080/runapi/v1/runs
+POST http://localhost:5080/runapi/v1/runs/experiment/642ee642d89a5400464abcc2
 Content-Type: application/json
 
 {
-  "src_code": "import numpy as np\ncol = df[\"sepal-length\"]\nz_scores = np.abs((col - col.mean()) / col.std())\nthreshold = 3\ncleaned_df = df[z_scores <= threshold]\ncleaned_df.to_csv(\"/appsrc/machine/code_runs/1234/cleaned_data.csv\", index=False)\n",
-  # "src_code": "print(df.head(10))",
-  "dataset_id": "642e165995cc6c004a85d429",
-  "experiment_id": "1234"
+  "src_code": "# Application 1: cross validation of fitted model on a new dataset\ntesting_features = df.drop(\"target\", axis=1).values\ntesting_target = df['target'].values\n# Get holdout score for fitted model\nprint(\"Holdout score: \", end=\"\")\nprint(model.score(testing_features, testing_target))",
+  "dataset_id": "642ee639d89a5400464abcc1"
 }

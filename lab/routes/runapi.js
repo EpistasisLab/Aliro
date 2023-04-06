@@ -5,35 +5,33 @@ const fs = require('fs');
 const Machine = require('../models/machine');
 const fetch = require('isomorphic-fetch');
 const db = require('../dbgoose').db;
-const { getDatasetById } = require('../runapiutils');
+const { 
+    getDatasetById,
+} = require('../runapiutils');
 
-router.post('/runs', getDatasetById, async (req, res) => {
+
+router.post('/runs/experiment/:id', getDatasetById, async (req, res, next) => {
     if (req.body.src_code == null) {
         return res.status(400).json({ message: 'No src_code provided' });
     }
-    if (req.body.dataset_id == null) {
-        return res.status(400).json({ message: 'No dataset_id provided' });
-    }
-    if (req.body.experiment_id == null) {
-        return res.status(400).json({ message: 'No experiment_id provided' });
-    }
-
-    // console.log('in lab:', res.dataset);
 
     let request = {
         src_code: req.body.src_code,
-        experiment_id: req.body.experiment_id,
-        file_id: res.dataset.files[0]._id
+        experiment_id: req.params.id
     };
 
+    if (req.body.dataset_id != null) {
+        request.dataset_file_id = res.dataset.files[0]._id;
+    }
+
     // make folder if not available yet:
-    console.log('CODE_RUN_PATH:', process.env.CODE_RUN_PATH);
-    let tmppath = path.join(process.env.CODE_RUN_PATH, req.body.experiment_id);
+    let tmppath = path.join(process.env.CODE_RUN_PATH, req.params.id);
     // make tmp folder if it is not available
-    // if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
     if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, { recursive: true });
 
     // find machines that could handle the project
+    // this may need revision, submitting experiments checks the machine capacity
+    // but the capacity is tied to each algorithm. Not sure how to handle this yet.
     let machines;
     try {
         machines = await Machine.find({}, { address: 1 });
