@@ -30,11 +30,27 @@ export default function SideMenu({
     currentExpId,
     setCurrentExpId,
 
+    tapTitles, 
+    setTapTitles,
+    setTapTitlesFunc,
+
+    getChatMessageByExperimentId,
+    getSpecificChatbyChatId,
+    getAllChatsFromDB,
+    
+    postChats,
+    postInChatlogsToDB,
+
+    deleteSpecificChat,
+    patchSpecificChat
+
+
 }
     
 ) {
 
     useEffect(() => {
+        console.log("useEffect-SideMenu")
 
         // get experiment id from url
         let url = window.location.href;
@@ -42,566 +58,789 @@ export default function SideMenu({
         let experimentID = urlSplit[urlSplit.length - 1];
 
         
+
         checkNumChatBox();
+
+
+        
         setBoldUnderlineAndInitTraIc();
         setCurrentExpId(experimentID);
 
-    }, 
+        // //set tapTitles
+        setTapTitlesFunc();
+
+
+        
+
+        
+
+    },
     [window.location.href, numChatBox]
-    // [window.location.href]
+
+
     
     );
 
 
+//    function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
+
+//         // get current url
+//         let url = window.location.href;
+//         let urlSplit = url.split('/');
+//         let experimentID = urlSplit[urlSplit.length - 1];
+
+
+//         // GET http://localhost:5080/chatapi/v1/chats
+//        fetch(`/chatapi/v1/chats/experiment/${experimentID}`, {
+//             method: "GET",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             }
+//         })
+//             .then(res => res.json())
+//             .then(data => {
+                
+
+//                 // filter data based on experiment id
+//                 let dataFiltered = data.filter(function (el) {
+//                     return el._experiment_id == experimentID;
+//                 });
+
+//                 data=dataFiltered;
+
+//                 console.log("clickedChatBoxNum",clickedChatBoxNum)
+
+//                 // console.log("data[clickedChatBoxNum]", data[clickedChatBoxNum])
+
+//                 // when user click + + New Chat button
+//                 if (clickedChatBoxNum == "+ New Chat" ) {
+                    
+//                     // POST http://localhost:5080/chatapi/v1/chats
+//                     // Content-Type: application/json
+
+//                     // {
+//                     //     "title" : "`${experimentID}`",
+//                     //     "_experiment_id": "641e7a67c3386b002e521705",
+//                     //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
+//                     // }
+
+//                     // current url 
+//                     let url = window.location.href;
+//                     let urlSplit = url.split('/');
+//                     let experimentID = urlSplit[urlSplit.length - 1];
+
+
+//                     fetch("/chatapi/v1/chats", {
+//                         method: "POST",
+//                         headers: {
+//                             "Content-Type": "application/json"
+//                         },
+//                         body: JSON.stringify({
+//                             "title": "ChatBox",
+//                             "_experiment_id": `${experimentID}`,
+//                             "_dataset_id": `${experimentID}`
+//                         })
+//                     })
+//                     .then(res => res.json())
+//                     .then(data => {
+//                         // console.log("data-newchat", data);
+
+
+//                         // POST http://localhost:5080/chatapi/v1/chatlogs
+//                         // Content-Type: application/json
+
+//                         // {
+//                         //     "_chat_id" : "641f26a1b2663354ec5d634f",
+//                         //     "message" : "Hello there from my desk!!!!!!b",
+//                         //     "message_type" : "text",
+//                         //     "who" : "user"
+//                         // }
+
+//                         fetch("/chatapi/v1/chatlogs", {
+//                             method: "POST",
+//                             headers: {
+//                                 "Content-Type": "application/json"
+//                             },
+//                             body: JSON.stringify({
+//                                 "_chat_id": `${data['_id']}`,
+//                                 "message": "How can I help you today?",
+//                                 "message_type": "text",
+//                                 "who": "gpt"
+//                             })
+//                         })
 
 
 
+//                         let chatLogNew = [
+//                             {
+//                                 user: "gpt",
+//                                 message: "How can I help you today?"
+//                             }
+//                         ]
 
-   function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
+//                         setChatLog(chatLogNew);
 
-        // get current url
+//                     }) 
+//                     .catch(err => {
+//                         console.log("err", err);
+//                     }
+//                     )
+
+
+                    
+//                 }
+//                 // when user click existing chat button
+//                 else{
+
+//                     // Get existing chatlogs
+//                     // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
+
+
+//                     console.log("data--getAllChatsAndGetSpecificChat", data)
+//                     console.log("data[clickedChatBoxNum]['_id']", data[clickedChatBoxNum]['_id'])
+
+
+//                     fetch(`/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}`, {
+//                         method: "GET",
+//                         headers: {
+//                             "Content-Type": "application/json"
+//                         }
+//                     })
+//                     .then(res => res.json())
+//                     .then(data => {
+//                         console.log("data['chatlogs']", data['chatlogs']);
+
+//                         // let chatLogNew = [
+//                         //     {
+//                         //         user: "gpt",
+//                         //         message: "How can I help you today?"
+//                         //     }
+//                         // ]
+
+//                         let chatLogNew = []
+            
+                        
+//                         for (let i = 0; i < data["chatlogs"].length; i++) {
+            
+//                             // chatLogNew = [
+//                             //     ...chatLogNew, {
+//                             //         user: data["chatlogs"][i]["who"],
+//                             //         message: data["chatlogs"][i]["message"]
+//                             //     }
+//                             // ]
+
+//                             if (data["chatlogs"][i]["who"]=="user"){
+//                                 chatLogNew = [
+//                                     ...chatLogNew, {
+//                                         user: data["chatlogs"][i]["who"],
+//                                         message: data["chatlogs"][i]["message"]
+//                                     }
+//                                 ]
+//                             }
+    
+//                             else if (data["chatlogs"][i]["who"]=="gpt"){
+//                                 chatLogNew =[
+//                                     ...chatLogNew, {
+//                                         user: data["chatlogs"][i]["who"],
+//                                         // message: `${messageFromOpenai}`
+//                                         message: data["chatlogs"][i]["message"].split(/\n/).map(line => <div key={line}>{line}</div>)
+//                                     }
+//                                 ]
+//                             }
+            
+//                         }
+                        
+//                         setChatLog(chatLogNew);
+       
+//                     })
+//                     .catch(err => {
+//                         console.log("err--getAllChatsAndGetSpecificChat-sidemenu-in", err);
+//                     });
+//                 }
+
+//             })
+//             .catch(err => {
+//                 console.log("err--getAllChatsAndGetSpecificChat-sidemenu-out", err);
+//             });
+    
+//     }
+
+
+
+async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
+
+    // get current url
+    let url = window.location.href;
+    let urlSplit = url.split('/');
+    let experimentID = urlSplit[urlSplit.length - 1];
+
+    let data = await getChatMessageByExperimentId(experimentID)
+
+
+            
+
+    // filter data based on experiment id
+    let dataFiltered = data.filter(function (el) {
+        return el._experiment_id == experimentID;
+    });
+
+    data=dataFiltered;
+
+    console.log("clickedChatBoxNum",clickedChatBoxNum)
+
+    // console.log("data[clickedChatBoxNum]", data[clickedChatBoxNum])
+
+    // when user click + + New Chat button
+    if (clickedChatBoxNum == "+ New Chat" ) {
+        
+        // POST http://localhost:5080/chatapi/v1/chats
+        // Content-Type: application/json
+
+        // {
+        //     "title" : "`${experimentID}`",
+        //     "_experiment_id": "641e7a67c3386b002e521705",
+        //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
+        // }
+
+        // current url 
         let url = window.location.href;
         let urlSplit = url.split('/');
         let experimentID = urlSplit[urlSplit.length - 1];
 
+        let data = await postChats(experimentID)
+        
 
-        // GET http://localhost:5080/chatapi/v1/chats
-       fetch(`/chatapi/v1/chats/experiment/${experimentID}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
+        // POST http://localhost:5080/chatapi/v1/chatlogs
+        // Content-Type: application/json
+
+        // {
+        //     "_chat_id" : "641f26a1b2663354ec5d634f",
+        //     "message" : "Hello there from my desk!!!!!!b",
+        //     "message_type" : "text",
+        //     "who" : "user"
+        // }
+
+        
+        await postInChatlogsToDB(data['_id'], "How can I help you today?", "text", "gpt")
+
+
+
+        let chatLogNew = [
+            {
+                user: "gpt",
+                message: "How can I help you today?"
+            }
+        ]
+
+        setChatLog(chatLogNew);
+
+
+        
+    }
+    // when user click existing chat button
+    else{
+
+        // Get existing chatlogs
+        // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
+
+
+        console.log("data--getAllChatsAndGetSpecificChat", data)
+        console.log("data[clickedChatBoxNum]['_id']", data[clickedChatBoxNum]['_id'])
+
+        data = await getSpecificChatbyChatId(data[clickedChatBoxNum]['_id'])
+
+
+        console.log("data['chatlogs']", data['chatlogs']);
+
+        // let chatLogNew = [
+        //     {
+        //         user: "gpt",
+        //         message: "How can I help you today?"
+        //     }
+        // ]
+
+        let chatLogNew = []
+
+        
+        for (let i = 0; i < data["chatlogs"].length; i++) {
+
+            // chatLogNew = [
+            //     ...chatLogNew, {
+            //         user: data["chatlogs"][i]["who"],
+            //         message: data["chatlogs"][i]["message"]
+            //     }
+            // ]
+
+            if (data["chatlogs"][i]["who"]=="user"){
+                chatLogNew = [
+                    ...chatLogNew, {
+                        user: data["chatlogs"][i]["who"],
+                        message: data["chatlogs"][i]["message"]
+                    }
+                ]
+            }
+
+            else if (data["chatlogs"][i]["who"]=="gpt"){
+                chatLogNew =[
+                    ...chatLogNew, {
+                        user: data["chatlogs"][i]["who"],
+                        // message: `${messageFromOpenai}`
+                        message: data["chatlogs"][i]["message"].split(/\n/).map(line => <div key={line}>{line}</div>)
+                    }
+                ]
+            }
+
+        }
+        
+        setChatLog(chatLogNew);
+
+
+    }
+
+
+    
+
+}
+
+async function checkClickedChatboxTab(e) {
+
+
+    // 
+    // first, clear the context of the chat completions endpoint. (refer to the jay's message on slack)
+        // in the openai api, is there a way to clear the context of the chat completions endpoint?
+        // Yes, in the OpenAI API, you can clear the context of the chat completions endpoint by sending an empty string as the value for the context parameter.
+        // For example, if you're using the Python client, you can make a request to the completions method with an empty string as the context parameter like this:
+        
+            
+            // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] == undefined,
+            // clear the context of the chat completions endpoint. And then, post with "How can I help you today?" to the openai api (chat/completions).
+    
+    // second, feed current chatlog of clicked chatbox to the chat completions endpoint. 
+
+            
+            // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] != undefined, // clear the context of the chat completions endpoint. And then, post with chatlog of clicked chatbox to the openai api (chat/completions).
+
+    console.log("checkClickedChatboxTab-e.target.childNodes",e.target.childNodes)
+
+    // length
+    console.log("checkClickedChatboxTab-e.target.childNodes.length",e.target.childNodes.length)
+
+    
+    if (e.target.childNodes[0].nodeValue === '+ New Chat') {
+        console.log("e.target.childNodes[0].nodeValue is + New Chat")
+
+        // this is the number of chat boxes in the result page
+        // numChatBox, setNumChatBox
+
+        var countClickedChatBoxID = numChatBox+1
+
+        // setNumChatBox(countClickedChatBoxID)
+            
+    }
+    else{
+
+        console.log("e.target.childNodes[0].nodeValue is not + New Chat")
+        var siblings = e.target.parentNode.parentNode.childNodes;
+        console.log("siblings",siblings)
+
+        for (var i = 1; i < siblings.length-1; i++) {
+            console.log("siblings[i]",siblings[i])
+
+            if (e.target.parentNode === siblings[i]) {
+                siblings[i].style.fontWeight = "bold";
+                // siblings[i].style.textDecoration = "underline";
+            }
+            else{
+                siblings[i].style.fontWeight = "normal";
+                // siblings[i].style.textDecoration = "none";
+            }
+        }
+
+        // var currentClickedChatBoxID = parseInt(e.target.childNodes[1].nodeValue);
+
+        var currentClickedChatBoxID = parseInt(e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue);
+        console.log("currentClickedChatBoxID",currentClickedChatBoxID)
+
+    
+        // Add 1 to currentClickedChatBoxID
+        var countClickedChatBoxID = currentClickedChatBoxID + 1;
+        console.log("countClickedChatBoxID",countClickedChatBoxID)
+
+        
+    } 
+    // first chatbox is 1, second chatbox is 2, third chatbox is 3, etc.
+    setChatCurrentTempId(countClickedChatBoxID)
+
+    // chatbox tap
+    if (e.target.childNodes.length == 3){
+        var clickedChatBoxNum = e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue;
+    }
+
+    // + New Chat
+    else if (e.target.childNodes.length == 1){
+
+        // console.log("e.target.childNodes[1].nodeValue", e.target.childNodes[1].nodeValue)
+
+        var clickedChatBoxNum = e.target.childNodes[0].nodeValue;
+
+    }
+
+    // console.log("e.target.childNodes[1]-getAllChat",e.target.childNodes[1])
+
+    // console.log("e.target.childNodes-getAllChat",e.target.childNodes)
+    
+    // count of e.target.childNodes
+
+    // console.log("e.target.childNodes.length-getAllChat",e.target.childNodes.length)
+    
+    
+    // console.log("e.target.childNodes-getAllChat[2]",e.target.childNodes[2])
+
+    // console.log("e.target.childNodes[2].childNodes[0].childNodes[1]",e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue)
+
+    
+
+    
+
+    // getAllChatsAndGetSpecificChat(clickedChatBoxNum, setChatLog);
+    getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog);
+
+    // make lanModelReset true
+    setLanModelReset(lanModelReset=true)
+}
+
+function clearAllTrashIcons (nodes) {
+
+    for (var i = 1; i < nodes.childNodes.length-1; i++) {
+        nodes.childNodes[i].childNodes[1].style.display = "none";
+        nodes.childNodes[i].childNodes[1].innerHTML = "🗑️";
+    }
+}
+
+
+// This function is to check if the number of chat boxes is equal to or greater than the limit, and if so, make the + New Chat button not clickable
+function checkNumChatBox() {
+    
+    if (numChatBox + 1 > limitNumChatBox) {
+        
+        document.getElementById("newchatbutton").style.pointerEvents = "none";
+    }
+    else{
+        document.getElementById("newchatbutton").style.pointerEvents = "auto";
+    }
+}
+
+
+function changeTrashToCheck(node, reverse) {
+    if (reverse==true){
+        node.innerHTML = "🗑️";
+        // console.log("node.innerHTML",node.innerHTML)
+    }
+    else{
+        node.innerHTML = "✔︎";
+        // console.log("node.innerHTML",node.innerHTML)
+    }
+}
+
+async function removeCorChat(e) {
+
+    if(e.target.parentNode.childNodes[1].innerHTML == "✔︎")
+    {
+        
+        
+
+        console.log("e.target.parentNode.childNodes[0]",e.target.parentNode.childNodes[0])
+
+        console.log("e.target.parentNode.childNodes[0].childNodes[0]",e.target.parentNode.childNodes[0].childNodes[0])
+
+        console.log("e.target.parentNode.childNodes[0].childNodes[1]",e.target.parentNode.childNodes[0].childNodes[1])
+
+        console.log("e.target.parentNode.childNodes[0].childNodes[2]",e.target.parentNode.childNodes[0].childNodes[2])
+
+        
+
+        if (e.target.parentNode.childNodes[0].childNodes.length === 2){
+
+            // var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[1].childNodes[0].textContent;
+
+                alert("Error: You cannot delete the chatbox tap. Please name the chatbox tap first.")
+
+            //  Uncaught TypeError: Cannot read properties of undefined (reading 'split')
+
+            throw new Error("Error: You cannot delete the chatbox tap. Please name the chatbox tap first.")
+
+            // receive the error message in the console
+
+        }
+
+        else if(e.target.parentNode.childNodes[0].childNodes.length === 3){
+
+            console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0]",e.target.parentNode.childNodes[0].childNodes[2].childNodes[0])
+
+            var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent;
+        }
+
+
+
+        
+
+
+        console.log("textClickedChatBox",textClickedChatBox)
+
+        // parse textClickedChatBox with _
+        var textClickedChatBoxIdString = textClickedChatBox.split("_")[1];
+
+        // convert textClickedChatBoxIdString to integer
+        var textClickedChatBoxId = parseInt(textClickedChatBoxIdString);
+
+        // remove the clicked chatbox tap from DB
+        // To do this, first get the experiment id from the url
+        // After that, get the all chats from the DB using the experiment id
+        // Then, remove the chat using the textClickedChatBox
+        
+        let data = await getAllChatsFromDB()
+
+
+
+        // get the experiment id from the url
+        let url = window.location.href;
+        let urlSplit = url.split("/");
+        let experimentId = urlSplit[urlSplit.length - 1];
+
+        // filter out the chats that has the same experiment id 
+        let filteredChats = data.map((chat) => {
+        
+        if (chat['_experiment_id'] === experimentId) {
+            return chat;
+            }
+            else {
+                return null;
             }
         })
-            .then(res => res.json())
-            .then(data => {
-                
 
-                // filter data based on experiment id
-                let dataFiltered = data.filter(function (el) {
-                    return el._experiment_id == experimentID;
-                });
+        // remove null from filteredChats
+        let filteredChatsWithoutNull = filteredChats.filter((chat) => {
+            return chat !== null;
+        })
 
-                data=dataFiltered;
-
-                console.log("data[clickedChatBoxNum]", data[clickedChatBoxNum])
-
-                if (data[clickedChatBoxNum] == undefined ) {
-                    
-                    // POST http://localhost:5080/chatapi/v1/chats
-                    // Content-Type: application/json
-
-                    // {
-                    //     "title" : "`${experimentID}`",
-                    //     "_experiment_id": "641e7a67c3386b002e521705",
-                    //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
-                    // }
-
-                    // current url 
-                    let url = window.location.href;
-                    let urlSplit = url.split('/');
-                    let experimentID = urlSplit[urlSplit.length - 1];
-
-
-                    fetch("/chatapi/v1/chats", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            "title": `${experimentID}`,
-                            "_experiment_id": `${experimentID}`,
-                            "_dataset_id": `${experimentID}`
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        // console.log("data-newchat", data);
-
-
-                        // POST http://localhost:5080/chatapi/v1/chatlogs
-                        // Content-Type: application/json
-
-                        // {
-                        //     "_chat_id" : "641f26a1b2663354ec5d634f",
-                        //     "message" : "Hello there from my desk!!!!!!b",
-                        //     "message_type" : "text",
-                        //     "who" : "user"
-                        // }
-
-                        fetch("/chatapi/v1/chatlogs", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                "_chat_id": `${data['_id']}`,
-                                "message": "How can I help you today?",
-                                "message_type": "text",
-                                "who": "gpt"
-                            })
-                        })
+        // DELETE /chatapi/v1/chats/6421ebd85dc44d80542362c4
 
 
 
-                        let chatLogNew = [
-                            {
-                                user: "gpt",
-                                message: "How can I help you today?"
-                            }
-                        ]
-
-                        setChatLog(chatLogNew);
-
-                    }) 
-                    .catch(err => {
-                        console.log("err", err);
-                    }
-                    )
 
 
-                    
+    // remove the chat from DB
+    await deleteSpecificChat(filteredChatsWithoutNull[textClickedChatBoxId]['_id'])
+
+
+    filteredChatsWithoutNull.splice(textClickedChatBoxId,1)
+
+    if (filteredChatsWithoutNull.length>0)
+    {
+
+        let data = await getSpecificChatbyChatId(filteredChatsWithoutNull[filteredChatsWithoutNull.length-1]['_id'])
+
+        console.log("data-get",data)
+
+        let chatLogNew = [];
+
+        for (let i = 0; i < data["chatlogs"].length; i++) {
+
+            chatLogNew = [
+                ...chatLogNew, {
+                    user: data["chatlogs"][i]["who"],
+                    message: data["chatlogs"][i]["message"]
                 }
-                else{
+            ]
 
-                    // Get existing chatlogs
-                    // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
-
-                    fetch(`/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}`, {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log("data['chatlogs']", data['chatlogs']);
-
-                        // let chatLogNew = [
-                        //     {
-                        //         user: "gpt",
-                        //         message: "How can I help you today?"
-                        //     }
-                        // ]
-
-                        let chatLogNew = []
-            
-                        
-                        for (let i = 0; i < data["chatlogs"].length; i++) {
-            
-                            // chatLogNew = [
-                            //     ...chatLogNew, {
-                            //         user: data["chatlogs"][i]["who"],
-                            //         message: data["chatlogs"][i]["message"]
-                            //     }
-                            // ]
-
-                            if (data["chatlogs"][i]["who"]=="user"){
-                                chatLogNew = [
-                                    ...chatLogNew, {
-                                        user: data["chatlogs"][i]["who"],
-                                        message: data["chatlogs"][i]["message"]
-                                    }
-                                ]
-                            }
-    
-                            else if (data["chatlogs"][i]["who"]=="gpt"){
-                                chatLogNew =[
-                                    ...chatLogNew, {
-                                        user: data["chatlogs"][i]["who"],
-                                        // message: `${messageFromOpenai}`
-                                        message: data["chatlogs"][i]["message"].split(/\n/).map(line => <div key={line}>{line}</div>)
-                                    }
-                                ]
-                            }
-            
-                        }
-                        
-                        setChatLog(chatLogNew);
-       
-                    })
-                    .catch(err => {
-                        console.log("err--getAllChatsAndGetSpecificChat-sidemenu-in", err);
-                    });
-                }
-
-            })
-            .catch(err => {
-                console.log("err--getAllChatsAndGetSpecificChat-sidemenu-out", err);
-            });
-    
-    }
-
-
-    async function checkClickedChatboxTab(e) {
-
-
-        // 
-        // first, clear the context of the chat completions endpoint. (refer to the jay's message on slack)
-            // in the openai api, is there a way to clear the context of the chat completions endpoint?
-            // Yes, in the OpenAI API, you can clear the context of the chat completions endpoint by sending an empty string as the value for the context parameter.
-            // For example, if you're using the Python client, you can make a request to the completions method with an empty string as the context parameter like this:
-            
-                
-                // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] == undefined,
-                // clear the context of the chat completions endpoint. And then, post with "How can I help you today?" to the openai api (chat/completions).
-        
-        // second, feed current chatlog of clicked chatbox to the chat completions endpoint. 
-
-                
-                // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] != undefined, // clear the context of the chat completions endpoint. And then, post with chatlog of clicked chatbox to the openai api (chat/completions).
-
-        
-        if (e.target.childNodes[1].nodeValue === 'New Chat') {
-            console.log("e.target.childNodes[1].nodeValue is New Chat")
-
-            // this is the number of chat boxes in the result page
-            // numChatBox, setNumChatBox
-
-            var countClickedChatBoxID = numChatBox+1
-
-            // setNumChatBox(countClickedChatBoxID)
-             
         }
-        else{
+        console.log("chatLogNew-clicked",chatLogNew)
 
+        setChatLog(chatLogNew);
+
+        setNumChatBox(numChatBox-1)
+        setChatCurrentTempId(numChatBox-1)
+
+    }
+    else
+    {   
+        // When filteredChatsWithoutNull.length == 0, if user remove the chatbox_0, it will reset the chatbox_0 with How can I help you today? by gpt. And this should be posted to the DB with the experimentId.
+
+        let data = await postChats(experimentId)
+
+        
+
+        if (data['chatlogs'].length === 0){
+
+            // POST http://localhost:5080/chatapi/v1/chatlogs
+            // Content-Type: application/json
+            // {
+            //     "_chat_id" : "642076d7262c19d0be23448b",
+            //     "message" : "How are you?",
+            //     "message_type" : "text",
+            //     "who" : "gpt"
+            // }
             
-            var siblings = e.target.parentNode.parentNode.childNodes;
+            await postInChatlogsToDB(data._id, "How can I help you today?", "text", "gpt")
+        }
 
-            for (var i = 1; i < siblings.length-1; i++) {
-                console.log("siblings[i]",siblings[i])
-
-                if (e.target.parentNode === siblings[i]) {
-                    siblings[i].style.fontWeight = "bold";
-                    // siblings[i].style.textDecoration = "underline";
-                }
-                else{
-                    siblings[i].style.fontWeight = "normal";
-                    // siblings[i].style.textDecoration = "none";
-                }
+        
+        
+        let chatLogNew = [
+            {
+                user: "gpt",
+                message: "How can I help you today?"
             }
+        ]
+        setChatLog(chatLogNew);
+        setNumChatBox(1)
+        setChatCurrentTempId(1)
 
-            var currentClickedChatBoxID = parseInt(e.target.childNodes[1].nodeValue);
-            console.log("currentClickedChatBoxID",currentClickedChatBoxID)
+        setTapTitlesFunc();
 
-        
-            // Add 1 to currentClickedChatBoxID
-            var countClickedChatBoxID = currentClickedChatBoxID + 1;
-            console.log("countClickedChatBoxID",countClickedChatBoxID)
-
-            
-        } 
-        // first chatbox is 1, second chatbox is 2, third chatbox is 3, etc.
-        setChatCurrentTempId(countClickedChatBoxID)
-
-        var clickedChatBoxNum = e
-            .target
-            .childNodes[1]
-            .nodeValue;
-        // getAllChatsAndGetSpecificChat(clickedChatBoxNum, setChatLog);
-        getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog);
-
-        // make lanModelReset true
-        setLanModelReset(lanModelReset=true)
-    }
-
-    function clearAllTrashIcons (nodes) {
-
-        for (var i = 1; i < nodes.childNodes.length-1; i++) {
-            nodes.childNodes[i].childNodes[1].style.display = "none";
-            nodes.childNodes[i].childNodes[1].innerHTML = "🗑️";
-        }
     }
 
 
-
-
-    // This function is to check if the number of chat boxes is equal to or greater than the limit, and if so, make the new chat button not clickable
-    function checkNumChatBox() {
-        
-        if (numChatBox + 1 > limitNumChatBox) {
-            
-            document.getElementById("newchatbutton").style.pointerEvents = "none";
-        }
-        else{
-            document.getElementById("newchatbutton").style.pointerEvents = "auto";
-        }
-    }
-
-
-    function changeTrashToCheck(node, reverse) {
-        if (reverse==true){
-            node.innerHTML = "🗑️";
-            // console.log("node.innerHTML",node.innerHTML)
-        }
-        else{
-            node.innerHTML = "✔︎";
-            console.log("node.innerHTML",node.innerHTML)
-        }
-    }
-
-    function removeCorChat(e) {
-
-        if(e.target.parentNode.childNodes[1].innerHTML == "✔︎")
-        {
-           
-            var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent;
-
-            console.log("textClickedChatBox",textClickedChatBox)
-
-            // parse textClickedChatBox with _
-            var textClickedChatBoxIdString = textClickedChatBox.split("_")[1];
-
-            // convert textClickedChatBoxIdString to integer
-            var textClickedChatBoxId = parseInt(textClickedChatBoxIdString);
-
-            // remove the clicked chatbox tap from DB
-            // To do this, first get the experiment id from the url
-            // After that, get the all chats from the DB using the experiment id
-            // Then, remove the chat using the textClickedChatBox
-            fetch("/chatapi/v1/chats", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                })
-                .then(res => res.json())
-                .then(data => {
-                 
     
-                    // get the experiment id from the url
-                    let url = window.location.href;
-                    let urlSplit = url.split("/");
-                    let experimentId = urlSplit[urlSplit.length - 1];
 
-                    // filter out the chats that has the same experiment id 
-                let filteredChats = data.map((chat) => {
-                    
-                    if (chat['_experiment_id'] === experimentId) {
-                        return chat;
-                    }
-                    else {
-                        return null;
-                    }
-                })
+            
+        
 
-                // remove null from filteredChats
-                let filteredChatsWithoutNull = filteredChats.filter((chat) => {
-                    return chat !== null;
-                })
 
-                // DELETE /chatapi/v1/chats/6421ebd85dc44d80542362c4
 
-                // remove the chat from DB
-                fetch("/chatapi/v1/chats/" + filteredChatsWithoutNull[textClickedChatBoxId]['_id'], {
-                    method: "DELETE",
-                    headers: {
-                    "Content-Type": "application/json"
-                },
-                })
-                .then(res => res.json())
-                .then(data => {
-                   
-                    filteredChatsWithoutNull.splice(textClickedChatBoxId,1)
 
-                    if (filteredChatsWithoutNull.length>0)
-                    {
-                        fetch("/chatapi/v1/chats/" + filteredChatsWithoutNull[filteredChatsWithoutNull.length-1]['_id'], {
-                            method: "GET",
-                            headers: {
-                            "Content-Type": "application/json"
-                        },
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log("data-get",data)
 
-                            let chatLogNew = [];
 
-                            for (let i = 0; i < data["chatlogs"].length; i++) {
-                
-                                chatLogNew = [
-                                    ...chatLogNew, {
-                                        user: data["chatlogs"][i]["who"],
-                                        message: data["chatlogs"][i]["message"]
-                                    }
-                                ]
-                
-                            }
-                            console.log("chatLogNew-clicked",chatLogNew)
+        // if the chatbox tap was only one, when user remove the chat, it will remove from the DB, but the chatbox will show "How can I help you today?"
 
-                            setChatLog(chatLogNew);
+        // if the chatbox tap was more than one, when user remove the chat, it will remove from the DB, and the chatbox will show the left chatbox tap or the right chatbox tap.
 
-                            setNumChatBox(numChatBox-1)
-                            setChatCurrentTempId(numChatBox-1)
 
-                        })
-                        .catch(err => {
-                            console.log("err-get",err)
-                        })
-                    }
-                    else
-                    {   
-                        // When filteredChatsWithoutNull.length == 0, if user remove the chatbox_0, it will reset the chatbox_0 with How can I help you today? by gpt. And this should be posted to the DB with the experimentId.
+    }
+    // console.log("e.target", e.target)
 
-                        fetch("/chatapi/v1/chats", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                title: "Chat with experiment id " + experimentId,
-                                _experiment_id: experimentId,
-                                _dataset_id: experimentId
-                            })
-                            })
-                            .then(res => res.json())
-                            .then(data => {
+    // console.log("e.target.parentNode", e.target.parentNode)
 
-                                if (data['chatlogs'].length === 0){
+    // console.log("e.target.parentNode.childNodes[0]", e.target.parentNode.childNodes[0])
 
-                                    // POST http://localhost:5080/chatapi/v1/chatlogs
-                                    // Content-Type: application/json
-                                    // {
-                                    //     "_chat_id" : "642076d7262c19d0be23448b",
-                                    //     "message" : "How are you?",
-                                    //     "message_type" : "text",
-                                    //     "who" : "gpt"
-                                    // }
-                                    
-                                        fetch("/chatapi/v1/chatlogs", {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/json"
-                                            },
-                                            body: JSON.stringify({
-                                                _chat_id: data._id,
-                                                "message": "How can I help you today?",
-                                                "message_type": "text",
-                                                "who": "gpt"
-                                            })
-                                        })
+    // console.log("e.target.parentNode.childNodes[1]", e.target.parentNode.childNodes[1])
 
-                                    
+    // changeTrashToCheck(e.target.parentNode.childNodes[1])
+
+    
+
+    // console.log("e.target.parentNode.childNodes", e.target.parentNode.childNodes)
+
+
+    // console.log("e.target.parentNode.childNodes[0].childNodes", e.target.parentNode.childNodes[0].childNodes)
+
+    // console.log("e.target.parentNode.childNodes[0].childNodes[2]", e.target.parentNode.childNodes[0].childNodes[2])
+
+    // console.log("e.target.parentNode.childNodes[0].childNodes[1]", e.target.parentNode.childNodes[0].childNodes[1])
+
+    // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes", e.target.parentNode.childNodes[0].childNodes[2].childNodes)
+
+    // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0]", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0])
+
+
+    // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent)
+
+}
+
+function setBoldUnderlineAndInitTraIc() {
+
+    //get div with class name sidemenu
+    var sidemenu = document.getElementsByClassName("chatboxtap");
+    // length of sidemenu
+    var sidemenuLength = sidemenu.length;
+
+    if (sidemenuLength>0) {
+        
+        for (var i = 0; i < sidemenu.length-1; i++) {
+            sidemenu[i].style.fontWeight = "normal";
+        }
     
     
-                                }
+        sidemenu[sidemenu.length-1].style.fontWeight = "bold";
 
-                                
-                                
-                                let chatLogNew = [
-                                    {
-                                        user: "gpt",
-                                        message: "How can I help you today?"
-                                    }
-                                ]
-                                setChatLog(chatLogNew);
-                                setNumChatBox(1)
-                                setChatCurrentTempId(1)
-                            })
-                            .catch(err => {
-                                console.log("err--best",err);
-                            })
-
-                        
-                        
-                    }
-
-                })
-                .catch(err => {
-                    console.log("err-delete-chatboxtap",err)
-                })
-
-                })
-
-                .catch(err => {
-                    console.log("err--best--getAllChats",err);
-                })
+        // Trash emoji for each chatboxtap
+        for (var i = 0; i < sidemenu.length; i++) {
             
-
-
-
-
-
-
-            // if the chatbox tap was only one, when user remove the chat, it will remove from the DB, but the chatbox will show "How can I help you today?"
-
-            // if the chatbox tap was more than one, when user remove the chat, it will remove from the DB, and the chatbox will show the left chatbox tap or the right chatbox tap.
-
-
+            sidemenu[i].childNodes[1].style.display = "none";
         }
-        // console.log("e.target", e.target)
 
-        // console.log("e.target.parentNode", e.target.parentNode)
-
-        // console.log("e.target.parentNode.childNodes[0]", e.target.parentNode.childNodes[0])
-
-        // console.log("e.target.parentNode.childNodes[1]", e.target.parentNode.childNodes[1])
-
-        // changeTrashToCheck(e.target.parentNode.childNodes[1])
-
-        
-
-        // console.log("e.target.parentNode.childNodes", e.target.parentNode.childNodes)
-
-
-        // console.log("e.target.parentNode.childNodes[0].childNodes", e.target.parentNode.childNodes[0].childNodes)
-
-        // console.log("e.target.parentNode.childNodes[0].childNodes[2]", e.target.parentNode.childNodes[0].childNodes[2])
-
-        // console.log("e.target.parentNode.childNodes[0].childNodes[1]", e.target.parentNode.childNodes[0].childNodes[1])
-
-        // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes", e.target.parentNode.childNodes[0].childNodes[2].childNodes)
-
-        // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0]", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0])
-
-
-        // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent)
-
-        
-
-        
-        
-
-
-
-
-
+        sidemenu[sidemenu.length-1].childNodes[1].style.display = "block";
 
     }
+    
+    
+    
+    
+    
+    
+}
 
-    function setBoldUnderlineAndInitTraIc() {
+async function postChatNameToDB(chatboxtapname){
 
-        //get div with class name sidemenu
-        var sidemenu = document.getElementsByClassName("chatboxtap");
-       // length of sidemenu
-        var sidemenuLength = sidemenu.length;
+    // post the + New Chat name to the DB
+    console.log("Post the + New Chat name to the DB.")
+    console.log("chatboxtapname", chatboxtapname)
 
-        if (sidemenuLength>0) {
-            
-            for (var i = 0; i < sidemenu.length-1; i++) {
-                sidemenu[i].style.fontWeight = "normal";
+
+    // get current url
+    let url = window.location.href;
+    let urlSplit = url.split('/');
+    let experimentID = urlSplit[urlSplit.length - 1];
+
+        // GET http://localhost:5080/chatapi/v1/chats
+    let data =await getChatMessageByExperimentId(experimentID)
+    // filter data based on experiment id
+    let dataFiltered = data.filter(function (el) {
+        return el._experiment_id == experimentID;
+    });
+
+
+
+    console.log("1.data", dataFiltered)
+
+
+    // PATCH http://localhost:5080/chatapi/v1/chats/640bd7290674aa751483658b
+    // Content-Type: application/json
+
+    // {
+    //     "title" : chatboxtapname,
+    //     "_experiment_id": experimentID,
+    //     "_dataset_id": experimentID
+    // }
+
+    await patchSpecificChat(dataFiltered[chatCurrentTempId-1]['_id'],chatboxtapname,experimentID,experimentID)
+
+    
+    console.log("22222")
+
+
+
+
+
+    // chatboxtapname
+
+    // chatCurrentTempId-1
+
+    // tapTitles.taptitles
+
+    setTapTitles({
+        taptitles: tapTitles.taptitles.map((title, index) => {
+            if (index === chatCurrentTempId-1) {
+                return chatboxtapname;
             }
-        
-        
-            sidemenu[sidemenu.length-1].style.fontWeight = "bold";
+            return title;
+        })
+    })
 
-            // Trash emoji for each chatboxtap
-            for (var i = 0; i < sidemenu.length; i++) {
-                
-                sidemenu[i].childNodes[1].style.display = "none";
-                        
-            }
+}
 
-            sidemenu[sidemenu.length-1].childNodes[1].style.display = "block";
-
-        }
-        
-        
-      
-      
-      
-      
-      }
+    // temp title
+    // let taptitles=["A","B","C","D","E"]
 
     return (
         <div>
@@ -610,18 +849,24 @@ export default function SideMenu({
                 {/* <div className="side-menu-button" onClick={() => setNumChatBox(numChatBox + 1)}> */}
                 <div className="side-menu-button" id="newchatbutton" onClick={ 
                     (e) =>
-                    {
+                    {   
+                        // // console.log("e.target-+ New Chat", e.target)
+                        // console.log("e.target.textContent-+ New Chat", e.target.textContent)
                         setNumChatBox(numChatBox + 1)
                         checkClickedChatboxTab(e)
                         checkNumChatBox()
+
+                        //set tapTitles
+                        // setTapTitlesFunc();
                     }
                 }>
-                    <span>+</span>
-                    New Chat 
+                    {/* <span></span> */}
+                    + New Chat 
                     {/* <div style={{display: 'hidden'}}>🗑</div> */}
                 </div>
 
-                {
+                {   
+                    
                     Array(numChatBox)
                         .fill()
                         .map(
@@ -633,35 +878,156 @@ export default function SideMenu({
                                     
                                     (e)=>{
                                         console.log("One clicked!")
+                                        console.log("e.target",e.target)
                                         checkClickedChatboxTab(e)
                                         clearAllTrashIcons(e.target.parentNode.parentNode)
                                         e.target.parentNode.childNodes[1].style.display = 'block'
                                     }
                                 }
-                                // onDoubleClick={
-                                //     (e)=>{
-                                //         console.log("Double clicked!")
-                                //         console.log("e.target",e.target)
 
-                                //         // allow to change the text in div
+                                onDoubleClick={
+                                    (e)=>{
+
+                                        
+                                        console.log("Double clicked!")
+                                        console.log("e.target.parentNode.childNodes[1]-Double",e.target.parentNode.childNodes[1].textContent)
+
+                                        console.log("e.keyCode",e.keyCode)
+
+                                        // e.keyCode
+                                        // e.mouse
+
+
+                                        // change e.target.parentNode.childNodes[1]  to 
+                                        // ✔︎
+                                        // add new div to e.target.parentNode.childNodes
+
+
+
+
+                                        // e.target.parentNode.childNodes[1].textContent = "✔︎"
+
+                                        // allow to change the text in div
+                                        e.target.contentEditable = true;
+                                        e.target.focus();
+
+                                        // do not allow user to use delete key when the text is empty
+                                        e.target.onkeydown = function(e) {
+                                            // split e.target.textContent with & and _ to get the text
+                                            console.log("e.target.childNodes[0].textContent",e.target.textContent)
+                                            let tempString = e.target.textContent.split("&")[0].split("_")[0];
+
+
+                                            console.log("tempString",tempString)
+
+                                            // e.keyCode === 8 is the delete key
+                                            if(tempString === "" && e.keyCode === 8) {
+                                                console.log("tempString ===  && e.keyCode === 8)")
+                                                e.preventDefault();
+                                                
+
+                                                // e.target.textContent 
+                                            }
+                                            // enter key is not allowed
+                                            if(e.keyCode === 13) {
+                                                console.log("e.keyCode === 13 enter key is not allowed")
+                                                e.preventDefault();
+                                                e.target.contentEditable = false;
+                                                e.target.focus();
+
+                                                // post the + New Chat name to the DB
+                                                postChatNameToDB(tempString)
+                                            }
+
+
+
+                                            // cannot enter more than 20 characters
+                                            if(e.target.textContent.length >25) {
+                                                console.log("e.target.textContent.length >25")
+                                                e.preventDefault();
+                                            }
+
+                                            
+                                        }
+
+                                        
+
+                                        
+                                    }
+                                
+                                }
+
+                                // when user click outside the div, the div will not be editable anymore
+                                
+
+                                // onMouseEnter={
+                                //     (e)=> {
                                 //         e.target.contentEditable = true;
                                 //         e.target.focus();
-                                //         // e.target.style.backgroundColor = "white";
-                                //         // e.target.style.border = "1px solid black";
-                                //         // e.target.style.borderRadius = "5px";
-                                //         // e.target.style.padding = "5px";
-                                //         // e.target.style.margin = "5px";
-                                //         // e.target.style.width = "100px";
+                                //         // make the current e contentEditable  not any children
+                                //         // e.target.childNodes[0].contentEditable = false;
+                                        
+                                        
+                                        
+                                        
+                                //         // ChatBox_
+                                //         console.log("e.target.childNodes[0]",e.target.childNodes[0])
+
+                                //         e.target.childNodes[0].contentEditable = true;
+                                        
+                                        
+                                //         // 1
+                                //         console.log("e.target.childNodes[1]",e.target.childNodes[1])
+
+                                //         // e.target.childNodes[1].contentEditable = true;
+                                        
+                                //         //  span
+                                //         console.log("e.target.childNodes[2]",e.target.childNodes[2])
+
+                                //         // e.target.childNodes[2].contentEditable = false;
 
 
                                 //     }
+
                                 // }
-                                
-                                
+
+                                // onMouseLeave={
+                                //     (e)=> {
+                                //         // tempTaptitle
+                                //         console.log("e.target.childNodes[0].textContent",e.target.childNodes[0].textContent)
+
+                                //         let tempTaptitle = e.target.childNodes[0].textContent;
+
+                                //         console.log("tempTaptitle",tempTaptitle)
+
+                                //         e.preventDefault();
+                                //         e.target.contentEditable = false;
+                                //         e.target.focus();
+
+                                //          // post the + New Chat name to the DB
+                                //          postChatNameToDB(tempTaptitle)
+                                //     }
+                                // }   
                                 >
-                                    ChatBox_{i}
-                                    <div style={{display: 'none'}}>
-                                        <span>ChatBox_{i}</span>
+                                    {/* ChatBox_{i} */}
+
+                                    {/* ChatBox<p style={{display: 'none'}}
+                                    contentEditable={false}>_{i}</p> */}
+
+                                    {tapTitles.taptitles[i]}<p style={{display: 'none'}}
+                                    contentEditable={false}>_{i}</p>
+                                    
+                                    {/* <p>ChatBox</p>
+                                    <p className ="numUnvisPele" style={{display: 'none'}}
+                                    contentEditable={false}>_{i}</p> */}
+
+
+                                    {/* ChatBox{i} */}
+                                    {/* ChatBox */}
+                                    
+                                    <div className ="numUnvisPele" style={{display: 'none'}}
+                                    contentEditable={false}>
+                                        <span>&ChatBox_{i}</span>
                                     </div>     
                                 </div>
 
@@ -682,7 +1048,14 @@ export default function SideMenu({
                                         (e)=> {
                                             // changeTrashToCheck(e.target.parentNode.childNodes[1]);
 
-                                            removeCorChat(e);
+                                            try {
+                                                removeCorChat(e);
+
+
+                                            } catch (error) {
+                                                // console.log("error",error)
+                                                console.log("error-removeCorChat")
+                                            }
                                         }
                                     }
                                     style={{display: 'none'}}

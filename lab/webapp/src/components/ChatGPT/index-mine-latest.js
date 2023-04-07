@@ -589,7 +589,7 @@ export default function ChatGPT({experiment}) {
                                     "Content-Type": "application/json"
                                 },
                                 body: JSON.stringify({
-                                    title: "Chat with experiment id " + experimentId,
+                                    title: "ChatBox",
                                     _experiment_id: experimentId,
                                     _dataset_id: experimentId
                                 })

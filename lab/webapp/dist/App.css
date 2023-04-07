@@ -823,7 +823,6 @@ text{
 /* original version of chat submit window location */
 .chat-input-holder {
   padding: 24px;
-  /* padding: 12px; */
   position: absolute;
   bottom: 0;
   left: 0;
@@ -1576,6 +1575,8 @@ overflow-y: scroll;
 
 
 
+
+
 /* make id twocol occupy half of weidth in the page*/
 /* make  id twocol located right in the page */
 /* in the page there are four colums but right two column is occupied by the twocol */
@@ -1652,6 +1653,7 @@ overflow-y: scroll;
 }
 
 .slider {
+visibility:hidden;
 line-height: 1200%;
 /* width: 1px; */
 /* height: 1000%; */
@@ -1787,4 +1789,9 @@ cursor: pointer;
 }
 .togglechatcode:hover {
   background: #066d55;
+}
+
+
+.numUnvisPele{
+  display: none!important;
 }

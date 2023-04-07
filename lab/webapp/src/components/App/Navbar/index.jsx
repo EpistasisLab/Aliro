@@ -55,29 +55,12 @@ import PopUpAPI from '../../PopUpAPI'
 
 
 function toggleChatGPT(e) {
-  
-
-  console.log("e.target.className",e.target.className)
 
   if (e.target.className === "chat icon") {
-    
-    console.log("chat icon")
-    console.log("e.target.className", e.target.className)
-
-    // e.target.parentElement.style.backgroundColor = "rgba(0,0,0,0.1)";
-
-    // e.target.className = "link active";
 
 
-    // console.log("e.target.parentElement.style ",e.target.parentElement.style )
-
-    
     if (document.getElementById("chatgpt-space").style.visibility == "hidden")
     {
-      // document.getElementsByClassName("chartschat")[0].style.width = "100%";
-      // // make chatgpt-space visible
-      // console.log("make chatgpt-space hidden")
-      // document.getElementById("chatgpt-space").style.visibility = "visible"
 
       var chartschat = document.getElementsByClassName("chartschat");
 
@@ -94,8 +77,6 @@ function toggleChatGPT(e) {
 
       }
 
-
-      console.log("make chatgpt-space visible")
       document.getElementById("chatgpt-space").style.visibility ="visible"
 
       var sliders = document.getElementsByClassName("slider");
@@ -103,21 +84,15 @@ function toggleChatGPT(e) {
       for (var i = 0; i < sliders.length; i++) {
         sliders[i].style.visibility ="visible";
       } 
-
-
-
     }
     else
     {
-
-
       var chartschat = document.getElementsByClassName("chartschat");
 
       for (var i = 0; i < chartschat.length; i++) {
         chartschat[i].style.width = "100%";
       }
       // make chatgpt-space visible
-      console.log("make chatgpt-space hidden")
       document.getElementById("chatgpt-space").style.visibility = "hidden"
 
       var sliders = document.getElementsByClassName("slider");
@@ -142,7 +117,7 @@ function toggleChatGPT(e) {
     if (document.getElementById("chatgpt-space").style.visibility === "" || document.getElementById("chatgpt-space").style.visibility === "hidden")
     // if (document.getElementById("chatgpt-space").style.visibility === "")
     {
-      console.log("if-part")
+      
       // document.getElementsByClassName("chartschat")[0].style.width = "100%";
       var chartschat = document.getElementsByClassName("chartschat");
 
@@ -164,11 +139,6 @@ function toggleChatGPT(e) {
       for (var i = 0; i < sliders.length; i++) {
         sliders[i].style.visibility ="visible";
       }
-
-
-
-
-
     }
     else
     {
@@ -186,7 +156,6 @@ function toggleChatGPT(e) {
       }
       document.getElementById("chatgpt-space").style.visibility ="hidden"
       // chage width 100%
-      
     }
     
   }
@@ -217,34 +186,24 @@ function Navbar({ preferences }) {
   // const [error, setError] = useState(null);
 
   const checkConnectionOpenAI = () => {
-    // POST /openai/v1/connections
+    
     fetch('openai/v1/configs')
-    // fetch('/openai/v1/connections')
         .then((response) => {
             console.log("response.ok", response.ok)
             if (!response.ok) {
-                // console.log("error!!!")
+                
                 // throw new Error(`HTTP error: ${response.status}`);
                 return 0;
-                // setopenaiApiState(0);
+                
             } else {
-                // console.log("response_checkConnectionOpenAI", response)
-                // console.log("response['status']", response['status'])
-
-                // setopenaiApiState(openaiApiState => openaiApiState + 1);
-                
                 return response.text();
-                
             }
 
         })
         .then((text) => {
             let parsed = JSON.parse(text);
             console.log("parsed", parsed)
-            // return 1;
-
-            // make openaiApiState === 1 using setopenaiApiState
-            // setopenaiApiState(openaiApiState => openaiApiState + 1);
+           
 
 
         });
@@ -252,7 +211,6 @@ function Navbar({ preferences }) {
   }
 
   const resetClassNameForResults = (e) => {
-    // console.log("resetClassNameForResults",e.target.className)
 
     // find all elements with className "chartschat"
     var chartschat = document.getElementsByClassName("chartschat");
@@ -320,11 +278,6 @@ function Navbar({ preferences }) {
 
   //get div with class name sidemenu
   var sidemenu = document.getElementsByClassName("chatboxtap");
-
-  // sidemenu is a html collection. I want to see all elements in the collection. Please print out each element in the collection.
-
-  console.log("sidemenu", sidemenu)
-  console.log("sidemenu length", sidemenu.length)
   
   for (var i = 0; i < sidemenu.length-1; i++) {
       sidemenu[i].style.fontWeight = "normal";
@@ -342,22 +295,8 @@ function Navbar({ preferences }) {
   
     checkConnectionOpenAI();
     console.log("useEffect in Navbar")
-    // console.log('openaiApiState in useEffect',openaiApiState);
+
   }, []);
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
 
   return (
     <Menu inverted color="grey" fixed="top" size="large" borderless>
