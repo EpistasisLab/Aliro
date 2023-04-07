@@ -156,6 +156,10 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       format: {
         title: function (d) { return 'Training examples: ' + d; }
       }
+    },
+
+    padding: {
+      top: 20,
     }
 
 
@@ -178,7 +182,8 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       // <div className={`LineChart ${this.props.chartKey}`} />
       <div >
         
-        <svg className={`LineChart ${this.props.chartKey}`} viewBox="0 10 500 350" preserveAspectRatio="xMinYMin meet" >
+        <svg className={`LineChart ${this.props.chartKey}`} 
+        viewBox={`0 0 ${window.innerWidth*0.31} ${window.innerHeight*0.31}`} preserveAspectRatio="xMinYMin meet" >
             
         </svg>
     </div>

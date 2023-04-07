@@ -585,6 +585,7 @@ class Results extends Component {
                         className="slider"
                         onMouseOver={moveSlidermakeBlack}
                         onMouseOut={makeOriginColor}>
+                        {/* onChange={moveSlidermakeBlack} */}
                         ""<br></br>
                         ""<br></br>
                         ""<br></br>
@@ -592,7 +593,7 @@ class Results extends Component {
                         ""<br></br>
                         ""<br></br>
                     </div>
-                    <div id="chatgpt-space" class="chartschat chatbaseright">
+                    <div id="chatgpt-space" className="chartschat chatbaseright">
                         <ChatGPT experiment={experiment}/>
                     </div>
                 </div>
@@ -767,7 +768,7 @@ class Results extends Component {
 
                                     {
                                         experiment.data.CVP_2d === undefined
-                                            ? <div>CVP_2d is not defined.</div>
+                                            ?  <Header inverted size="tiny" content="experiment.data.CVP_2d is empty." />
                                             : <PCAJSON
                                                     scoreName="Cross-Validated Predictions"
                                                     Points={experiment.data.CVP_2d}
@@ -788,7 +789,7 @@ class Results extends Component {
                                     }
                                     {
                                         experiment.data.CVR_2d === undefined
-                                            ? <div>CVR_2d is not defined.</div>
+                                            ? <Header inverted size="tiny" content="experiment.data.CVR_2d is empty." />
                                             : <PCAJSON
                                                     scoreName="Cross-Validated Residuals"
                                                     Points={experiment.data.CVR_2d}
@@ -799,7 +800,7 @@ class Results extends Component {
                                     }
                                     {
                                         experiment.data.QQNR_2d === undefined
-                                            ? <div>QQNR_2d is not defined.</div>
+                                            ? <Header inverted size="tiny" content="experiment.data.QQNR_2d is empty." />
                                             : <PCAJSON
                                                     scoreName="Q-Q Plot for Normalized Residuals"
                                                     Points={experiment.data.QQNR_2d}
@@ -839,6 +840,7 @@ class Results extends Component {
                         className="slider"
                         onMouseOver={moveSlidermakeBlack}
                         onMouseOut={makeOriginColor}>
+                        {/* onChange={moveSlidermakeBlack} */}
                         ""<br></br>
                         ""<br></br>
                         ""<br></br>

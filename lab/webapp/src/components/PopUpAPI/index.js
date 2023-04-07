@@ -21,7 +21,6 @@ export default function PopUpAPI(
 
                     // throw new Error(`HTTP error: ${response.status}`);
                     // alert("Connection to OpenAI is not established")
-                    console.log("This is useEffect in PopupAPI, and it shows response.ok: ", response.ok)
 
                     // when it render, in the case where the connection is not established, we will require user to input the API key in the box.
                     var modal = document.getElementsByClassName("modal")[0];
@@ -37,12 +36,7 @@ export default function PopUpAPI(
                   // make it unvisible
                     modal.style.display = "none";
 
-                   
-                    console.log("This is useEffect in PopupAPI, and it shows response.ok: ", response.ok)
                     setopenaiApiState(openaiApiState => openaiApiState + 1);
-
-
-                    // return response.text();
 
                 }
             });
@@ -52,9 +46,6 @@ export default function PopUpAPI(
     }, [window.location.href]);
 
     function handleClick() {
-        // this.props.toggle(); console.log("handleClick");
-        // console.log("this.props.openaiApiState", this.props.openaiApiState);
-        // console.log("e.target.textContent", e.target.textContent); get className
         // modal
         var modal = document.getElementsByClassName("modal")[0];
         // make it unvisible

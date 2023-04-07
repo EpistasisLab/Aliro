@@ -132,6 +132,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       // tooltip: {
       //   format: {
 
+
     });
 
     // if document element has testuser text, then make it unvisiable 
@@ -159,7 +160,8 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
     <div >
         
-        <svg className={`donut ${this.props.chartKey}`} viewBox="0 0 500 400" preserveAspectRatio="xMinYMin meet" >
+        <svg className={`donut ${this.props.chartKey}`} viewBox={`0 0 ${window.innerWidth*0.31} ${window.innerHeight*0.31}`}
+        preserveAspectRatio="xMinYMin meet" >
             
         </svg>
     </div>
