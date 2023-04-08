@@ -456,7 +456,8 @@ app.post("/code/run", jsonParser, (req, res) => {
         'machine/pyutils/run_code.py',
         '--code', req.body.src_code,
         '--dataset_file_id', req.body.dataset_file_id,
-        '--experiment_id', req.body.experiment_id
+        '--experiment_id', req.body.experiment_id,
+        '--execution_id', req.body.execution_id
     ]
 
     let pyProc = spawn('python', args, { cwd: process.env.PROJECT_ROOT });

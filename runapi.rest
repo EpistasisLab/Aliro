@@ -1,9 +1,0 @@
-###
-
-POST http://localhost:5080/runapi/v1/runs/experiment/642ee642d89a5400464abcc2
-Content-Type: application/json
-
-{
-  "src_code": "# Application 1: cross validation of fitted model on a new dataset\ntesting_features = df.drop(\"target\", axis=1).values\ntesting_target = df['target'].values\n# Get holdout score for fitted model\nprint(\"Holdout score: \", end=\"\")\nprint(model.score(testing_features, testing_target))",
-  "dataset_id": "642ee639d89a5400464abcc1"
-}

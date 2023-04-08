@@ -1,0 +1,27 @@
+###
+
+POST http://localhost:5080/execapi/v1/executions/experiment/64319c0ecb1029004afa0443
+Content-Type: application/json
+
+{
+  "src_code":  "# Application 2: predict outcome by fitted model\n# In this application, the input dataset may not include target column\n# Please comment this line below if there is no target column in input dataset\ndf.drop('target', axis=1, inplace=True)\npredict_target = model.predict(df.values)\nprint(predict_target)",
+  # "src_code": "# Application 1: cross validation of fitted model on a new dataset\ntesting_features = df.drop(\"target\", axis=1).values\ntesting_target = df['target'].values\n# Get holdout score for fitted model\nprint(\"Holdout score: \", end=\"\")\nprint(model.score(testing_features, testing_target))",
+  "dataset_id": "64319c01cb1029004afa0442"
+}
+
+###
+
+GET http://localhost:5080/execapi/v1/executions/64319c367591d8f77675edb1
+
+###
+
+POST http://localhost:5080/execapi/v1/executions/64319c367591d8f77675edb1/files
+Content-Type: application/json
+
+{
+  "file_path": "/appsrc/machine/code_runs"
+}
+
+###
+
+GET http://localhost:5080/api/v1/files/6431c0cd738f342c84bf0c24

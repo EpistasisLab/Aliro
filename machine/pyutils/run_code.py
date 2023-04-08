@@ -107,11 +107,69 @@ def get_file_from_server(file_id):
     # return res.text
     return res.content
 
+
+def save_result_to_server(result, execution_id):
+    '''Save the result of the execution to the server'''
+    apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
+    path = apiPath + "/execapi/v1/executions/" + execution_id
+    
+    execution = {
+        "result": result,
+        "status": "completed"
+    }
+    
+    res = None
+    try:
+        res = requests.request('PATCH', path, json=execution, timeout=15)
+    except:
+        logger.error("Unexpected error in save_result_to_server for path 'PATCH: " +
+                        str(path) + "': " + str(sys.exc_info()[0]))
+        raise
+    
+    if res.status_code != requests.codes.ok:
+        msg = "Request PATCH status_code not ok, path: '" + \
+            str(path) + "'' status code: '" + str(res.status_code) + \
+            "'' response text: " + str(res.text)
+        logger.error(msg)
+        raise RuntimeError(msg)
+    
+    logger.info("Result saved, execution_id: '" + execution_id)
+    
+    return res.text
+
+
+def upload_file_to_server(file_path, file_name):
+    '''Upload a file to the server'''
+    apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
+    path = apiPath + "/api/v1/files"
+    
+    files = {'file': (file_name, open(file_path, 'rb'), 'application/octet-stream')}
+    
+    res = None
+    try:
+        res = requests.request('POST', path, files=files, timeout=15)
+    except:
+        logger.error("Unexpected error in upload_file_to_server for path 'POST: " +
+                        str(path) + "': " + str(sys.exc_info()[0]))
+        raise
+    
+    if res.status_code != requests.codes.ok:
+        msg = "Request POST status_code not ok, path: '" + \
+            str(path) + "'' status code: '" + str(res.status_code) + \
+            "'' response text: " + str(res.text)
+        logger.error(msg)
+        raise RuntimeError(msg)
+    
+    logger.info("File uploaded, file_name: '" + file_name)
+    
+    return res.text
+
 def main():
     parser = argparse.ArgumentParser(description="Run python code", add_help=False)
     parser.add_argument("--code", help="python code to run")
     parser.add_argument("--dataset_file_id", help="dataset file_id")
     parser.add_argument("--experiment_id", help="experiment id")
+    parser.add_argument("--execution_id", help="execution id")
     
     args = parser.parse_args()
     
@@ -129,7 +187,12 @@ def main():
     response = {}
     
     try:
+        workdir = os.path.join(os.environ["CODE_RUN_PATH"], args.execution_id)
+        current_dir = os.getcwd()
+        os.chdir(workdir)
         result = run_code(args.code, args.dataset_file_id, args.experiment_id)
+        save_result_to_server(result, args.execution_id)
+        os.chdir(current_dir)
         response = simplejson.dumps({'ok': True, 'result': result})
         sys.stdout.write(response)
         sys.stdout.flush()

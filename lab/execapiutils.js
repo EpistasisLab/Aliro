@@ -1,5 +1,6 @@
 const db = require('./dbgoose').db;
 const Dataset = require('./models/dataset');
+const Execution = require('./models/execution');
 
 let laburi;
 
@@ -30,6 +31,22 @@ async function getDatasetById(req, res, next) {
     next();
 }
 
+async function getExecutionById(req, res, next) {
+    let execution;
+    try {
+        execution = await Execution.findById(req.params.id);
+        if (execution == null) {
+            return res.status(404).json({ message: 'Cannot find execution: ' + req.params.id });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
+    res.execution = execution;
+    next();
+}
+
 module.exports = {
     getDatasetById,
+    getExecutionById
 }
