@@ -449,6 +449,44 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 });
 
 
+// run code execution
+app.post("/code/run", jsonParser, (req, res) => {
+
+    let args = [
+        'machine/pyutils/run_code.py',
+        '--code', req.body.src_code,
+        '--dataset_file_id', req.body.dataset_file_id,
+        '--experiment_id', req.body.experiment_id,
+        '--execution_id', req.body.execution_id
+    ]
+
+    let pyProc = spawn('python', args, { cwd: process.env.PROJECT_ROOT });
+
+    let result = req.body;
+    result.exec_results = {};
+
+    pyProc.stdout.on('data', (data) => {
+        result.exec_results = JSON.parse(data.toString());
+    });
+
+    pyProc.stderr.on('data', (data) => {
+        // console.log(`stderr: ${data}`);
+        try {
+            result.exec_results = JSON.parse(data.toString());
+        }
+        catch (e) {
+            console.log(e);
+        }
+    });
+
+    pyProc.on('close', (code) => {
+        // result.code = code;
+        console.log(`child process exited with code ${code}`);
+        res.send(result);
+    });
+
+});
+
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server
