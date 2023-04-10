@@ -123,6 +123,17 @@ router.post('/chats', async (req, res) => {
     }
 });
 
+// Get chat by experiment_id
+router.get('/chats/experiments/:id', getChatById, (req, res) => {
+    // get all chatlogs associated with this chat
+    ChatLog.find({ _experiment_id: res.chat._id }, function (err, chatlogs) {
+        if (err) {
+            res.status(500).json({ message: err.message });
+        }
+        res.send({ chat: res.chat, chatlogs: chatlogs });
+    });
+});
+
 // Get all chats
 // This endpoint will not return the chatlogs
 router.get('/chats', async (req, res) => {

@@ -48,8 +48,6 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 			icon_type = "line graph";
 	}
 
-  // console.log("DatasetCard refresh");
-
   if (document.getElementById("aiTooglePopup") == null && document.getElementById("aiTooglePopupready") != null) {
   
     // console.log("aiTooglePopup is null");
@@ -273,12 +271,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
   
   }
   else {
-    // console.log("aiTooglePopup is not null");
-    // console.log(document.getElementById("aiTooglePopup"));
-
-
-    // console.log("aiTooglePopupready is null");
-    // console.log(document.getElementById("aiTooglePopupready"));
+    
 
 
     return (
@@ -333,54 +326,6 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
   }
 
 
-  // return (
-  //   <Grid.Column className="dataset-card">
-      
-  //     <Segment inverted attached="top" className="panel-header">
-  //       <Popup
-  //         position="right center"
-  //         header={formatDataset(dataset.name)}
-  //         content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}, Classes: ${dataset.metafeatures.n_classes}  Prediction type: ${dataset.files[0].prediction_type}`}
-  //         trigger={
-  //           <Header
-  //             as="a"
-  //             inverted
-  //             size="large"
-  //             icon={icon_type}
-  //             content={formatDataset(dataset.name)}
-  //             href={datasetLink}
-  //             className="title"
-  //           />
-  //         }
-  //       />
-  //       <span className="float-right">
-  //         <DatasetActions
-  //           dataset={dataset}
-  //           recommender={recommender}
-  //           toggleAI={toggleAI}
-  //         />
-  //       </span>
-  //     </Segment>
-
-  //     <BestResult
-  //       result={dataset.best_result}
-  //       hasMetadata={dataset.has_metadata}
-  //     />
-  //     <ExperimentStatus
-  //       filter={dataset._id}
-  //       experiments={dataset.experiments}
-  //       notifications={dataset.notifications}
-  //     />
-  //    <Button
-  //         as="a"
-  //         color="blue"
-  //         attached="bottom"
-  //         content="Build New Experiment"
-  //         href={builderLink}
-  //       />
-
-  //   </Grid.Column>
-  // );
 
   
 };

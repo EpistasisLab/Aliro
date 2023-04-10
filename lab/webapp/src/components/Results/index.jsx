@@ -55,6 +55,7 @@ import NoScore from './components/NoScore';
 import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 import ClassRate from './components/ClassRate';
+// import ChatGPT from '../ChatGPT';
 
 class Results extends Component {
   constructor(props) {
@@ -164,7 +165,7 @@ class Results extends Component {
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
 
-      console.log("experiment.data", experiment.data)
+      // console.log("experiment.data", experiment.data)
       // console.log("X_pca", experiment.data.X_pca)
       // console.log("y_pca", experiment.data.y_pca)
 
@@ -212,6 +213,7 @@ class Results extends Component {
           shapSummaryCurveDict[class_name] = file;
           shap_explainer=experiment.data.shap_explainer;
           shap_num_samples=experiment.data.shap_num_samples;
+          
         }
         else if (filename.includes('shap_summary_json')) {
           console.log("shap_summary_json")
@@ -266,17 +268,9 @@ class Results extends Component {
       });
 
 
-
-
-      // print class_percentage
-      // console.log("class_percentage", class_percentage)
-
-      // print experiment.data
-      // console.log("experiment.data['class_1']", experiment.data['class_1'])
-
-
-
       return (
+        
+        
         <div>
           <Grid columns={2} stackable>
             <Grid.Row>
@@ -447,7 +441,22 @@ class Results extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+
+          {/* GPT Space */}
+          {/* <Grid columns={4} stackable="stackable">
+              <ChatGPT/>
+          </Grid> */}
+
+
+          {/* GPT Space */}
+          {/* <ChatGPT/> */}
+
+
+
         </div>
+
+        
+
       );
     } else if(experiment.data.prediction_type == "regression") { // regression
       let importanceScore, reg_cv_pred, reg_cv_resi, reg_cv_qq;
@@ -600,6 +609,16 @@ class Results extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+
+          {/* GPT Space */}
+          {/* <Grid columns={4} stackable="stackable">
+              <ChatGPT/>
+          </Grid> */}
+          
+          {/* GPT Space */}
+          {/* <ChatGPT/> */}
+          
+
         </div>
       );
     }

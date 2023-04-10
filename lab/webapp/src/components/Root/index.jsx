@@ -30,7 +30,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Router, Route, IndexRedirect, hashHistory } from 'react-router';
+import { Router, Route, IndexRedirect, hashHistory, IndexRoute } from 'react-router';
+
 
 import App from '../App';
 import Datasets from '../Datasets';
@@ -41,11 +42,21 @@ import Builder from '../Builder';
 import Results from '../Results';
 import Admin from '../Admin';
 import NotFound from '../NotFound';
+import ChatGPT from '../ChatGPT';
+import ResultsV2 from '../ResultsV2';
+
+import testTest from '../testTest';
 
 /**
 * Use react router to delineate different parts of website; essentially links
 */
 function Root({ store }) {
+
+  console.log("store", store)
+
+  console.log("hashHistory", hashHistory)
+
+  
 
   // var [eventsEnabled, setEventsEnabled] = React.useState(true)
   // var [open, setOpen] = React.useState(true)
@@ -58,11 +69,19 @@ function Root({ store }) {
           <Route path="datasets" component={Datasets} />
           <Route path="datasets/:id" component={Dataset} />
           <Route path="experiments" component={Experiments} />
+          {/* <Route path="builder" component={Builder} /> */}
           <Route path="builder" component={Builder} />
-          <Route path="results/:id" component={Results} />
+          {/* <Route path="/builder" render={(props) => <Builder {...props} />} /> */}
+          {/* <Route path="results/:id" component={Results} /> */}
+          <Route path="results/:id" component={ResultsV2} >
+
+            {/* <IndexRoute component={ChatGPT}/>
+            <Route path="test" component={testTest} /> */}
+
+          </Route>
+          {/* <Route path="results/:id" component={ChatGPT} /> */}
           <Route path="admin" component={Admin} />
           <Route path="*" component={NotFound} />
-          
         </Route>
       </Router>
     </Provider>

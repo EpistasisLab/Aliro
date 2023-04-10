@@ -1087,6 +1087,77 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
         });
 });
 
+
+// Constructs an experiment
+app.post("/api/v1/execPython",  (req, res, next) => {
+    var projId = req.params.id;
+    var dataset;
+    var ai_score;
+
+    users.returnUserData(req)
+        .then((user) => {
+            var username = user['username'];
+            db.projects.findByIdAsync(projId, {
+                    schema: 1
+                })
+                .then((project) => {
+                    if (project === null) {
+                        res.status(400);
+                        console.log("400 ERROR: Project ID " + projId + " does not exist")
+                        res.send({
+                            error: "Project ID " + projId + " does not exist"
+                        });
+                    } else {
+                        var obj = Object.assign(req.query, req.body);
+
+                        if (obj['parameters']) {
+                            old_obj = obj;
+                            obj = new Object(obj['parameters']);
+                            obj['dataset'] = old_obj['dataset_id'];
+                            ai_score = old_obj['ai_score'];
+                            dataset = old_obj['dataset_id']
+                            username = old_obj['username'];
+                        }
+                        if ("dataset" in obj) {
+                            dataset = obj['dataset'];
+                            delete obj['dataset'];
+                        }
+                        var files = req.files;
+                        submitPythonJob(projId, obj, files, dataset, username)
+                        .then((resp) => {
+                            res.status(201);
+                            res.send(resp);
+                        })
+                        .catch((err) => {
+                            // TODO Check comprehensiveness of error catching
+                            if (err.error === "No machine capacity available") {
+                                res.status(503);
+                                res.statusMessage = "All experiment nodes busy."
+                                res.send(err);
+                            } else if ((err.error !== undefined) && err.error.startsWith("Experiment failed to run")) {
+                                res.status(500);
+                                res.send(err);
+                            }
+                             else {
+                                //next(err);
+                                res.status(500);
+                                res.send({
+                                    error: "Experiment failed to run: unknown error from submitJob()"
+                                });
+                            }
+                        });
+
+                    }
+                })
+                .catch((err) => {
+                    next(err);
+                });
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
 // Submit job with retry
 var submitJobRetry = function(projId, options, batch_id, retryT) {
     submitJob(projId, options)
