@@ -108,36 +108,6 @@ def get_file_from_server(file_id):
     return res.content
 
 
-def save_result_to_server(result, execution_id):
-    '''Save the result of the execution to the server'''
-    apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
-    path = apiPath + "/execapi/v1/executions/" + execution_id
-    
-    execution = {
-        "result": result,
-        "status": "completed"
-    }
-    
-    res = None
-    try:
-        res = requests.request('PATCH', path, json=execution, timeout=15)
-    except:
-        logger.error("Unexpected error in save_result_to_server for path 'PATCH: " +
-                        str(path) + "': " + str(sys.exc_info()[0]))
-        raise
-    
-    if res.status_code != requests.codes.ok:
-        msg = "Request PATCH status_code not ok, path: '" + \
-            str(path) + "'' status code: '" + str(res.status_code) + \
-            "'' response text: " + str(res.text)
-        logger.error(msg)
-        raise RuntimeError(msg)
-    
-    logger.info("Result saved, execution_id: '" + execution_id)
-    
-    return res.text
-
-
 def upload_file_to_server(file_path, file_name):
     '''Upload a file to the server'''
     apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
@@ -191,14 +161,14 @@ def main():
         current_dir = os.getcwd()
         os.chdir(workdir)
         result = run_code(args.code, args.dataset_file_id, args.experiment_id)
-        save_result_to_server(result, args.execution_id)
+        # save_result_to_server(result, args.execution_id)
         os.chdir(current_dir)
-        response = simplejson.dumps({'ok': True, 'result': result})
+        response = simplejson.dumps({'ok': True, 'status': 'completed', 'result': result})
         sys.stdout.write(response)
         sys.stdout.flush()
     except Exception as e:
         logger.error(traceback.format_exc())
-        response = simplejson.dumps({'ok': False, 'error': str(e)})
+        response = simplejson.dumps({'ok': False, 'status': 'error', 'result': str(e)})
         sys.stderr.write(response)
         sys.stderr.flush()
 

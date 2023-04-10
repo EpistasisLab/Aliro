@@ -5,16 +5,13 @@ const fs = require('fs');
 const Machine = require('../models/machine');
 const Execution = require('../models/execution');
 const fetch = require('isomorphic-fetch');
-// const { gfs } = require('../dbgoose');
-const db = require('../dbgoose');
-const { GridFSBucket, ObjectID } = require('mongodb');
 const { 
     getDatasetById,
-    getExecutionById
+    getExecutionById,
+    uploadExecFiles
 } = require('../execapiutils');
-const { default: mongoose } = require('mongoose');
-const { isConstructorDeclaration } = require('typescript');
-const mime = require('mime-types');
+const { result } = require('lodash');
+
 
 router.post('/executions/experiment/:id', getDatasetById, async (req, res, next) => {
     if (req.body.src_code == null) {
@@ -38,6 +35,10 @@ router.post('/executions/experiment/:id', getDatasetById, async (req, res, next)
 
     if (req.body.dataset_id != null) {
         request.dataset_file_id = res.dataset.files[0]._id;
+    }
+
+    if (req.body.dataset_file_id != null) {
+        request.dataset_file_id = req.body.dataset_file_id;
     }
 
     // create a new execution
@@ -72,7 +73,7 @@ router.post('/executions/experiment/:id', getDatasetById, async (req, res, next)
             return res.status(400).json({ message: 'No machines available' });
         }
         // call the machine api
-        result = await fetch(machines[0].address + '/code/run', {
+        let result = await fetch(machines[0].address + '/code/run', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -81,67 +82,24 @@ router.post('/executions/experiment/:id', getDatasetById, async (req, res, next)
         });
         result = await result.json();
         console.log('result:', result);
-        res.send(result);
+
+        // update the execution status
+        execution.status = result.exec_results.status;
+        execution._dataset_file_id = request.dataset_file_id;
+        execution.result = result.exec_results.result;
+
+        // add any generated files in tmppath to the execution.files array
+        const files = await uploadExecFiles(request.execution_id, tmppath);
+        execution.files = files;
+
+        const updatedExecution = await execution.save();
+        // result.files = files;
+        res.send(execution);
     }
     catch (err) {
         console.error(err);
         return res.status(500).json({ message: err.message });
     }
-});
-
-router.post('/executions/:id/files', getExecutionById, async (req, res, next) => {
-    const executionId = res.execution._id;
-    const uploadedFile = [];
-
-    const gfs = new GridFSBucket(db.db, {
-		bucketName: 'fs'
-	});
-	console.log('----------------:gfs:', gfs)
-
-    console.log('gfs:', gfs);
-
-    // iterate over the directory and get the filenames of all files
-    fs.readdir(req.body.file_path, (err, files) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ message: err.message });
-        }
-        files.forEach(file => {
-            const filePath = path.join(req.body.file_path, file);
-            fs.stat(filePath, (err, stats) => {
-                if (err) {
-                    console.error(err);
-                    // res.status(500).json({ message: err.message });
-                } else {
-                    if (!stats.isDirectory()) {
-                        console.log('file:', file);
-                        const writeStream = gfs.openUploadStreamWithId(new mongoose.Types.ObjectId(),
-                            file,
-                            {
-                                metadata: {
-                                    execution_id: executionId,
-                                    contentType: mime.lookup(file)
-                                },
-                                contentType: 'binary/octet-stream'
-                            }
-                        );
-                        const readStream = fs.createReadStream(filePath);
-                        readStream.pipe(writeStream);
-                        writeStream.on('error', (err) => {
-                            console.error(err);
-                            // res.status(500).json({ message: err.message });
-                        });
-                        writeStream.on('finish', () => {
-                            console.log('file uploaded to GridFS');
-                            uploadedFile.push(file);
-                        });
-                    }
-                }
-            });
-        });
-    });
-
-    res.status(200).json({ message: 'File uploaded to GridFS', files: uploadedFile });
 });
 
 router.get('/executions/:id', getExecutionById, async (req, res, next) => {

@@ -1,6 +1,13 @@
-const db = require('./dbgoose').db;
+// const db = require('./dbgoose').db;
 const Dataset = require('./models/dataset');
 const Execution = require('./models/execution');
+const { GridFSBucket } = require('mongodb');
+const db = require('./dbgoose');
+const path = require("path");
+const fs = require('fs');
+const { default: mongoose } = require('mongoose');
+// const { isConstructorDeclaration } = require('typescript');
+const mime = require('mime-types');
 
 let laburi;
 
@@ -46,7 +53,50 @@ async function getExecutionById(req, res, next) {
     next();
 }
 
+async function uploadExecFiles(executionId, filepath) {
+    const files = [];
+
+    const gfs = new GridFSBucket(db.db, {
+        bucketName: 'fs'
+    });
+
+    const filenames = await fs.promises.readdir(filepath);
+
+    for (const file of filenames) {
+        const filename = path.join(filepath, file);
+        const stats = await fs.promises.stat(filename);
+        if (!stats.isDirectory()) {
+            const fileId = new mongoose.Types.ObjectId();
+            const writeStream = gfs.openUploadStreamWithId(fileId,
+                file,
+                {
+                    metadata: {
+                        execution_id: executionId,
+                        contentType: mime.lookup(file)
+                    },
+                    contentType: 'binary/octet-stream'
+                }
+            );
+            const readStream = fs.createReadStream(filename);
+            readStream.pipe(writeStream);
+
+            await new Promise((resolve, reject) => {
+                writeStream.on('error', reject);
+                writeStream.on('finish', () => {
+                    console.log('file uploaded to GridFS:' + filename);
+                    files.push({ _id: fileId, filename: file, mimetype: mime.lookup(file) });
+                    resolve();
+                });
+            });
+        }
+    }
+
+    console.log('files uploaded to GridFS:' + files);
+    return files;
+}
+
 module.exports = {
     getDatasetById,
-    getExecutionById
+    getExecutionById,
+    uploadExecFiles
 }

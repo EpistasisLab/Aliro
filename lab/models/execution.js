@@ -11,6 +11,9 @@ const executionSchema = new mongoose.Schema({
   _dataset_id: {
     type: mongoose.Schema.Types.ObjectId,
   },
+  _dataset_file_id: {
+    type: mongoose.Schema.Types.ObjectId,
+  },
   status: {
     type: String,
   },
