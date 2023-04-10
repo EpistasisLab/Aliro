@@ -57,214 +57,17 @@ export default function SideMenu({
         let urlSplit = url.split('/');
         let experimentID = urlSplit[urlSplit.length - 1];
 
-        
-
         checkNumChatBox();
-
-
         
         setBoldUnderlineAndInitTraIc();
         setCurrentExpId(experimentID);
 
         // //set tapTitles
         setTapTitlesFunc();
-
-
-        
-
-        
-
     },
     [window.location.href, numChatBox]
-
-
     
     );
-
-
-//    function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
-
-//         // get current url
-//         let url = window.location.href;
-//         let urlSplit = url.split('/');
-//         let experimentID = urlSplit[urlSplit.length - 1];
-
-
-//         // GET http://localhost:5080/chatapi/v1/chats
-//        fetch(`/chatapi/v1/chats/experiment/${experimentID}`, {
-//             method: "GET",
-//             headers: {
-//                 "Content-Type": "application/json"
-//             }
-//         })
-//             .then(res => res.json())
-//             .then(data => {
-                
-
-//                 // filter data based on experiment id
-//                 let dataFiltered = data.filter(function (el) {
-//                     return el._experiment_id == experimentID;
-//                 });
-
-//                 data=dataFiltered;
-
-//                 console.log("clickedChatBoxNum",clickedChatBoxNum)
-
-//                 // console.log("data[clickedChatBoxNum]", data[clickedChatBoxNum])
-
-//                 // when user click + + New Chat button
-//                 if (clickedChatBoxNum == "+ New Chat" ) {
-                    
-//                     // POST http://localhost:5080/chatapi/v1/chats
-//                     // Content-Type: application/json
-
-//                     // {
-//                     //     "title" : "`${experimentID}`",
-//                     //     "_experiment_id": "641e7a67c3386b002e521705",
-//                     //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
-//                     // }
-
-//                     // current url 
-//                     let url = window.location.href;
-//                     let urlSplit = url.split('/');
-//                     let experimentID = urlSplit[urlSplit.length - 1];
-
-
-//                     fetch("/chatapi/v1/chats", {
-//                         method: "POST",
-//                         headers: {
-//                             "Content-Type": "application/json"
-//                         },
-//                         body: JSON.stringify({
-//                             "title": "ChatBox",
-//                             "_experiment_id": `${experimentID}`,
-//                             "_dataset_id": `${experimentID}`
-//                         })
-//                     })
-//                     .then(res => res.json())
-//                     .then(data => {
-//                         // console.log("data-newchat", data);
-
-
-//                         // POST http://localhost:5080/chatapi/v1/chatlogs
-//                         // Content-Type: application/json
-
-//                         // {
-//                         //     "_chat_id" : "641f26a1b2663354ec5d634f",
-//                         //     "message" : "Hello there from my desk!!!!!!b",
-//                         //     "message_type" : "text",
-//                         //     "who" : "user"
-//                         // }
-
-//                         fetch("/chatapi/v1/chatlogs", {
-//                             method: "POST",
-//                             headers: {
-//                                 "Content-Type": "application/json"
-//                             },
-//                             body: JSON.stringify({
-//                                 "_chat_id": `${data['_id']}`,
-//                                 "message": "How can I help you today?",
-//                                 "message_type": "text",
-//                                 "who": "gpt"
-//                             })
-//                         })
-
-
-
-//                         let chatLogNew = [
-//                             {
-//                                 user: "gpt",
-//                                 message: "How can I help you today?"
-//                             }
-//                         ]
-
-//                         setChatLog(chatLogNew);
-
-//                     }) 
-//                     .catch(err => {
-//                         console.log("err", err);
-//                     }
-//                     )
-
-
-                    
-//                 }
-//                 // when user click existing chat button
-//                 else{
-
-//                     // Get existing chatlogs
-//                     // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
-
-
-//                     console.log("data--getAllChatsAndGetSpecificChat", data)
-//                     console.log("data[clickedChatBoxNum]['_id']", data[clickedChatBoxNum]['_id'])
-
-
-//                     fetch(`/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}`, {
-//                         method: "GET",
-//                         headers: {
-//                             "Content-Type": "application/json"
-//                         }
-//                     })
-//                     .then(res => res.json())
-//                     .then(data => {
-//                         console.log("data['chatlogs']", data['chatlogs']);
-
-//                         // let chatLogNew = [
-//                         //     {
-//                         //         user: "gpt",
-//                         //         message: "How can I help you today?"
-//                         //     }
-//                         // ]
-
-//                         let chatLogNew = []
-            
-                        
-//                         for (let i = 0; i < data["chatlogs"].length; i++) {
-            
-//                             // chatLogNew = [
-//                             //     ...chatLogNew, {
-//                             //         user: data["chatlogs"][i]["who"],
-//                             //         message: data["chatlogs"][i]["message"]
-//                             //     }
-//                             // ]
-
-//                             if (data["chatlogs"][i]["who"]=="user"){
-//                                 chatLogNew = [
-//                                     ...chatLogNew, {
-//                                         user: data["chatlogs"][i]["who"],
-//                                         message: data["chatlogs"][i]["message"]
-//                                     }
-//                                 ]
-//                             }
-    
-//                             else if (data["chatlogs"][i]["who"]=="gpt"){
-//                                 chatLogNew =[
-//                                     ...chatLogNew, {
-//                                         user: data["chatlogs"][i]["who"],
-//                                         // message: `${messageFromOpenai}`
-//                                         message: data["chatlogs"][i]["message"].split(/\n/).map(line => <div key={line}>{line}</div>)
-//                                     }
-//                                 ]
-//                             }
-            
-//                         }
-                        
-//                         setChatLog(chatLogNew);
-       
-//                     })
-//                     .catch(err => {
-//                         console.log("err--getAllChatsAndGetSpecificChat-sidemenu-in", err);
-//                     });
-//                 }
-
-//             })
-//             .catch(err => {
-//                 console.log("err--getAllChatsAndGetSpecificChat-sidemenu-out", err);
-//             });
-    
-//     }
-
 
 
 async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
@@ -276,15 +79,12 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
 
     let data = await getChatMessageByExperimentId(experimentID)
 
-
-            
-
     // filter data based on experiment id
     let dataFiltered = data.filter(function (el) {
         return el._experiment_id == experimentID;
     });
 
-    data=dataFiltered;
+    // data=dataFiltered;
 
     console.log("clickedChatBoxNum",clickedChatBoxNum)
 
@@ -307,7 +107,7 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
         let urlSplit = url.split('/');
         let experimentID = urlSplit[urlSplit.length - 1];
 
-        let data = await postChats(experimentID)
+        data = await postChats(experimentID)
         
 
         // POST http://localhost:5080/chatapi/v1/chatlogs
@@ -323,32 +123,20 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
         
         await postInChatlogsToDB(data['_id'], "How can I help you today?", "text", "gpt")
 
-
-
         let chatLogNew = [
             {
                 user: "gpt",
                 message: "How can I help you today?"
             }
         ]
-
         setChatLog(chatLogNew);
-
-
-        
     }
     // when user click existing chat button
     else{
 
         // Get existing chatlogs
         // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
-
-
-        console.log("data--getAllChatsAndGetSpecificChat", data)
-        console.log("data[clickedChatBoxNum]['_id']", data[clickedChatBoxNum]['_id'])
-
-        data = await getSpecificChatbyChatId(data[clickedChatBoxNum]['_id'])
-
+        data = await getSpecificChatbyChatId(dataFiltered[clickedChatBoxNum]['_id'])
 
         console.log("data['chatlogs']", data['chatlogs']);
 
@@ -361,7 +149,6 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
 
         let chatLogNew = []
 
-        
         for (let i = 0; i < data["chatlogs"].length; i++) {
 
             // chatLogNew = [
@@ -389,23 +176,14 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
                     }
                 ]
             }
-
         }
-        
         setChatLog(chatLogNew);
-
-
     }
-
-
-    
-
 }
 
 async function checkClickedChatboxTab(e) {
 
 
-    // 
     // first, clear the context of the chat completions endpoint. (refer to the jay's message on slack)
         // in the openai api, is there a way to clear the context of the chat completions endpoint?
         // Yes, in the OpenAI API, you can clear the context of the chat completions endpoint by sending an empty string as the value for the context parameter.
@@ -417,14 +195,7 @@ async function checkClickedChatboxTab(e) {
     
     // second, feed current chatlog of clicked chatbox to the chat completions endpoint. 
 
-            
             // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] != undefined, // clear the context of the chat completions endpoint. And then, post with chatlog of clicked chatbox to the openai api (chat/completions).
-
-    console.log("checkClickedChatboxTab-e.target.childNodes",e.target.childNodes)
-
-    // length
-    console.log("checkClickedChatboxTab-e.target.childNodes.length",e.target.childNodes.length)
-
     
     if (e.target.childNodes[0].nodeValue === '+ New Chat') {
         console.log("e.target.childNodes[0].nodeValue is + New Chat")
@@ -434,7 +205,6 @@ async function checkClickedChatboxTab(e) {
 
         var countClickedChatBoxID = numChatBox+1
 
-        // setNumChatBox(countClickedChatBoxID)
             
     }
     else{
@@ -471,36 +241,18 @@ async function checkClickedChatboxTab(e) {
     // first chatbox is 1, second chatbox is 2, third chatbox is 3, etc.
     setChatCurrentTempId(countClickedChatBoxID)
 
-    // chatbox tap
+    // user clicks chatbox tap
     if (e.target.childNodes.length == 3){
         var clickedChatBoxNum = e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue;
     }
 
-    // + New Chat
+    // user clicks + New Chat
     else if (e.target.childNodes.length == 1){
 
         // console.log("e.target.childNodes[1].nodeValue", e.target.childNodes[1].nodeValue)
-
         var clickedChatBoxNum = e.target.childNodes[0].nodeValue;
 
     }
-
-    // console.log("e.target.childNodes[1]-getAllChat",e.target.childNodes[1])
-
-    // console.log("e.target.childNodes-getAllChat",e.target.childNodes)
-    
-    // count of e.target.childNodes
-
-    // console.log("e.target.childNodes.length-getAllChat",e.target.childNodes.length)
-    
-    
-    // console.log("e.target.childNodes-getAllChat[2]",e.target.childNodes[2])
-
-    // console.log("e.target.childNodes[2].childNodes[0].childNodes[1]",e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue)
-
-    
-
-    
 
     // getAllChatsAndGetSpecificChat(clickedChatBoxNum, setChatLog);
     getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog);
@@ -546,19 +298,6 @@ async function removeCorChat(e) {
 
     if(e.target.parentNode.childNodes[1].innerHTML == "✔︎")
     {
-        
-        
-
-        console.log("e.target.parentNode.childNodes[0]",e.target.parentNode.childNodes[0])
-
-        console.log("e.target.parentNode.childNodes[0].childNodes[0]",e.target.parentNode.childNodes[0].childNodes[0])
-
-        console.log("e.target.parentNode.childNodes[0].childNodes[1]",e.target.parentNode.childNodes[0].childNodes[1])
-
-        console.log("e.target.parentNode.childNodes[0].childNodes[2]",e.target.parentNode.childNodes[0].childNodes[2])
-
-        
-
         if (e.target.parentNode.childNodes[0].childNodes.length === 2){
 
             // var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[1].childNodes[0].textContent;
@@ -575,17 +314,9 @@ async function removeCorChat(e) {
 
         else if(e.target.parentNode.childNodes[0].childNodes.length === 3){
 
-            console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0]",e.target.parentNode.childNodes[0].childNodes[2].childNodes[0])
-
             var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent;
         }
 
-
-
-        
-
-
-        console.log("textClickedChatBox",textClickedChatBox)
 
         // parse textClickedChatBox with _
         var textClickedChatBoxIdString = textClickedChatBox.split("_")[1];
@@ -626,12 +357,8 @@ async function removeCorChat(e) {
         // DELETE /chatapi/v1/chats/6421ebd85dc44d80542362c4
 
 
-
-
-
     // remove the chat from DB
     await deleteSpecificChat(filteredChatsWithoutNull[textClickedChatBoxId]['_id'])
-
 
     filteredChatsWithoutNull.splice(textClickedChatBoxId,1)
 
@@ -639,8 +366,6 @@ async function removeCorChat(e) {
     {
 
         let data = await getSpecificChatbyChatId(filteredChatsWithoutNull[filteredChatsWithoutNull.length-1]['_id'])
-
-        console.log("data-get",data)
 
         let chatLogNew = [];
 
@@ -654,10 +379,8 @@ async function removeCorChat(e) {
             ]
 
         }
-        console.log("chatLogNew-clicked",chatLogNew)
-
+    
         setChatLog(chatLogNew);
-
         setNumChatBox(numChatBox-1)
         setChatCurrentTempId(numChatBox-1)
 
@@ -667,9 +390,6 @@ async function removeCorChat(e) {
         // When filteredChatsWithoutNull.length == 0, if user remove the chatbox_0, it will reset the chatbox_0 with How can I help you today? by gpt. And this should be posted to the DB with the experimentId.
 
         let data = await postChats(experimentId)
-
-        
-
         if (data['chatlogs'].length === 0){
 
             // POST http://localhost:5080/chatapi/v1/chatlogs
@@ -684,8 +404,6 @@ async function removeCorChat(e) {
             await postInChatlogsToDB(data._id, "How can I help you today?", "text", "gpt")
         }
 
-        
-        
         let chatLogNew = [
             {
                 user: "gpt",
@@ -700,51 +418,11 @@ async function removeCorChat(e) {
 
     }
 
-
-    
-
-            
-        
-
-
-
-
-
-
         // if the chatbox tap was only one, when user remove the chat, it will remove from the DB, but the chatbox will show "How can I help you today?"
 
         // if the chatbox tap was more than one, when user remove the chat, it will remove from the DB, and the chatbox will show the left chatbox tap or the right chatbox tap.
 
-
     }
-    // console.log("e.target", e.target)
-
-    // console.log("e.target.parentNode", e.target.parentNode)
-
-    // console.log("e.target.parentNode.childNodes[0]", e.target.parentNode.childNodes[0])
-
-    // console.log("e.target.parentNode.childNodes[1]", e.target.parentNode.childNodes[1])
-
-    // changeTrashToCheck(e.target.parentNode.childNodes[1])
-
-    
-
-    // console.log("e.target.parentNode.childNodes", e.target.parentNode.childNodes)
-
-
-    // console.log("e.target.parentNode.childNodes[0].childNodes", e.target.parentNode.childNodes[0].childNodes)
-
-    // console.log("e.target.parentNode.childNodes[0].childNodes[2]", e.target.parentNode.childNodes[0].childNodes[2])
-
-    // console.log("e.target.parentNode.childNodes[0].childNodes[1]", e.target.parentNode.childNodes[0].childNodes[1])
-
-    // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes", e.target.parentNode.childNodes[0].childNodes[2].childNodes)
-
-    // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0]", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0])
-
-
-    // console.log("e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent", e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent)
-
 }
 
 function setBoldUnderlineAndInitTraIc() {
@@ -759,8 +437,6 @@ function setBoldUnderlineAndInitTraIc() {
         for (var i = 0; i < sidemenu.length-1; i++) {
             sidemenu[i].style.fontWeight = "normal";
         }
-    
-    
         sidemenu[sidemenu.length-1].style.fontWeight = "bold";
 
         // Trash emoji for each chatboxtap
@@ -768,40 +444,23 @@ function setBoldUnderlineAndInitTraIc() {
             
             sidemenu[i].childNodes[1].style.display = "none";
         }
-
         sidemenu[sidemenu.length-1].childNodes[1].style.display = "block";
-
     }
-    
-    
-    
-    
-    
-    
 }
 
 async function postChatNameToDB(chatboxtapname){
-
-    // post the + New Chat name to the DB
-    console.log("Post the + New Chat name to the DB.")
-    console.log("chatboxtapname", chatboxtapname)
-
 
     // get current url
     let url = window.location.href;
     let urlSplit = url.split('/');
     let experimentID = urlSplit[urlSplit.length - 1];
 
-        // GET http://localhost:5080/chatapi/v1/chats
+    // GET http://localhost:5080/chatapi/v1/chats
     let data =await getChatMessageByExperimentId(experimentID)
     // filter data based on experiment id
     let dataFiltered = data.filter(function (el) {
         return el._experiment_id == experimentID;
     });
-
-
-
-    console.log("1.data", dataFiltered)
 
 
     // PATCH http://localhost:5080/chatapi/v1/chats/640bd7290674aa751483658b
@@ -815,19 +474,6 @@ async function postChatNameToDB(chatboxtapname){
 
     await patchSpecificChat(dataFiltered[chatCurrentTempId-1]['_id'],chatboxtapname,experimentID,experimentID)
 
-    
-    console.log("22222")
-
-
-
-
-
-    // chatboxtapname
-
-    // chatCurrentTempId-1
-
-    // tapTitles.taptitles
-
     setTapTitles({
         taptitles: tapTitles.taptitles.map((title, index) => {
             if (index === chatCurrentTempId-1) {
@@ -839,19 +485,15 @@ async function postChatNameToDB(chatboxtapname){
 
 }
 
-    // temp title
-    // let taptitles=["A","B","C","D","E"]
-
     return (
-        <div>
+        <div className="divsidemenu">
             <aside className="sidemenu">
 
                 {/* <div className="side-menu-button" onClick={() => setNumChatBox(numChatBox + 1)}> */}
                 <div className="side-menu-button" id="newchatbutton" onClick={ 
                     (e) =>
                     {   
-                        // // console.log("e.target-+ New Chat", e.target)
-                        // console.log("e.target.textContent-+ New Chat", e.target.textContent)
+                        
                         setNumChatBox(numChatBox + 1)
                         checkClickedChatboxTab(e)
                         checkNumChatBox()
@@ -862,7 +504,6 @@ async function postChatNameToDB(chatboxtapname){
                 }>
                     {/* <span></span> */}
                     + New Chat 
-                    {/* <div style={{display: 'hidden'}}>🗑</div> */}
                 </div>
 
                 {   

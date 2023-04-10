@@ -78,7 +78,6 @@ const ChatMessage = ({message, extractedCode}) => {
     //     // }
     // }
     
-    
     console.log("message-ChatMessage.message", message.message)
     console.log("message-ChatMessage.message.length", message.message.length)
     //  type of message.message
@@ -138,6 +137,7 @@ const ChatMessage = ({message, extractedCode}) => {
                             : <div>You</div>
                     }
                 </div>
+                {/* In this case, it shows normal string message. */}
                 {/* if code is false then show  */}
                 {
                     !codeIncluded &&
@@ -149,7 +149,6 @@ const ChatMessage = ({message, extractedCode}) => {
                 
                 
                 {/* simple version to present code */}
-                
                 {
                     codeIncluded &&
                     <div className="message code">

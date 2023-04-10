@@ -747,6 +747,10 @@ text{
   /* align-items:flex-end; */
 }
 
+.divsidemenu{
+  background-color: #202123
+}
+
 .sidemenu {
   /* width: 260px; */
   /* padding: 10px; */
@@ -801,7 +805,7 @@ text{
   flex: 1;
   background-color: #343541;
   position: relative;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   padding-bottom: 95px;
   border-radius: 5px;
 }
@@ -876,7 +880,7 @@ text{
   right: 0;
   bottom: 89px;
   left: 0;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   text-align: left;
 }
 
@@ -1649,16 +1653,19 @@ overflow-y: scroll;
 flex: 1; /* adjust automatically */
 min-width: 0; /* allow flexing beyond auto width */
 overflow: hidden; /* hide overflow on small width */
-overflow-y: scroll;
+/* overflow-y: scroll; */
 }
 
 .slider {
 visibility:hidden;
 line-height: 1200%;
+/* height: 100%; */
+/* width: 100%; */
+/*  */
 /* width: 1px; */
 /* height: 1000%; */
 /*  */
-/* background-color: #1B1C1D; */
+/* background-color: #579ce1!important; */
 /* background-color: black; */
 /* when mouseover  */
 
@@ -1668,8 +1675,8 @@ cursor: col-resize;
 user-select: none;
 text-align: center;
 /* make padding left and right 5px */
-padding-left: 5px;
-padding-right: 5px;
+/* padding-left: 5px;
+padding-right: 5px; */
 /* locate in the center */
 
 /* make transparent charachters in slider */
@@ -1677,17 +1684,19 @@ color: transparent;
 
 border-radius: 10px;
 
+/* position:relative; */
 
-}
+background-color: rgba(38, 37, 37, 0.25);
 
-.slider {
-/* background-color: #FFFFFF; */
-background-color: rgba(0, 0, 0, 0.25);
+
 }
 
 .slider:hover {
-background-color: black;
+background-color: rgb(118, 112, 112);
 }
+
+
+
 
 
 /* ====================== blocks and slider ====================================*/
@@ -1702,7 +1711,7 @@ color:transparent;
 
 
 #expertChatGPT{
-cursor: pointer;
+  cursor: pointer;
 }
 
 /* make trash align by row with side-menu-button */

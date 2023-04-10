@@ -14,15 +14,12 @@ export default function ChatGPT({experiment}) {
     useEffect(() => {
         console.log("useEffect-index.js")
         
-        
         // getEngines();
 
         initailChatBoxSetting();
-
         getAllChatsFromDBFilterbyExpIdSetChatbox();
 
         //set tapTitles
-        // setTapTitlesFunc();
         setTapTitlesFunc();
         setLanModelReset(true);
        
@@ -30,7 +27,6 @@ export default function ChatGPT({experiment}) {
     [window.location.href],
     // [experimentId],
     )
-
 
     const [chatInput, setChatInput] = useState("");
     const [models, setModels] = useState([]);
@@ -47,8 +43,6 @@ export default function ChatGPT({experiment}) {
         }
     ]);
 
-
-
     // this is the number of chat boxes in the result page
     const [numChatBox, setNumChatBox] = useState(1);
 
@@ -57,7 +51,6 @@ export default function ChatGPT({experiment}) {
 
     // const [testID, setTestID] = useState(0);
     // true or false trigger for chat box
-
 
     // language model reset
     // This is a boolean value that indicates whether the language model should be reset
@@ -131,6 +124,7 @@ export default function ChatGPT({experiment}) {
 
     }
 
+    
     function extractCode(messageFromOpenai) {
 
 
@@ -204,11 +198,11 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("data--best", data);
+                console.log("postChats", data);
                 return data;
             })
             .catch(err => {
-                console.log("err--best",err);
+                console.log("err--postChats",err);
                 return err;
             })
 
@@ -226,18 +220,17 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("step.1", data);
+                console.log("step.1-getAllChatsFromDB", data);
                 return data;
             })
             .catch(err => {
-                console.log("err--best--getAllChatsFromDB",err);
+                console.log("err--getAllChatsFromDB",err);
                 return err;
             })
         
         return data;
 
     }
-
 
     // get all chats and filter out the chats that has the same experiment id
     // function getAllChatsFromDBFilterbyExpIdSetChatbox(){
@@ -431,7 +424,7 @@ export default function ChatGPT({experiment}) {
 
             })
             .catch(err => {
-                console.log("err--best--getSpecificChatbyChatId",err);
+                console.log("err--getSpecificChatbyChatId",err);
             })
 
         return data;
@@ -463,10 +456,10 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("data--best--patchSpecificChat", data);
+                console.log("data--patchSpecificChat", data);
             })
             .catch(err => {
-                console.log("err--best--patchSpecificChat",err);
+                console.log("err--patchSpecificChat",err);
             })
 
     
@@ -484,11 +477,11 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("data--best--deleteSpecificChat", data);
+                console.log("data--deleteSpecificChat", data);
                 return data;
             })
             .catch(err => {
-                console.log("err--best--deleteSpecificChat",err);
+                console.log("err--deleteSpecificChat",err);
                 return err;
             })
         return data;
@@ -506,7 +499,7 @@ export default function ChatGPT({experiment}) {
         //     "who" : "user"
         // }
 
-        let data=await fetch("/chatapi/v1/chatlogs", {
+        let data = await fetch("/chatapi/v1/chatlogs", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -535,7 +528,7 @@ export default function ChatGPT({experiment}) {
 
     }
 
-    function patchChatlog(chatlogId, message, message_type, who){
+    async function patchChatlog(chatlogId, message, message_type, who){
         // PATCH http://localhost:5080/chatapi/v1/chatlogs/641e148dc5abc90a3b2b2221
         // Content-Type: application/json
 
@@ -545,7 +538,7 @@ export default function ChatGPT({experiment}) {
         //     "who" : "openai"
         // }
 
-        fetch("/chatapi/v1/chatlogs/641e148dc5abc90a3b2b2221", 
+        await fetch("/chatapi/v1/chatlogs/641e148dc5abc90a3b2b2221", 
             {
                 method: "PATCH",
                 headers: {
@@ -580,13 +573,13 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("data--best--getChatMessage", data);
+                console.log("getChatMessageByExperimentId: ", data);
                 return data;
                 
             }
             )
             .catch(err => {
-                console.log("err--best--getChatMessage",err);
+                console.log("err--getChatMessageByExperimentId",err);
                 return err;
             }
             )
@@ -773,10 +766,10 @@ export default function ChatGPT({experiment}) {
                 
 
     }
-
+    // ==================== openai api ====================
     async function openaiChatCompletions(currentModel,preSetLastMessageFromUser){
 
-        // jay's api 
+        // jay's
         let data=await fetch("openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -808,6 +801,12 @@ export default function ChatGPT({experiment}) {
 
 
     }
+
+
+
+
+
+
 
     // async function handleSubmit(e) {
     //     // prevent page from refreshing
@@ -995,7 +994,6 @@ export default function ChatGPT({experiment}) {
     
     
     // simple
-    
     async function handleSubmit(e) {
         // prevent page from refreshing
         e.preventDefault();
@@ -1012,9 +1010,6 @@ export default function ChatGPT({experiment}) {
             }
         ]
         
-
-        
-
         chatLogNew = [
             ...chatLog, {
                 user: "me",
@@ -1027,21 +1022,13 @@ export default function ChatGPT({experiment}) {
 
 
         // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
-
-
-
-        
         let data = await getChatMessageByExperimentId(experimentId);
 
-        
-        // console.log("data--best--experiment", data);
         // filter the data using _experiment_id
         var filteredData= data.filter((item) => item._experiment_id === experimentId)
 
-        console.log("filteredData-handleSubmit", filteredData)
-        console.log("experimentId-handleSubmit", experimentId)
-        console.log("chatCurrentTempId-handleSubmit",chatCurrentTempId)
-
+        // chatCurrentTempId is 1,2,3, ...
+        // there is no 0 chatCurrentTempId.
         if (chatCurrentTempId === 0){
 
             setChatCurrentTempId(1);
@@ -1071,12 +1058,7 @@ export default function ChatGPT({experiment}) {
 
         let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
     
-        
-
         data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
-
-
-
 
         var messageFromOpenai = data.choices[0].message['content'];
             
@@ -1098,7 +1080,7 @@ export default function ChatGPT({experiment}) {
         }
 
         // postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], data.message, "text", "gpt");
-        postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
+        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
         
         // setChatLog([
         //     ...chatLogNew, {
@@ -1117,8 +1099,7 @@ export default function ChatGPT({experiment}) {
                 //remove the first 6 characters
                 match[1] = match[1].substring(6);
             }
-            console.log("python code:",match[1]);
-    
+            // console.log("python code:",match[1]);
         }
 
         // setChatLog([
@@ -1137,20 +1118,10 @@ export default function ChatGPT({experiment}) {
             }
         ])
 
-
-
         var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
         scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
-    
-
-    
-
-
-
 
         setLanModelReset(false);
-
-
     }
 
     function handleTemp(temp) {
@@ -1213,13 +1184,10 @@ export default function ChatGPT({experiment}) {
     // simple
     async function setTapTitlesFunc(){
         console.log("setTapTitlesFunc");
-        
         let tempTapTitles = [];
-
         let url = window.location.href;
         let urlSplit = url.split('/');
         let experimentID = urlSplit[urlSplit.length - 1];
-
 
         let data = await getChatMessageByExperimentId(experimentID);
 
@@ -1228,19 +1196,12 @@ export default function ChatGPT({experiment}) {
             return el._experiment_id == experimentID;
         });
         
-
-        console.log("setTapTitlesFunc-dataFiltered",dataFiltered)
-
         // get the title of each chat from data
         for (let i = 0; i < dataFiltered.length; i++){
             tempTapTitles[i] = dataFiltered[i]['title'];
         }
 
-        console.log("setTapTitlesFunc-tempTapTitles",tempTapTitles)
-
-        setTapTitles({...tapTitles, taptitles: tempTapTitles});
-
-        
+        setTapTitles({...tapTitles, taptitles: tempTapTitles});   
     }
 
     return (

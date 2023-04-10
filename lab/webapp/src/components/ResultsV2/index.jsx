@@ -433,8 +433,8 @@ class Results extends Component {
             // localStorage.setItem('class_percentage', JSON.stringify(class_percentage));
 
             return (
-                <div class="containerChartsChats">
-                    <div class="chartschat chartsbaseleft">
+                <div className="containerChartsChats">
+                    <div className="chartschat chartsbaseleft">
                         <Grid columns={2} stackable="stackable">
                             <Grid.Row>
                                 <Grid.Column>
@@ -860,15 +860,7 @@ class Results extends Component {
 
 const mapStateToProps = (state) => ({experiment: state.experiments.selected});
 
-// const mapStateToProps = (state, props) => (   {     experiment:
-// state.experiments.selected,     dataset:
-// state.datasets.byId[props.location.query.dataset],     defaultAlgorithms:
-// state.preferences.data.algorithms,     availableAlgorithms:
-// state.preferences.data.algorithms.filter(function(algo) {         return
-// algo.category==state.datasets.byId[props.location.query.dataset].files[0].prediction_type
-// }),     currentAlgorithm: state.builder.currentAlgorithm,     currentParams:
-// state.builder.currentParams,     isSubmitting: state.builder.isSubmitting,
-// error: state.builder.error   } );
+
 export {
     Results
 };

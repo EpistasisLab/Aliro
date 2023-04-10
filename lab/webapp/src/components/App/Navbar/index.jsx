@@ -100,22 +100,13 @@ function toggleChatGPT(e) {
       for (var i = 0; i < sliders.length; i++) {
         sliders[i].style.visibility ="hidden";
       }
-
-      
-
-      // document.getElementsByClassName("chartschat")[0].style.width = "50%";
-      // console.log("make chatgpt-space visible")
-      // document.getElementById("chatgpt-space").style.visibility ="hidden"
     }
 
   }
 
   else{
 
-
-    
     if (document.getElementById("chatgpt-space").style.visibility === "" || document.getElementById("chatgpt-space").style.visibility === "hidden")
-    // if (document.getElementById("chatgpt-space").style.visibility === "")
     {
       
       // document.getElementsByClassName("chartschat")[0].style.width = "100%";

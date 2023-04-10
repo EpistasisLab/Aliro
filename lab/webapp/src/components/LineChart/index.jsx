@@ -157,10 +157,18 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
         title: function (d) { return 'Training examples: ' + d; }
       }
     },
+    legend:{
+      item: { onclick: function (id) {
+        console.log('id: ', id)
+        // make it thicker 
+        console.log('legend item clicked')
+      } }
+    },
 
     padding: {
       top: 20,
     }
+
 
 
     

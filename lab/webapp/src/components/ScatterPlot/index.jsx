@@ -331,54 +331,21 @@ if (chartKey.includes('pca') || chartKey.includes('tsne')) {
       show: false
     },
     legend: {
-      show: false
+      // show: false
+      item: { onclick: function (id) {
+
+        console.log('id: ', id)
+
+        
+        
+        console.log('legend item clicked')
+      } }
     },
     padding: {
       top: 20,
     }
   });
 }
-
-
-
-// scatter plot and dashed line for 1:1
-// var chart = c3.generate({
-//   data: {
-
-      
-      
-//       xs: {'class_0':"0_x", 'class_1':"1_x", 'class_2':"2_x",'line_y':"line_x"},
-      
-//       columns: [
-//           ["2_x", 1,1,3,4,2],
-//           ['class_2', 300, 200, 160, 400, 250, 250],
-//           ['1_x', 200, 130, 90, 240, 130, 220],
-//           ['class_1', 200, 120, 150, 140, 160, 150],
-//           ['0_x', 90, 70, 20, 50, 60, 120],
-//           ['class_0', 200, 120, 150, 140, 160, 150],
-//           ['line_x', 1,100],
-//           ['line_y', 1,100]
-          
-//       ],
-//       type: 'scatter',
-      
-//       types: {
-          
-          
-//           line_y: 'line'
-          
-          
-//       },
-//       regions: {
-//         'line_y': [{'style':'dashed'}], // currently 'dashed' style only
-        
-//       },
-//       colors: {
-//     line_y: '#FF0000'
-// }
-      
-//   }
-// });
 
 else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
 
@@ -407,9 +374,6 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
     },
     axis: axis,
 
-    
-
-
     // set tooltip based on your setting 
     tooltip: {
       // format: {
@@ -424,6 +388,9 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
       item: { onclick: function () {
         console.log('legend item clicked')
       } }
+      // mouseover and thick
+
+
     },
     padding:{
       top: 10,
@@ -500,12 +467,6 @@ else if (chartKey.includes('CVR')) {
   render() {
     return (
       // <div className={`ScatterPlot ${this.props.chartKey}`} />
-
-
-      
-
-
-
 
     <div >
         
