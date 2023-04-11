@@ -40,6 +40,7 @@ export default function SideMenu({
     
     postChats,
     postInChatlogsToDB,
+    // postInChatlogsToDBWithExeId,
 
     deleteSpecificChat,
     patchSpecificChat,
@@ -117,6 +118,8 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
         
         await postInChatlogsToDB(data['_id'], "How can I help you today?", "text", "gpt")
 
+        // await postInChatlogsToDBWithExeId(experimentID, data['_id'], "How can I help you today?", "text", "gpt","")
+
         let chatLogNew = [
             {
                 user: "gpt",
@@ -165,8 +168,8 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
                 chatLogNew =[
                     ...chatLogNew, {
                         user: data["chatlogs"][i]["who"],
-                        // message: `${messageFromOpenai}`
-                        message: data["chatlogs"][i]["message"].split(/\n/).map(line => <div key={line}>{line}</div>)
+                        message: data["chatlogs"][i]["message"]
+                        // message: data["chatlogs"][i]["message"].split(/\n/).map(line => <div key={line}>{line}</div>)
                     }
                 ]
             }
@@ -392,6 +395,8 @@ async function removeCorChat(e) {
             // }
             
             await postInChatlogsToDB(data._id, "How can I help you today?", "text", "gpt")
+
+            // await postInChatlogsToDBWithExeId(experimentId, "How can I help you today?", "text", "gpt","")
         }
 
         let chatLogNew = [
