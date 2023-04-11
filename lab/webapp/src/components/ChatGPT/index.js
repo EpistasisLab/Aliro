@@ -13,7 +13,6 @@ export default function ChatGPT({experiment}) {
 
     useEffect(() => {
         console.log("useEffect-index.js")
-        
         // getEngines();
 
         initailChatBoxSetting();
@@ -193,7 +192,7 @@ export default function ChatGPT({experiment}) {
             body: JSON.stringify({
                 title: "ChatBox",
                 _experiment_id: experimentId,
-                _dataset_id: experimentId
+                _dataset_id: experiment.data._dataset_id
             })
             })
             .then(res => res.json())
@@ -338,12 +337,8 @@ export default function ChatGPT({experiment}) {
 
         console.log("step.2", data)
 
-        
-
-        // get the experiment id from the url
-        let url = window.location.href;
-        let urlSplit = url.split("/");
-        let experimentId = urlSplit[urlSplit.length - 1];
+    
+        let experimentId = experiment.data._id;
 
 
         // map to filter out the chats that has the same experiment id 
@@ -409,6 +404,9 @@ export default function ChatGPT({experiment}) {
     async function getSpecificChatbyChatId(chatId){
         // GET http://localhost:5080/chatapi/v1/chats/641e137ac5abc90a3b2b221e
 
+        // datasetid
+        // fetch(`
+
         let data=await fetch(`/chatapi/v1/chats/${chatId}`, {
             method: "GET",
             headers: {
@@ -451,7 +449,7 @@ export default function ChatGPT({experiment}) {
             body: JSON.stringify({
                 title: title,
                 _experiment_id: experiment_id,
-                _dataset_id: dataset_id
+                _dataset_id: experiment.data._dataset_id
             })
             })
             .then(res => res.json())
@@ -694,10 +692,15 @@ export default function ChatGPT({experiment}) {
     //simple
     async function initailChatBoxSetting()
     {
-        // the experiment id from the url
-        let url = window.location.href;
-        let urlSplit = url.split("/");
-        let experimentId = urlSplit[urlSplit.length - 1];
+        
+        let experimentId = experiment.data._id;
+
+        // experimentId = experiment.data._id
+
+        console.log("experiment.data._id", experiment.data._id )
+        console.log("experimentId",experimentId)
+
+        // experimentId = urlSplit[urlSplit.length - 1]
 
         // GET http://localhost:5080/chatapi/v1/chats
 
@@ -998,9 +1001,13 @@ export default function ChatGPT({experiment}) {
         // prevent page from refreshing
         e.preventDefault();
 
-        let url = window.location.href;
-        let urlSplit = url.split("/");
-        let experimentId = urlSplit[urlSplit.length - 1];
+        // datasets/6434549bdb5238004a49a984
+        // datasetId
+        // is there any way to get dataset id from result page?
+
+
+
+        let experimentId = experiment.data._id;;
 
 
         let chatLogNew =[
@@ -1187,7 +1194,7 @@ export default function ChatGPT({experiment}) {
         let tempTapTitles = [];
         let url = window.location.href;
         let urlSplit = url.split('/');
-        let experimentID = urlSplit[urlSplit.length - 1];
+        let experimentID = experiment.data._id;
 
         let data = await getChatMessageByExperimentId(experimentID);
 
@@ -1249,6 +1256,8 @@ export default function ChatGPT({experiment}) {
 
                     deleteSpecificChat={deleteSpecificChat}
                     patchSpecificChat = {patchSpecificChat}
+
+                    experiment = {experiment}
                     
                 />
             }

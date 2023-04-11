@@ -42,7 +42,9 @@ export default function SideMenu({
     postInChatlogsToDB,
 
     deleteSpecificChat,
-    patchSpecificChat
+    patchSpecificChat,
+
+    experiment
 
 
 }
@@ -52,10 +54,7 @@ export default function SideMenu({
     useEffect(() => {
         console.log("useEffect-SideMenu")
 
-        // get experiment id from url
-        let url = window.location.href;
-        let urlSplit = url.split('/');
-        let experimentID = urlSplit[urlSplit.length - 1];
+        let experimentID = experiment.data._id ;
 
         checkNumChatBox();
         
@@ -72,10 +71,8 @@ export default function SideMenu({
 
 async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
 
-    // get current url
-    let url = window.location.href;
-    let urlSplit = url.split('/');
-    let experimentID = urlSplit[urlSplit.length - 1];
+    
+    let experimentID = experiment.data._id ;
 
     let data = await getChatMessageByExperimentId(experimentID)
 
@@ -102,10 +99,7 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
         //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
         // }
 
-        // current url 
-        let url = window.location.href;
-        let urlSplit = url.split('/');
-        let experimentID = urlSplit[urlSplit.length - 1];
+        let experimentID = experiment.data._id ;
 
         data = await postChats(experimentID)
         
@@ -332,11 +326,7 @@ async function removeCorChat(e) {
         let data = await getAllChatsFromDB()
 
 
-
-        // get the experiment id from the url
-        let url = window.location.href;
-        let urlSplit = url.split("/");
-        let experimentId = urlSplit[urlSplit.length - 1];
+        let experimentId = experiment.data._id ;
 
         // filter out the chats that has the same experiment id 
         let filteredChats = data.map((chat) => {
@@ -453,7 +443,7 @@ async function postChatNameToDB(chatboxtapname){
     // get current url
     let url = window.location.href;
     let urlSplit = url.split('/');
-    let experimentID = urlSplit[urlSplit.length - 1];
+    let experimentID = experiment.data._id ;
 
     // GET http://localhost:5080/chatapi/v1/chats
     let data =await getChatMessageByExperimentId(experimentID)

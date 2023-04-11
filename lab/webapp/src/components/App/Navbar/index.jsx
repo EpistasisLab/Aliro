@@ -42,119 +42,8 @@ import PopUpAPI from '../../PopUpAPI'
 * menu bar with links to other sections of site
 */
 
-// openaiapiState={seen:false};
-// const [openaiapiState, openaiapiState]= useState
-
-// const [text, setText] = useState('');
 
 
-
-
-
-
-
-
-function toggleChatGPT(e) {
-
-  if (e.target.className === "chat icon") {
-
-
-    if (document.getElementById("chatgpt-space").style.visibility == "hidden")
-    {
-
-      var chartschat = document.getElementsByClassName("chartschat");
-
-      for (var i = 0; i < chartschat.length; i++) {
-        chartschat[i].style.width = "49%";
-      }
-
-
-
-      var sliders = document.getElementsByClassName("slider");
-
-      for (var i = 0; i < sliders.length; i++) {
-        sliders[i].style.width = "1%";
-
-      }
-
-      document.getElementById("chatgpt-space").style.visibility ="visible"
-
-      var sliders = document.getElementsByClassName("slider");
-
-      for (var i = 0; i < sliders.length; i++) {
-        sliders[i].style.visibility ="visible";
-      } 
-    }
-    else
-    {
-      var chartschat = document.getElementsByClassName("chartschat");
-
-      for (var i = 0; i < chartschat.length; i++) {
-        chartschat[i].style.width = "100%";
-      }
-      // make chatgpt-space visible
-      document.getElementById("chatgpt-space").style.visibility = "hidden"
-
-      var sliders = document.getElementsByClassName("slider");
-
-      for (var i = 0; i < sliders.length; i++) {
-        sliders[i].style.visibility ="hidden";
-      }
-    }
-
-  }
-
-  else{
-
-    if (document.getElementById("chatgpt-space").style.visibility === "" || document.getElementById("chatgpt-space").style.visibility === "hidden")
-    {
-      
-      // document.getElementsByClassName("chartschat")[0].style.width = "100%";
-      var chartschat = document.getElementsByClassName("chartschat");
-
-      for (var i = 0; i < chartschat.length; i++) {
-        chartschat[i].style.width = "49%";
-      }
-
-      var sliders = document.getElementsByClassName("slider");
-
-      for (var i = 0; i < sliders.length; i++) {
-        sliders[i].style.width = "1%";
-      }
-      
-      // make chatgpt-space visible
-      document.getElementById("chatgpt-space").style.visibility = "visible"
-
-      var sliders = document.getElementsByClassName("slider");
-
-      for (var i = 0; i < sliders.length; i++) {
-        sliders[i].style.visibility ="visible";
-      }
-    }
-    else
-    {
-      console.log("else-part")
-      var chartschat = document.getElementsByClassName("chartschat");
-
-      for (var i = 0; i < chartschat.length; i++) {
-        chartschat[i].style.width = "100%";
-      }
-
-      var sliders = document.getElementsByClassName("slider");
-
-      for (var i = 0; i < sliders.length; i++) {
-        sliders[i].style.visibility ="hidden";
-      }
-      document.getElementById("chatgpt-space").style.visibility ="hidden"
-      // chage width 100%
-    }
-    
-  }
-
-
-
-
-}
 function Navbar({ preferences }) {
   const getUserTrigger = () => {
 
@@ -175,6 +64,109 @@ function Navbar({ preferences }) {
 
 
   // const [error, setError] = useState(null);
+
+
+  function toggleChatGPT(e) {
+
+    if (e.target.className === "chat icon") {
+  
+  
+      if (document.getElementById("chatgpt-space").style.visibility == "hidden")
+      {
+  
+        var chartschat = document.getElementsByClassName("chartschat");
+  
+        for (var i = 0; i < chartschat.length; i++) {
+          chartschat[i].style.width = "49%";
+        }
+  
+  
+  
+        var sliders = document.getElementsByClassName("slider");
+  
+        for (var i = 0; i < sliders.length; i++) {
+          sliders[i].style.width = "1%";
+  
+        }
+  
+        document.getElementById("chatgpt-space").style.visibility ="visible"
+  
+        var sliders = document.getElementsByClassName("slider");
+  
+        for (var i = 0; i < sliders.length; i++) {
+          sliders[i].style.visibility ="visible";
+        } 
+      }
+      else
+      {
+        var chartschat = document.getElementsByClassName("chartschat");
+  
+        for (var i = 0; i < chartschat.length; i++) {
+          chartschat[i].style.width = "100%";
+        }
+        // make chatgpt-space visible
+        document.getElementById("chatgpt-space").style.visibility = "hidden"
+  
+        var sliders = document.getElementsByClassName("slider");
+  
+        for (var i = 0; i < sliders.length; i++) {
+          sliders[i].style.visibility ="hidden";
+        }
+      }
+  
+    }
+  
+    else{
+  
+      if (document.getElementById("chatgpt-space").style.visibility === "" || document.getElementById("chatgpt-space").style.visibility === "hidden")
+      {
+        
+        // document.getElementsByClassName("chartschat")[0].style.width = "100%";
+        var chartschat = document.getElementsByClassName("chartschat");
+  
+        for (var i = 0; i < chartschat.length; i++) {
+          chartschat[i].style.width = "49%";
+        }
+  
+        var sliders = document.getElementsByClassName("slider");
+  
+        for (var i = 0; i < sliders.length; i++) {
+          sliders[i].style.width = "1%";
+        }
+        
+        // make chatgpt-space visible
+        document.getElementById("chatgpt-space").style.visibility = "visible"
+  
+        var sliders = document.getElementsByClassName("slider");
+  
+        for (var i = 0; i < sliders.length; i++) {
+          sliders[i].style.visibility ="visible";
+        }
+      }
+      else
+      {
+        console.log("else-part")
+        var chartschat = document.getElementsByClassName("chartschat");
+  
+        for (var i = 0; i < chartschat.length; i++) {
+          chartschat[i].style.width = "100%";
+        }
+  
+        var sliders = document.getElementsByClassName("slider");
+  
+        for (var i = 0; i < sliders.length; i++) {
+          sliders[i].style.visibility ="hidden";
+        }
+        document.getElementById("chatgpt-space").style.visibility ="hidden"
+        // chage width 100%
+      }
+      
+    }
+  
+  
+  
+  
+  }
 
   const checkConnectionOpenAI = () => {
     
