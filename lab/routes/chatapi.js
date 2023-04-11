@@ -1,8 +1,6 @@
 const express = require('express');
-const chat = require('../models/chat');
 const router = express.Router();
 const Chat = require('../models/chat');
-const chatlog = require('../models/chatlog');
 const ChatLog = require('../models/chatlog');
 const db = require('../dbgoose').db;
 const { 
@@ -33,6 +31,7 @@ router.post('/chatlogs', async (req, res) => {
 
     const chatlog = new ChatLog({
         _chat_id: req.body._chat_id,
+        _execution_id: req.body._execution_id,
         message: req.body.message,
         message_type: req.body.message_type,
         source_code: req.body.source_code,
@@ -60,6 +59,9 @@ router.patch('/chatlogs/:id', getChatlogById, async (req, res) => {
     }
     if (req.body.message != null) {
         res.chatlog.message = req.body.message;
+    }
+    if (req.body._execution_id != null) {
+        res.chatlog._execution_id = req.body._execution_id;
     }
     if (req.body.message_type != null) {
         res.chatlog.message_type = req.body.message_type;

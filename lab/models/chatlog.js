@@ -6,6 +6,10 @@ const chatlogSchema = new mongoose.Schema({
         required: true,
         ref: 'Chat'
     },
+    _execution_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Execution'
+    },
     message: {
         type: String,
     },
