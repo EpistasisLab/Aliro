@@ -26,9 +26,6 @@ router.post('/executions', async (req, res, next) => {
     //     return res.status(400).json({ message: 'no chatlog_id provided' });
     // }
 
-    // let request = {
-    //     src_code: req.body.src_code,
-    // };
     // create a new execution
     let execution = new Execution({
         src_code: req.body.src_code,
@@ -38,29 +35,21 @@ router.post('/executions', async (req, res, next) => {
     });
 
     if (req.body.dataset_file_id != null) {
-        // request.dataset_file_id = req.body.dataset_file_id;
         execution._dataset_file_id = req.body.dataset_file_id;
     } else if (req.body.dataset_id != null) {
         execution._dataset_id = req.body.dataset_id;
         let dataset = await getDatasetById(req.body.dataset_id);
         if (dataset != null) {
-            // request.dataset_file_id = dataset.files[0]._id;
             execution._dataset_file_id = dataset.files[0]._id;
         }
     }
 
-    // if (request.dataset_file_id != null) {
-    //     execution._dataset_file_id = request.dataset_file_id;
-    // }
-
     if (req.body.experiment_id != null) {
         execution._experiment_id = req.body.experiment_id;
-        // request.experiment_id = req.body.experiment_id;
     }
 
     try {
         const newExecution = await execution.save();
-        // request.execution_id = newExecution._id;
         execution._id = newExecution._id;
     } catch (err) {
         return res.status(500).json({ message: err.message });
@@ -87,23 +76,29 @@ router.post('/executions', async (req, res, next) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            // body: JSON.stringify(request)
             body: JSON.stringify(execution)
         });
         result = await result.json();
 
         // update the execution status
         execution.status = result.exec_results.status;
-        // execution._dataset_file_id = request.dataset_file_id;
         execution.result = result.exec_results.result;
 
         // add any generated files in tmppath to the execution.files array
-        // const files = await uploadExecFiles(request.execution_id, tmppath);
         const files = await uploadExecFiles(execution._id, tmppath);
         execution.files = files;
 
         const updatedExecution = await execution.save();
-        // result.files = files;
+
+        // delete the tmp folder
+        fs.rm(tmppath, { recursive: true }, (err) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(tmppath + ' folder deleted');
+            }
+        });
+
         res.send(execution);
     }
     catch (err) {
@@ -133,6 +128,5 @@ router.patch('/executions/:id', getExecutionById, async (req, res, next) => {
         res.status(400).json({ message: err.message });
     }
 });
-
 
 module.exports = router;
