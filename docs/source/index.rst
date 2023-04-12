@@ -21,6 +21,7 @@ And, it has an *AI* assistant that can choose the analysis to run for you.
    lab_api
    openai_api
    chatapi
+   execapi
    ai
    recommenders
    api

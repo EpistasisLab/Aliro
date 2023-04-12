@@ -1,0 +1,126 @@
+#%RAML 1.0
+title: Execution API
+version: v1
+baseUri: http://localhost:5080/execapi/{version}
+mediaType: application/json
+
+types:
+  file:
+    type: object
+    properties:
+      _id:
+        type: string
+      filename:
+        type: string
+      mimetype:
+        type: string
+      timestamp:
+        type: string
+  execution:
+    type: object
+    properties:
+      _id:
+        type: string
+      src_code:
+        type: string
+      status:
+        type: string
+        enum: [submitted, completed, error]
+      result:
+        type: string
+      files:
+        type: array
+        items: file
+      _dataset_file_id?:
+        type: string
+      _dataset_id?:
+        type: string
+      _experiment_id?:
+        type: string
+
+/executions:
+  post:
+    description: Create a new execution
+    body:
+      application/json:
+        properties:
+          src_code:
+            type: string
+          dataset_file_id?:
+            type: string
+          dataset_id?:
+            type: string
+          experiment_id?:
+            type: string
+        example:
+          {
+            "src_code": "df_new = df.head(10)\ndf_new.to_csv('example.csv')",
+            "dataset_id": "444555666",
+            "experiment_id": "777888999"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            type: execution
+            example:
+              {
+                "_id": "987654321",
+                "src_code": "df_new = df.head(10)\ndf_new.to_csv('example.csv')",
+                "status": "completed",
+                "result": "Hello, world!",
+                "files": [
+                  {
+                    "_id": "123456789",
+                    "filename": "example.csv",
+                    "mimetype": "text/csv",
+                    "timestamp": "2023-04-11T12:34:56Z"
+                  }
+                ],
+                "_dataset_file_id": "111222333",
+                "_dataset_id": "444555666",
+                "_experiment_id": "777888999"
+              }
+      400:
+        body:
+          application/json:
+            properties:
+              message:
+                type: string
+            example: { "message": 'No src_code provided' }
+  /{id}:
+    uriParameters:
+      id:
+        type: string
+    get:
+      description: Get execution by id
+      responses:
+        200:
+          body:
+            application/json:
+              type: execution
+              example:
+                {
+                  "_id": "987654321",
+                  "src_code": "df_new = df.head(10)\ndf_new.to_csv('example.csv')",
+                  "status": "completed",
+                  "result": "Hello, world!",
+                  "files": [
+                    {
+                      "_id": "123456789",
+                      "filename": "example.csv",
+                      "mimetype": "text/csv",
+                      "timestamp": "2023-04-11T12:34:56Z"
+                    }
+                  ],
+                  "_dataset_file_id": "111222333",
+                  "_dataset_id": "444555666",
+                  "_experiment_id": "777888999"
+                }
+        404:
+          body:
+            application/json:
+              properties:
+                message:
+                  type: string
+              example: { message: 'Cannot find execution: 123456789' }
