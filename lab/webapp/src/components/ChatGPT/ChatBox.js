@@ -160,7 +160,7 @@ const ChatMessage = ({message, extractedCode}) => {
                         
 
                         {/* {message.message} */}
-
+                        
                         {/* play button */}
                         <div>
                         <button className="run-code-button" onClick={async (e)=>
