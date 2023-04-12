@@ -20,22 +20,18 @@ if (process.env.LAB_HOST && process.env.LAB_PORT) {
     process.exit(1);
 }
 
-async function getDatasetById(req, res, next) {
-    if (req.body.dataset_id == null) {
-        return
-    }
+async function getDatasetById(datasetId) {
     let dataset;
     try {
-        dataset = await Dataset.findById(req.body.dataset_id);
+        dataset = await Dataset.findById(datasetId);
         if (dataset == null) {
-            return res.status(404).json({ message: 'Cannot find dataset: ' + req.body.dataset_id });
+            console.log('Cannot find dataset: ' + datasetId);
         }
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        console.log(err.message);
     }
     
-    res.dataset = dataset;
-    next();
+    return dataset;
 }
 
 async function getExecutionById(req, res, next) {
@@ -91,7 +87,6 @@ async function uploadExecFiles(executionId, filepath) {
         }
     }
 
-    console.log('files uploaded to GridFS:' + files);
     return files;
 }
 
