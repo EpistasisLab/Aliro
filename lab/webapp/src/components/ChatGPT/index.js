@@ -1287,6 +1287,7 @@ export default function ChatGPT({experiment}) {
         //     await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], chatInput, "text", "user");
         // }
 
+        // test
         const messages = chatLogNew
         .map((message) => message.message)
         .join("\n")
