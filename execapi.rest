@@ -1,18 +1,12 @@
 ###
 
-POST http://localhost:5080/execapi/v1/executions/experiment/6434aff4cfccf000316a9283
+POST http://localhost:5080/execapi/v1/executions
 Content-Type: application/json
 
 {
-  "src_code": "print(df.shape)",
-  # "src_code": "df_new = df.head(50)\ndf_new.to_csv('iris_new.csv')",
-  # "src_code": "import sklearn.decomposition\nimport matplotlib.pyplot as plt\n\npca = sklearn.decomposition.PCA(n_components=2)\ndf = pca.fit_transform(df.drop('target', axis=1))\n\nplt.scatter(df[:, 0], df[:, 1])\nplt.xlabel('PC 1')\nplt.ylabel('PC 2')\nplt.title('PCA Plot of Iris Dataset')\nplt.savefig('iris_pca.png')\n",
-  # "src_code": "df = pca.fit_transform(df.drop('Species', axis=1))\nplt.scatter(df[:, 0], df[:, 1])\nplt.xlabel('PC 1')\nplt.ylabel('PC 2')\nplt.title('PCA Plot of Iris Dataset')\nplt.savefig('iris_pca.png')",
-  # "src_code": "import csv\n\ndata = [\n    ['Name', 'Age', 'Gender'],\n    ['Alice', 25, 'Female'],\n    ['Bob', 30, 'Male'],\n    ['Charlie', 35, 'Male'],\n    ['David', 40, 'Male'],\n]\n\nfilename = 'test.csv'\nfilepath = ''\n\nwith open(filepath + filename, mode='w', newline='') as file:\n    writer = csv.writer(file)\n    writer.writerows(data)\n\nprint(f'CSV file {filename} has been created and saved to {filepath}.')",
-  # "src_code":  "print('hello world')",
-  # "src_code": "# Application 1: cross validation of fitted model on a new dataset\ntesting_features = df.drop(\"target\", axis=1).values\ntesting_target = df['target'].values\n# Get holdout score for fitted model\nprint(\"Holdout score: \", end=\"\")\nprint(model.score(testing_features, testing_target))",
-  "dataset_id": "6434afedcfccf000316a9282",
-  # "dataset_file_id": "6434950891900008f372c7a0"
+  "src_code": "import sklearn.decomposition\nimport matplotlib.pyplot as plt\n\npca = sklearn.decomposition.PCA(n_components=2)\ndf = pca.fit_transform(df.drop('target', axis=1))\n\nplt.scatter(df[:, 0], df[:, 1])\nplt.xlabel('PC 1')\nplt.ylabel('PC 2')\nplt.title('PCA Plot of Iris Dataset')\nplt.savefig('iris_pca.png')\n",
+  "dataset_id": "6434a0fe9c33cd004aa10011",
+  "experiment_id": "6434a1039c33cd004aa10012"
 }
 
 ###
@@ -30,4 +24,4 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5080/api/v1/files/6434950891900008f372c7a0
+GET http://localhost:5080/api/v1/files/6435f0485a15a86c5f84b826

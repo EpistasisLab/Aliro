@@ -455,10 +455,18 @@ app.post("/code/run", jsonParser, (req, res) => {
     let args = [
         'machine/pyutils/run_code.py',
         '--code', req.body.src_code,
-        '--dataset_file_id', req.body.dataset_file_id,
-        '--experiment_id', req.body.experiment_id,
-        '--execution_id', req.body.execution_id
+        '--execution_id', req.body._id
     ]
+
+    if (req.body._dataset_file_id !== undefined) {
+        args.push('--dataset_file_id');
+        args.push(req.body._dataset_file_id);
+    }
+
+    if (req.body._experiment_id !== undefined) {
+        args.push('--experiment_id');
+        args.push(req.body._experiment_id);
+    }
 
     let pyProc = spawn('python', args, { cwd: process.env.PROJECT_ROOT });
 
