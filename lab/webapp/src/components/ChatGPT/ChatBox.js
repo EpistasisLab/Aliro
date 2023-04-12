@@ -110,7 +110,40 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
         //   "dataset_id": "6431c4a6df7aa3004a1b8e17",
         // }
 
-        let resultFromRuningCode= await fetch(`/execapi/v1/executions/experiment/${experimentId}`, {
+
+
+
+        // let resultFromRuningCode= await fetch(`/execapi/v1/executions/${experimentId}`, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        //     body: JSON.stringify({
+        //         "src_code": code,
+        //         "dataset_id": datasetId,
+        //     })
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     console.log("response-data-result", data['result'])
+        //     return data;
+        // })
+        // .catch(error => {
+        //     console.log("runExtractedCode-fetch-error", error)
+        //     return error;
+        // })
+
+
+                // POST http://localhost:5080/execapi/v1/executions
+        // Content-Type: application/json
+
+        // {
+        // "src_code": "import sklearn.decomposition\nimport matplotlib.pyplot as plt\n\npca = sklearn.decomposition.PCA(n_components=2)\ndf = pca.fit_transform(df.drop('target', axis=1))\n\nplt.scatter(df[:, 0], df[:, 1])\nplt.xlabel('PC 1')\nplt.ylabel('PC 2')\nplt.title('PCA Plot of Iris Dataset')\nplt.savefig('iris_pca.png')\n",
+        // "dataset_id": "6434a0fe9c33cd004aa10011",
+        // "experiment_id": "6434a1039c33cd004aa10012"
+        // }
+
+        let resultFromRuningCode= await fetch(`/execapi/v1/executions`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -118,6 +151,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
             body: JSON.stringify({
                 "src_code": code,
                 "dataset_id": datasetId,
+                "experiment_id": experimentId
             })
         })
         .then(response => response.json())
