@@ -20,6 +20,7 @@ services:
     command: bash -c "npm i -g raml2html && 
       raml2html /appsrc/lab/api.raml > /appsrc/target/ai_docs/html/lab_api_source.html && 
       raml2html /appsrc/docs/APIs/openai.raml > /appsrc/target/ai_docs/html/openai_source.html &&
-      raml2html /appsrc/docs/APIs/chatapi.raml > /appsrc/target/ai_docs/html/chatapi_source.html"
+      raml2html /appsrc/docs/APIs/chatapi.raml > /appsrc/target/ai_docs/html/chatapi_source.html &&
+      raml2html /appsrc/docs/APIs/execapi.raml > /appsrc/target/ai_docs/html/execapi_source.html"
     volumes:
       - "./:/appsrc"
