@@ -24,4 +24,4 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5080/api/v1/files/6435f0485a15a86c5f84b826
+GET http://localhost:5080/api/v1/files/6434950891900008f372c7a0
