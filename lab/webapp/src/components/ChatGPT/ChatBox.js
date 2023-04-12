@@ -1,6 +1,6 @@
 import AISVGLogo from './AISVGLogo'
 import React from 'react';
-// import {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 
@@ -96,6 +96,24 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
     // )
 
 
+
+
+
+
+
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const handleDoubleClick = () => {
+
+        console.log("handleDoubleClick")
+        setIsExpanded(!isExpanded);
+    };
+
+    const imageHeight = isExpanded ? '200%' : '100%';
+    const imageWidth = isExpanded ? '200%' : '100%';
+
+    const divHeight = isExpanded ? '200%' : '100%';
+  const divWidth = isExpanded ? '200%' : '100%';
     
 
 
@@ -157,6 +175,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
         .then(response => response.json())
         .then(data => {
             console.log("response-data-result", data['result'])
+            // e.target.textContent = "Completed";
             return data;
         })
         .catch(error => {
@@ -179,12 +198,23 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
 
     function checkIncludeCode(message) {
 
-        console.log("message-checkIncludeCode", message)
-        let codeIncluded = false;
-        if (message.includes("```")) {
-            codeIncluded = true;
+        // if message is not undefined
+
+        if (message !== undefined) {
+
+            // console.log("message-checkIncludeCode", message)
+            let codeIncluded = false;
+            if (message.includes("```")) {
+                codeIncluded = true;
+            }
+            return codeIncluded
         }
-        return codeIncluded
+        else
+        {
+            let codeIncluded = false;
+            return codeIncluded
+        }
+
     }
 
     function extractCodeFromMess(message) {
@@ -286,15 +316,59 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
                             message.message.split(/\n/).map(line => {
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
                                   return (
+
+                                    // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+
+
+                                         
+                                    //   <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                    //     <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
+                                        
+                                    //   </svg>
+                                  
+                                      
+                                    // </div>
+
+
+
                                     <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+
+                                    <a href={line.substring(line.indexOf("http"))} download>
+                                         
                                       <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
                                         <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
+                                        
                                       </svg>
+                                    </a>
+                                      
                                     </div>
+
+
+                                    
+                                    // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                    // <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                    //     <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" onDoubleClick={() => window.open(`<div><img src="${line.substring(line.indexOf("http"))}" /></div>`, "_blank")}/>
+                                    // </svg>
+                                    // </div>
+
+                                    
+
+                                    
+
+                                    // <div style={{ position: 'relative', width: divWidth, height: divHeight, paddingBottom: '100%' }}>
+                                    // <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                    //     <image href={line.substring(line.indexOf("http"))} height={imageHeight} width={imageWidth} onDoubleClick={handleDoubleClick} />
+                                    // </svg>
+                                    // </div>
                                   );
-                                } else if (line.includes(".csv") && line.includes("http") || line.includes(".tsv") && line.includes("http")) {
+                                } 
+                                else if (line.includes(".csv") && line.includes("http") || line.includes(".tsv") && line.includes("http")) 
+                                // else if (line.includes("http")) 
+                                {
                                   return (
                                     <div>
+                                        {/* show me preview of the file  */}
+                                    
                                       <a href={line.substring(line.indexOf("http"))} download>
                                         Download file
                                       </a>
@@ -327,33 +401,48 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
                             )
                         } */}
 
-                        <div style={{ width: '100%', overflowX: 'auto' }}>
-                        <pre style={{ margin: 0 }}>
-                            <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                            {
-                                message.message.split(/\n/).map((line, index) => {
-                                return (
-                                    <div className={`line-${index % 2 === 0 ? 'even' : 'odd'}`}>
-                                    {line}
-                                    </div>
-                                );
-                                })
-                            }
-                            </code>
-                        </pre>
-                        </div>
+                            <div style={{ width: '100%', overflowX: 'auto' }}>
+                                <pre style={{ margin: 0 }}>
+                                    <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}>
+                                        {
+                                            message.message.split(/\n/).map((line, index) => {
+                                                return (
+                                                    <div className={`line-${index % 2 === 0 ? 'even' : 'odd'}`}>
+                                                        {line}
+                                                    </div>
+                                                );
+                                            })
+                                        }
+                                    </code>
+                                </pre>
+                            </div>
 
                         {/* {message.message} */}
                         
 
                         {/* play button */}
                         <div>
-                            <button className="run-code-button" onClick={
+                            <button id="runbutton" className="run-code-button" onClick={
                                 async (e)=>
                                 {
-                                    // extractedCode="df_new = df.head(50)\ndf_new.to_csv('iris_new.csv')"
-                                    let resp = await runExtractedCode(extractedCode, datasetId,experimentId)
+                            
+                                    // use usestate to change the text of the button
+                                    document.getElementById("runbutton").textContent = "Running...";
+                                    console.log("ttt",document.getElementById("runbutton").textContent)
+                                    // e.target.textContent = "Running...";
+                                    // make the button non clickable
+                                    // e.target.click = false;
+                                    e.target.disabled = true;
+                                    // even though the button is disabled, do not change the color of the button.
+                                    e.target.style.color = "black";
 
+
+                                    let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
+                                    
+
+                                    document.getElementById("runbutton").textContent = "Completed";
+
+                                    console.log("ttt-after",document.getElementById("runbutton").textContent)
                                     
                                     
                                     updateAfterRuningCode(e, resp)
@@ -375,37 +464,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
                         </div>
                     </div>
                 }
-
-                
-                
-
-
-                
-                {/* advanced version to present code */}
-
-                {/* if code is true then show  */}
-                {/* this below is the exmaple.*/}
-
-                {/* Step 1: Import the required modules
-
-                You will need the urllib and beautifulSoup modules to crawl and parse web pages, respectively. You can use the following code to import these modules:
-
-                ```
-                import urllib.request
-                from bs4 import BeautifulSoup
-                ```import { element } from '../../../dist/vendors.a08b12698240f370fc2c';
-
-
-                Step 2: Define the website to crawl */}
-
-                {/* {
-                    codeIncluded &&
-                    message.message.split("```").map((message, index) => {
-                        console.log("message-inside", message)
-                        
-                    }
-                    )
-                } */}
 
             </div>
         </div>

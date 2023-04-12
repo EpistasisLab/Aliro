@@ -1804,3 +1804,35 @@ cursor: pointer;
 .numUnvisPele{
   display: none!important;
 }
+
+
+
+/* run code button */
+
+/* .run-code-button {
+  display: inline-block;
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.run-code-button:hover {
+  background-color: #0062cc;
+}
+
+.run-code-button:active {
+  background-color: #005cbf;
+} */
+
+
+.run-code-button{
+  margin-top: 10px;
+}

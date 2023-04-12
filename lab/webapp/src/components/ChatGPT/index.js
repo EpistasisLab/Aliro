@@ -1111,6 +1111,9 @@ export default function ChatGPT({experiment}) {
         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv to /data/lab/`+experiment.data._dataset_id;
 
         let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
+
+        // my prompt eng
+        // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. In the case, new dataframe is saved as csv or tsv file format. please always return first 10 rows in the result.`;
     
         data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
 
@@ -1185,7 +1188,7 @@ export default function ChatGPT({experiment}) {
 
     async function getFilesURLs(file_id)
     {
-        console.log("getFiles")
+        console.log("step-1.getFiles")
         // GET http://localhost:5080/api/v1/files/6435c790d48f033fde87242b
 
         const response = await fetch(`/api/v1/files/${file_id}`, {
@@ -1195,7 +1198,7 @@ export default function ChatGPT({experiment}) {
             },
         })
         .then(response => {
-            console.log("getFiles-response", response)
+            console.log("step-2.getFiles-response", response)
             return response;
         })
         
@@ -1211,6 +1214,9 @@ export default function ChatGPT({experiment}) {
 
 
     }
+
+
+    
 
     async function updateAfterRuningCode(e,resp) {
 
@@ -1230,23 +1236,58 @@ export default function ChatGPT({experiment}) {
 
         let resultMessage = resp['result'];
 
-        if (resultMessage === "" && resp['files'].length!==0){
-            resultMessage = "The result is empty. But the file is saved locally. Please check the file in the file explorer." + "\n" + "The file name is: " + resp['files'][0]['filename']+"the URL is:";
-
-            resp['files'].forEach(async (file) => {
-                console.log("resp['files']-file", file)
-                let resp =await getFilesURLs(file['_id'])
-
-                console.log("resp['url']", resp['url'])
-
-                // img with src
-                resultMessage += resp['url'];
-            })
+        // if (resultMessage === "" && resp['files'].length!==0){
+        if (resp['files'].length!==0){
             
 
-            if (resp['_id'] !== ""){
-                console.log("resp['_id']", resp['_id'])
+            // resultMessage = "The result is empty. But the file is saved locally." + "\n" ;
+
+            resultMessage =  "\n" ;
+
+            let filesarray = [];
+            resp['files'].forEach((file) => {
+                let filename = file['filename']
+                filename += ","
+                // resultMessage += filename
+
+                filesarray.push(filename)
+                
+            })
+
+            // "The file name is: "
+            // resultMessage += "the URL is:";
+
+            let filesURLsarray = [];
+            for (const file of resp['files']) {
+                
+                const resp2 = await getFilesURLs(file['_id']);
+                
+                // resultMessage += resp2['url'];
+                // resultMessage += "\n";
+
+                filesURLsarray.push(resp2['url'])
+              }
+
+            let fni =  "The file name is: ";
+            let tui = "the URL is:";
+            let fni_tui = "";
+            for (let i=0; i<filesarray.length; i++)
+            {
+                fni = filesarray[i];
+                // console.log("fni", fni)
+                tui = filesURLsarray[i];
+
+
+                fni_tui = fni+ " "+ tui + "\n";
+
+                resultMessage += fni_tui;
+
             }
+
+
+            console.log("step-3.resultMessage", resultMessage)
+            
+
         }
 
         let experimentId = experiment.data._id;
