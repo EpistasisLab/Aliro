@@ -159,15 +159,22 @@ router.post('/chat/completions', async (req, res) => {
 // It is likely that we don't need this GET
 // The POST below can handle checking and opening the connection.
 // get openai connections
-// router.get('/connections', async (req, res) => {
-//     try {
-//         let response = await openai.listModels();
-//         response = { 'connected': true };
-//         res.send(response);
-//     } catch (err) {
-//         res.status(500).json({ message: err.message });
-//     }
-// });
+router.get('/connections', async (req, res) => {
+    try {
+        if (openai == null) {
+            return res.status(400).json({ message: 'No connection available' });
+        }
+        let response = await openai.listModels();
+        if (response == null) {
+            return res.status(400).json({ message: 'No connection available' });
+        } else {
+            response = { message: 'Connection open' };
+        }
+        res.send(response);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
 
 // make a connection to openai
 router.post('/connections', async (req, res) => {
@@ -208,6 +215,12 @@ router.post('/connections', async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
+});
+
+// close the connection to openai
+router.delete('/connections', async (req, res) => {
+    openai = null;
+    res.send({ message: 'Connection closed' });
 });
 
 module.exports = router;

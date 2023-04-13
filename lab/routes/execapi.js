@@ -107,6 +107,34 @@ router.post('/executions', async (req, res, next) => {
     }
 });
 
+router.post('/executions/install', async (req, res, next) => {
+    if (req.body.packages == null) {
+        return res.status(400).json({ message: 'No packages provided' });
+    }
+
+    let machines;
+    try {
+        machines = await Machine.find({}, { address: 1 });
+        if (machines.length == 0) {
+            return res.status(400).json({ message: 'No machines available' });
+        }
+        // call the machine api
+        let result = await fetch(machines[0].address + '/code/run/install', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(req.body)
+        });
+        result = await result.json();
+        res.send(result);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: err.message });
+    }
+});
+
+
 router.get('/executions/:id', getExecutionById, async (req, res, next) => {
     res.send(res.execution);
 });

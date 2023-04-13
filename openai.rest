@@ -16,7 +16,11 @@ Content-Type: application/json
 
 ###
 
-# GET http://localhost:5080/openai/v1/connections
+GET http://localhost:5080/openai/v1/connections
+
+###
+
+DELETE http://localhost:5080/openai/v1/connections
 
 ###
 

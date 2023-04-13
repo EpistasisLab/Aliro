@@ -124,3 +124,35 @@ types:
                 message:
                   type: string
               example: { message: 'Cannot find execution: 123456789' }
+  /install:
+    post:
+      description: Install a list of python packages via pip
+      body:
+        application/json:
+          properties:
+            packages:
+              type: array
+              items: string
+      responses:
+        200:
+          body:
+            application/json:
+              properties:
+                packages: [string]
+                exec_results: {
+                  stdout: string
+                  stderr: string
+                  code: number
+                }
+              example:
+                {
+                  "packages": [
+                    "seaborn"
+                  ],
+                  "exec_results": {
+                    "stdout": "Successfully installed seaborn-0.12.2\n",
+                    "stderr": "WARNING: You are using pip version 22.0.4; however, version 23.0.1 is available.\nYou should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.\n",
+                    "code": 0
+                  }
+                }
+
