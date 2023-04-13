@@ -107,8 +107,14 @@ router.post('/executions', async (req, res, next) => {
     }
 });
 
+
 router.post('/executions/install', async (req, res, next) => {
-    if (req.body.packages == null) {
+
+    if (req.body.command != 'install' && req.body.command != 'freeze') {
+        return res.status(400).json({ message: 'Invalid command' });
+    }
+    
+    if (req.body.packages == null && req.body.command != 'freeze') {
         return res.status(400).json({ message: 'No packages provided' });
     }
 

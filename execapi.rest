@@ -4,7 +4,7 @@ POST http://localhost:5080/execapi/v1/executions
 Content-Type: application/json
 
 {
-  "src_code": "print('hello world')"
+  "src_code": "import seaborn as sns\nimport matplotlib.pyplot as plt\ndf = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})\nsns.lineplot(x='a', y='b', data=df)\nplt.savefig('test.png')"
 }
 
 ###
@@ -30,5 +30,7 @@ POST http://localhost:5080/execapi/v1/executions/install
 Content-Type: application/json
 
 {
-  "packages": ["seaborn", "matplotlib"]
+  "command": "freeze",
+  # "command": "install",
+  # "packages": ["seaborn", "matplotlib"]
 }

@@ -451,7 +451,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
 app.post("/code/run/install", jsonParser, (req, res) => {
     let args = [
-        'install'
+        req.body.command
     ]
 
     if (req.body.packages !== undefined) {
