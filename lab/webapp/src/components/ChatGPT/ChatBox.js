@@ -211,9 +211,9 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
         if (message !== undefined) {
 
-            // console.log("message-checkIncludeCode", message)
+            console.log("message-checkIncludeCode", message)
             let codeIncluded = false;
-            if (message.includes("```")) {
+            if (message.includes("```python")) {
                 codeIncluded = true;
             }
             return codeIncluded
@@ -314,11 +314,19 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
                                     console.log("1-if", line)
                                   return (
-                                    <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
-                                      <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                                        <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
-                                      </svg>
-                                    </div>
+                                    // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                    //   <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                    //     <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
+                                    //   </svg>
+                                    // </div>
+
+                                    <a href={line.substring(line.indexOf("http"))} download>
+                                        <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                            <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                            <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
+                                            </svg>
+                                        </div>
+                                        </a>
 
                                   );
                                 } 
@@ -328,7 +336,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     
                                     
 
-                                    console.log("2-if", line)
+                                console.log("2-if", line)
                                   return (
 
                                     
@@ -429,8 +437,8 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
 
 
-                                        {/* marging left 10 px */}
-                                        <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                        {/* uploading file button */}
+                                        {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
                                             e.preventDefault();
                                             console.log("e.target", e.target);
                                             document.getElementById('datasetInput').click();
@@ -449,7 +457,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                 let reader = new FileReader();
                                                 reader.readAsText(file);
                                                 reader.onload = function() {
-                                                    console.log(reader.result);
+                                                    console.log("reader.result",reader.result);
                                                 };
                                                 reader.onerror = function() {
                                                     console.log(reader.error);
@@ -460,7 +468,27 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                             }
 
                                             }
-                                            />
+                                        /> */}
+
+                                        {/* generating experiment button */}
+                                        <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                            e.preventDefault();
+                                            console.log("e.target", e.target);
+                                            // parent of e.target
+                                            console.log("e.target.parentElement", e.target.parentElement);
+                                            // second child of parent of e.target
+                                            console.log("e.target.parentElement.children[1]", e.target.parentElement.children[1]);
+
+                                            // get the url of the file
+                                            const url = e.target.parentElement.children[1].href;
+
+                                            console.log("url", url);
+                                            }}>
+                                            Generate experiment
+                                        </a>
+                                            
+                                            
+                                        
 
 
                                     </div>
@@ -503,7 +531,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {data.slice(1, 6).map((row) => (
+                                                {data.slice(1, 11).map((row) => (
                                                     <tr>
                                                     {row.map((cell) => (
                                                         <td style={{ textAlign: "center", border: "1px solid rgba(255, 255, 255, 0.5)" }}>{cell}</td>
@@ -696,7 +724,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                         {/* {message.message} */}
                         
 
-                        {/* play button */}
+                        {/* Run button */}
                         <div>
                             <button id="runbutton" className="run-code-button" onClick={
                                 async (e)=>

@@ -118,8 +118,8 @@ export default function ChatGPT({experiment}) {
 
             let booleanCode = false;
             messageFromOpenai.split("\n").forEach(line => {
-                console.log("line", line)
-                if (line.includes("```")) {
+                console.log("checkIfCode-line", line)
+                if (line.includes("```python")) {
                     booleanCode = true;
                 }
             })
@@ -1134,7 +1134,7 @@ export default function ChatGPT({experiment}) {
 
         if (booleanCode){
             let extractedCodeTemp = extractCode(messageFromOpenai);
-            // messageFromOpenai = "Running the below code on Aliro..." + "\n" + messageFromOpenai;
+            
             messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
 
             // function for running the code on aliro
@@ -1282,7 +1282,6 @@ export default function ChatGPT({experiment}) {
                     .then((response) => response.text())
                     .then((text) => {
                         
-
                         const rows = text.split("\n");
                         const data = rows.map((row) => row.split(","));
                         setTabluerData(data)
@@ -1290,34 +1289,19 @@ export default function ChatGPT({experiment}) {
                     });
 
                     
-                    // get only the first 10 rows
-                    // tableDataText = tableDataText.slice(0,10);
-                    console.log("tableData-tableDataText", tableDataText)
+                    
 
                     // Parse tableDataText into an array of rows
                     const rows = tableDataText.split('\n');
 
                     // Extract the top 10 rows
-                    const top10Rows = rows.slice(0, 6);
-
-                    console.log("tableData-top10Rows", top10Rows)
+                    const top10Rows = rows.slice(0, 11);
 
                     // const top10RowsText = top10Rows.join('\n');
                     const top10RowsText = top10Rows.join('\_');
 
-                    console.log("tableData-top10RowsText", top10RowsText)
-
-                    
-
                     tableDataText = top10RowsText;
 
-
-
-
-
-                    // const rows =  tableDataText.split("\n");
-
-                    // console("rows", rows)
                 }
 
             
