@@ -4,8 +4,10 @@ import {useState, useEffect} from "react";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 
+
+
 // Primary Chat Window
-const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode}) => <section className="chatbox">
+const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData}) => <section className="chatbox">
     <div className="chat-log">
         {
             chatLog.map(
@@ -15,6 +17,9 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
                     datasetId={datasetId}
                     experimentId={experimentId}
                     updateAfterRuningCode={updateAfterRuningCode}
+                    modeForTabluerData = {modeForTabluerData}
+                    setModeForTabluerData = {setModeForTabluerData}
+                    
                 />)
             )
         }
@@ -65,7 +70,7 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 </section>
 
 // Individual Chat Message
-const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => {
+const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData}) => {
     // console.log("message-ChatMessage", message)
     // console.log("message-ChatMessage.message", message.message)
     // console.log("message-ChatMessage.message.length", message.message.length)
@@ -102,6 +107,9 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
 
 
     const [isExpanded, setIsExpanded] = useState(false);
+
+    // temp
+    // const [tabluerData, setTabluerData] = useState([]);
 
     const handleDoubleClick = () => {
 
@@ -175,6 +183,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
         .then(response => response.json())
         .then(data => {
             console.log("response-data-result", data['result'])
+            console.log("response-data", data)
             // e.target.textContent = "Completed";
             return data;
         })
@@ -259,8 +268,8 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
 
 
 
-
-
+   
+    
 
     return (
         <div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
@@ -282,105 +291,372 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
                 {/* if code is false then show  */}
                 {
                     codeIncluded === false ?
+                    // make the 
                     <div className="message">
                         {/* origin */}
                         {/* {message.message} */}
 
-
                         
-
-                        {/* v5 */}
-                        {/* {
-                            message.message.split(/\n/).map(line => {
-                                if (line.includes("http")) {
-                                  return (
-                                    <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
-                                      <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                                        <image href={line} height="100%" width="100%" />
-                                      </svg>
-                                    </div>
-                                  );
-                                } else {
-                                  return (
-                                    <div>
-                                      {line}
-                                    </div>
-                                  );
-                                }
-                              })
-                        } */}
+                
 
                         {/* v7 */}
                         {
-
-                            message.message.split(/\n/).map(line => {
+                            // define tableRowArray as an empty array
+                            // const tableRowArray = [];
+                            
+                            message.message.split(/\n/).map((line,index) => {
+                                
+                                // let tableRowArray = [];
+                                
+                                console.log("line", line)
+                                console.log("line-index", index)
+                                
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
+                                    console.log("1-if", line)
                                   return (
-
-                                    // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
-
-
-                                         
-                                    //   <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                                    //     <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
-                                        
-                                    //   </svg>
-                                  
-                                      
-                                    // </div>
-
-
-
                                     <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
-
-                                    <a href={line.substring(line.indexOf("http"))} download>
-                                         
                                       <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
                                         <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
-                                        
                                       </svg>
-                                    </a>
-                                      
                                     </div>
 
-
-                                    
-                                    // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
-                                    // <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                                    //     <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" onDoubleClick={() => window.open(`<div><img src="${line.substring(line.indexOf("http"))}" /></div>`, "_blank")}/>
-                                    // </svg>
-                                    // </div>
-
-                                    
-
-                                    
-
-                                    // <div style={{ position: 'relative', width: divWidth, height: divHeight, paddingBottom: '100%' }}>
-                                    // <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                                    //     <image href={line.substring(line.indexOf("http"))} height={imageHeight} width={imageWidth} onDoubleClick={handleDoubleClick} />
-                                    // </svg>
-                                    // </div>
                                   );
                                 } 
                                 else if (line.includes(".csv") && line.includes("http") || line.includes(".tsv") && line.includes("http")) 
                                 // else if (line.includes("http")) 
                                 {
+                                    
+                                    
+
+                                    console.log("2-if", line)
                                   return (
+
+                                    
                                     <div>
+                                        
+                                        {
+                                            console.log("line-csv", line)
+                                        }
                                         {/* show me preview of the file  */}
+
+
+                                        {/* make below unvisible */}
+                                        <a style={{marginRight: '10px'}} onClick={async (e) => {
+                                           
+
+                                            
+
+                                            if (e.target.parentElement.parentElement.children[3].style.display === "none")
+                                            {
+                                                e.target.parentElement.parentElement.children[3].style.display = "block";
+                                            }
+
+                                            else{
+                                                e.target.parentElement.parentElement.children[3].style.display = "none";
+                                            }
+                                            
+
+                                            const url = line.substring(line.indexOf("http"));
+
+                                            }}>Preview file</a>
                                     
                                       <a href={line.substring(line.indexOf("http"))} download>
-                                        Download file
+                                        <b style={{color: '#87CEEB'}}>Download {line.substring(0, line.indexOf(","))}</b>
                                       </a>
+
+                                      
+
+
+                                      {/* {
+                                            line.substring(line.indexOf("The tabular data is:") + 19).length !== 0  ?
+
+                                            <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
+                                            
+                                            
+                                                <table style={{ width: "100%" }}>
+                                                <thead>
+                                                    <tr>
+                                                    {line.substring(line.indexOf("The tabular data is:") + 19)[0] && line.substring(line.indexOf("The tabular data is:") + 19)[0].map((column) => <th>{column}</th>)}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {line.substring(line.indexOf("The tabular data is:") + 19).slice(1, 6).map((row) => (
+                                                    <tr>
+                                                        {row.map((cell) => (
+                                                        <td>{cell}</td>
+                                                        ))}
+                                                    </tr>
+                                                    ))}
+                                                </tbody>
+                                                </table>
+                                            </div>
+                                            :
+                                            <div></div>
+                                        } */}
+
+                                      
+
+
+                                        {/* if tabluerData is not empty , show the table */}
+                                        {/* {
+                                            tabluerData.length !== 0  ?
+
+                                            <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
+                                            
+                                            
+                                            <table style={{ width: "100%" }}>
+                                            <thead>
+                                                <tr>
+                                                {tabluerData[0] && tabluerData[0].map((column) => <th>{column}</th>)}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {tabluerData.slice(1, 6).map((row) => (
+                                                <tr>
+                                                    {row.map((cell) => (
+                                                    <td>{cell}</td>
+                                                    ))}
+                                                </tr>
+                                                ))}
+                                            </tbody>
+                                            </table>
+                                            </div>
+                                            :
+                                            <div></div>
+                                        } */}
+
+
+
+
+
+                                        {/* marging left 10 px */}
+                                        <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                            e.preventDefault();
+                                            console.log("e.target", e.target);
+                                            document.getElementById('datasetInput').click();
+                                            }}>
+                                            Upload dataset
+                                            </a>
+                                            <input
+                                            type="file"
+                                            id="datasetInput"
+                                            style={{display: 'none'}}
+                                            onChange={(e) => {
+                                                console.log("upload file",e.target.files)
+
+                                                // show me preview of the file
+                                                let file = e.target.files[0];
+                                                let reader = new FileReader();
+                                                reader.readAsText(file);
+                                                reader.onload = function() {
+                                                    console.log(reader.result);
+                                                };
+                                                reader.onerror = function() {
+                                                    console.log(reader.error);
+                                                };
+
+
+
+                                            }
+
+                                            }
+                                            />
+
+
                                     </div>
                                   );
-                                } else {
-                                  return (
-                                    <div>
-                                      {line}
-                                    </div>
-                                  );
+                                } 
+
+
+                                else if (line.includes("The tabular data is:") && modeForTabluerData === false)
+                                {   
+                                    console.log("3-if", line)
+                                    setModeForTabluerData(true);
+
+
+
                                 }
+                                else if ( modeForTabluerData === true && index ==4 )
+                                {   
+
+                                    console.log("4-if", line)
+
+                                    // check there is \t or not to check the file is csv or tsv
+                                    if (line.includes("\t"))
+                                    {
+                                        line=line.replace(/\t/g, ',');
+                                    }
+                                    // line = line.replace(/_/g, "\n");
+                                    line = line.replace(/_/g, "\n");
+                                    
+                                    console.log("4-if-replace", line)
+                                    // make line as array
+                                    const rows = line.split("\n");
+                                    const data = rows.map((row) => row.split(","));
+                                    
+                                    return (
+                                        <div class="previewTable" style={{ overflowX: "auto", overflowY: "auto", backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px', display:"none"}}>
+                                            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                                                <thead>
+                                                <tr>
+                                                    {data[0] && data[0].map((column) => <th style={{ textAlign: "center", border: "1px solid rgba(255, 255, 255, 0.5)" }}>{column}</th>)}
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {data.slice(1, 6).map((row) => (
+                                                    <tr>
+                                                    {row.map((cell) => (
+                                                        <td style={{ textAlign: "center", border: "1px solid rgba(255, 255, 255, 0.5)" }}>{cell}</td>
+                                                    ))}
+                                                    </tr>
+                                                ))}
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                    )
+
+
+                                    
+
+
+                                        
+                                    // // make varible to store below div
+                                    // const row =(
+                                    // <div className="tableRow" style={{backgroundColor: '#343a40', 
+                                    //     borderTopLeftRadius: index === 4 ? '10px' : '0', borderTopRightRadius: index === 4 ? '10px' : '0', borderBottomLeftRadius: index === 9 ? '10px' : '0', borderBottomRightRadius: index === 9 ? '10px' : '0',
+                                    //     marginTop: index === 4 ? '10px' : '0',
+                                    //     }}>
+                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
+                                    //             <tbody>
+                                    //             <tr>
+                                    //                 {/* split line by comma */}
+                                    //                 {line.split(",").map((cell) => (
+                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
+                                    //                 ))}
+                                    //             </tr>
+                                    //             </tbody>
+                                    //         </table>
+                                    // </div>);
+
+                                    // tableRowArray.push(row); 
+
+
+                                    // if (index === 9)
+                                    // {
+                                    //     return (
+                                    //         <div className="entireTable" style={{width: '100%', overflowX: 'auto'}}>
+                                    //           {tableRowArray}
+                                    //         </div>
+                                    //       );
+                                    // }
+
+
+
+                                    
+                                    // return(
+                                    //     <div className="tableRow" style={{backgroundColor: '#343a40',
+                                    //     marginTop: index === 4 ? '10px' : '0',
+                                    //     }}>
+                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
+                                    //             <tbody>
+                                    //             <tr>
+                                    //                 {/* split line by comma */}
+                                    //                 {line.split(",").map((cell) => (
+                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
+                                    //                 ))}
+                                    //             </tr>
+                                    //             </tbody>
+                                    //         </table>
+                                    //     </div>
+                                    // )
+
+
+
+
+
+                                    // return(
+                                    //     // get element by id testTable
+                                        
+                                    //     <div className="tableRow" style={{backgroundColor: '#343a40', 
+                                    //     borderTopLeftRadius: index === 4 ? '10px' : '0', borderTopRightRadius: index === 4 ? '10px' : '0', borderBottomLeftRadius: index === 9 ? '10px' : '0', borderBottomRightRadius: index === 9 ? '10px' : '0',
+                                    //     marginTop: index === 4 ? '10px' : '0',
+                                    //     }}>
+                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
+                                    //             <tbody>
+                                    //             <tr>
+                                    //                 {/* split line by comma */}
+                                    //                 {line.split(",").map((cell) => (
+                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
+                                    //                 ))}
+                                    //             </tr>
+                                    //             </tbody>
+                                    //         </table>
+                                    //     </div>
+                                    // )
+
+
+
+
+
+
+                                    // return (
+                                    //     <div style={{width: '100%', overflowX: 'auto'}}>
+                                    //     <div id="justmessage" style={{backgroundColor: '#343a40', 
+                                    //                                     borderTopLeftRadius: index === 4 ? '10px' : '0', borderTopRightRadius: index === 4 ? '10px' : '0', borderBottomLeftRadius: index === 9 ? '10px' : '0', borderBottomRightRadius: index === 9 ? '10px' : '0',
+                                    //                                     marginTop: index === 4 ? '10px' : '0',
+                                    //                                     }}>
+                                    //         <div style={{width: '100%', overflowX: 'auto'}}>
+                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
+                                    //             <tbody>
+                                    //             <tr>
+                                    //                 {/* split line by comma */}
+                                    //                 {line.split(",").map((cell) => (
+                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
+                                    //                 ))}
+                                    //             </tr>
+                                    //             </tbody>
+                                    //         </table>
+                                    //         </div>
+                                    //     </div>
+                                    //     </div>
+                                    // )
+
+                                    
+
+
+                                    
+                                }
+
+
+                                else if(!line.includes("The tabular data is:")) {
+                                    if (!line.includes("This is the end of the tabular data."))
+                                    {
+
+                                        console.log("5-if", line)
+                                        console.log("5-if-index", index)
+                                        return (
+
+                                            <div id="justmessage" >
+                                                {line}
+                                            </div>
+                                        );
+                                    }
+                                  }
+
+
+                                  
+
+                                
+
+
+                                // else {
+                                //   return (
+                                //     // make the message hidden
+                                //     <div id="justmessage" >
+                                //       {line}
+                                //     </div>
+                                //   );
+                                // }
                               })
                         }
                     </div> : 
@@ -436,6 +712,11 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode}) => 
                                     // even though the button is disabled, do not change the color of the button.
                                     e.target.style.color = "black";
 
+
+                                    console.log("onClick-extractedCode",extractedCode)
+
+                                    console.log("onClick-datasetId",datasetId)
+                                    console.log("onClick-experimentId",experimentId)
 
                                     let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
                                     

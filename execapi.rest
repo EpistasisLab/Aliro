@@ -5,13 +5,13 @@ Content-Type: application/json
 
 {
   "src_code": "import sklearn.decomposition\nimport matplotlib.pyplot as plt\n\npca = sklearn.decomposition.PCA(n_components=2)\ndf = pca.fit_transform(df.drop('target', axis=1))\n\nplt.scatter(df[:, 0], df[:, 1])\nplt.xlabel('PC 1')\nplt.ylabel('PC 2')\nplt.title('PCA Plot of Iris Dataset')\nplt.savefig('iris_pca.png')\n",
-  "dataset_id": "6434a0fe9c33cd004aa10011",
+  "dataset_id": "6437102badee74007a613e02",
   "experiment_id": "6434a1039c33cd004aa10012"
 }
 
 ###
 
-GET http://localhost:5080/execapi/v1/executions/64346c2ee97e044e16d642d7
+GET http://localhost:5080/execapi/v1/executions/6434aff4cfccf000316a9283
 
 ###
 

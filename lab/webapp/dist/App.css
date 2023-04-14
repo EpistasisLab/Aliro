@@ -1836,3 +1836,15 @@ cursor: pointer;
 .run-code-button{
   margin-top: 10px;
 }
+
+
+
+
+table {
+  border-collapse: collapse;
+}
+th, td {
+  /* make the border transparent */
+  border: 1px solid transparent;
+  padding: 0.5em;
+}

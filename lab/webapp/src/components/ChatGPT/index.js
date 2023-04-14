@@ -75,6 +75,10 @@ export default function ChatGPT({experiment}) {
         code: ""
       });
 
+    const [tabluerData, setTabluerData] = useState([]);
+
+    const [modeForTabluerData, setModeForTabluerData] = useState(false);
+
     // booleanCode for checking if the messageFromOpenai contains python code
     // const [booleanCode, setBooleanCode] = useState(false);
 
@@ -1110,10 +1114,12 @@ export default function ChatGPT({experiment}) {
 
         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv to /data/lab/`+experiment.data._dataset_id;
 
-        let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
+        // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
 
         // my prompt eng
-        // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. In the case, new dataframe is saved as csv or tsv file format. please always return first 10 rows in the result.`;
+        let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate one script of python code.   
+        "
+        `;
     
         data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
 
@@ -1237,12 +1243,15 @@ export default function ChatGPT({experiment}) {
         let resultMessage = resp['result'];
 
         // if (resultMessage === "" && resp['files'].length!==0){
-        if (resp['files'].length!==0){
+        if (resp['files'].length!==0)
+        {
             
 
-            // resultMessage = "The result is empty. But the file is saved locally." + "\n" ;
+            resultMessage = "The result is empty. However, please check below." + "\n" ;
 
-            resultMessage =  "\n" ;
+            // generate empty 
+
+            // resultMessage =  "\n" ;
 
             let filesarray = [];
             resp['files'].forEach((file) => {
@@ -1258,15 +1267,66 @@ export default function ChatGPT({experiment}) {
             // resultMessage += "the URL is:";
 
             let filesURLsarray = [];
-            for (const file of resp['files']) {
+            let tableDataText = "";
+            for (const file of resp['files']){
+
+                // console.log("temp-file",file)
                 
                 const resp2 = await getFilesURLs(file['_id']);
-                
-                // resultMessage += resp2['url'];
-                // resultMessage += "\n";
-
                 filesURLsarray.push(resp2['url'])
-              }
+                // for now i assume that it generates one csv or tsv.
+
+                if (file['filename'].includes(".csv") || file['filename'].includes(".tsv"))
+                {
+                    tableDataText = await fetch(resp2['url'])
+                    .then((response) => response.text())
+                    .then((text) => {
+                        
+
+                        const rows = text.split("\n");
+                        const data = rows.map((row) => row.split(","));
+                        setTabluerData(data)
+                        return text;
+                    });
+
+                    
+                    // get only the first 10 rows
+                    // tableDataText = tableDataText.slice(0,10);
+                    console.log("tableData-tableDataText", tableDataText)
+
+                    // Parse tableDataText into an array of rows
+                    const rows = tableDataText.split('\n');
+
+                    // Extract the top 10 rows
+                    const top10Rows = rows.slice(0, 6);
+
+                    console.log("tableData-top10Rows", top10Rows)
+
+                    // const top10RowsText = top10Rows.join('\n');
+                    const top10RowsText = top10Rows.join('\_');
+
+                    console.log("tableData-top10RowsText", top10RowsText)
+
+                    
+
+                    tableDataText = top10RowsText;
+
+
+
+
+
+                    // const rows =  tableDataText.split("\n");
+
+                    // console("rows", rows)
+                }
+
+            
+            
+            }
+
+            
+
+
 
             let fni =  "The file name is: ";
             let tui = "the URL is:";
@@ -1284,8 +1344,23 @@ export default function ChatGPT({experiment}) {
 
             }
 
+            if (tableDataText !== "")
+            {
+                resultMessage += "\n";
+                resultMessage += "The tabular data is: ";
+                resultMessage += "\n";
+                // please maintain the format of the table 
+                // otherwise it will not be displayed correctly
+                resultMessage += tableDataText
+            }
+
+            resultMessage += "\n";
+            resultMessage += "This is the end of the tabular data.";
 
             console.log("step-3.resultMessage", resultMessage)
+
+            console.log("step-4.resultMessage", resultMessage.substring(resultMessage.indexOf("The tabular data is:") + 19))
+            
             
 
         }
@@ -1535,6 +1610,9 @@ async function setTapTitlesFunc(){
                 experimentId = {experiment.data._id}
 
                 updateAfterRuningCode = {updateAfterRuningCode}
+
+                modeForTabluerData = {modeForTabluerData}
+                setModeForTabluerData = {setModeForTabluerData}
 
                 
 
