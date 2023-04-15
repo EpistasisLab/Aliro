@@ -449,6 +449,49 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 });
 
 
+app.post("/code/run/install", jsonParser, (req, res) => {
+    let args = [
+        req.body.command
+    ]
+
+    if (req.body.packages !== undefined) {
+        // iterate over the packages and add them to the args
+        for (let i = 0; i < req.body.packages.length; i++) {
+            args.push(req.body.packages[i]);
+        }
+    }
+
+    let pyProc = spawn('pip', args, { cwd: process.env.PROJECT_ROOT });
+
+    let result = req.body;
+    result.exec_results = {};
+
+    pyProc.stdout.on('data', (data) => {
+        // result.exec_results = JSON.parse(data.toString());
+        console.log(`stdout: ${data}`);
+        result.exec_results.stdout = data.toString();
+    });
+
+    pyProc.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+        result.exec_results.stderr = data.toString();
+        // try {
+        //     result.exec_results = JSON.parse(data.toString());
+        // }
+        // catch (e) {
+        //     console.log(e);
+        // }
+    });
+
+    pyProc.on('close', (code) => {
+        // result.code = code;
+        console.log(`child process exited with code ${code}`);
+        result.exec_results.code = code;
+        res.send(result);
+    });
+});
+
+
 // run code execution
 app.post("/code/run", jsonParser, (req, res) => {
 
