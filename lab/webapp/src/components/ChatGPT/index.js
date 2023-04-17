@@ -79,6 +79,8 @@ export default function ChatGPT({experiment}) {
 
     const [modeForTabluerData, setModeForTabluerData] = useState(false);
 
+    const [booleanPackageInstall, setBooleanPackageInstall] = useState(false);
+
     // booleanCode for checking if the messageFromOpenai contains python code
     // const [booleanCode, setBooleanCode] = useState(false);
 
@@ -860,13 +862,97 @@ export default function ChatGPT({experiment}) {
     }
 
 
+    function extractPackagesOfCode(code){
+        let packages = [];
+        let codeSplit = code.split("\n");
+        codeSplit.forEach((item) => {
+            if ((item.includes("import") && item.includes("as")) || (item.includes("from") && item.includes("import")) ){
+                let itemSplit = item.split(" ");
+                // import sklearn.datasets as datasets 
+                // for the above case.
+                let pack = itemSplit[1].split(".")[0];
+
+                packages.push(pack);
+            }
+        })
+
+        console.log("packages",packages)
+        return packages;
+    }
+
+    async function checkCodePackages(packagesArray)
+    {
+
+        // console.log("packagesArray",packagesArray)
+
+        // POST http://localhost:5080/execapi/v1/executions/install
+        // Content-Type: application/json
+
+        // {
+        // "command": "freeze"
+        // }
+
+        let data = await fetch("/execapi/v1/executions/install", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                command: "freeze"
+            })
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                console.log("data-executions/install",data)
+                return data;
+            }
+            )
+            .catch(err => {
+                console.log("err--checkCodePackages",err);
+            }
+            )
+
+        let allInstalledPackages=data['exec_results']['stdout'].split("\n")
+
+        for (let i=0;i<allInstalledPackages.length;i++){
+
+            allInstalledPackages[i] = allInstalledPackages[i].split("==")[0];
+            
+        }
+
+        //  packagesArray , allInstalledPackages
+        //  set substract
+        // let packagesNotInstalled = packagesArray - allInstalledPackages
+
+        let requiredPackages = new Set(packagesArray);
+        let installedPackages = new Set(allInstalledPackages);
+
+        const result = new Set(requiredPackages);
+
+        //  set substract
+        for (const elem of installedPackages) {
+            result.delete(elem);
+          }
+
+        // console.log("checkCodePackages-packagesNotInstalled",packagesNotInstalled)
+
+        console.log("checkCodePackages-allInstalledPackages",allInstalledPackages)
+
+        console.log("checkCodePackages-result",result)
+
+        // convert result to array
+        let packagesNotInstalled = Array.from(result);
+
+        return packagesNotInstalled;
+
+
+    }
 
 
 
 
-
-    // async function handleSubmit(e) {
-    //     // prevent page from refreshing
+    
     //     e.preventDefault();
 
     //     let url = window.location.href;
@@ -1055,7 +1141,7 @@ export default function ChatGPT({experiment}) {
         // prevent page from refreshing
         e.preventDefault();
 
-        let experimentId = experiment.data._id;;
+        let experimentId = experiment.data._id;
 
         // let chatLogNew =[
         //     {
@@ -1070,7 +1156,6 @@ export default function ChatGPT({experiment}) {
             ...chatLog, {
                 user: "me",
                 message: `${chatInput}`
-
             }
         ]
 
@@ -1086,13 +1171,11 @@ export default function ChatGPT({experiment}) {
         // chatCurrentTempId is 1,2,3, ...
         // there is no 0 chatCurrentTempId.
         if (chatCurrentTempId === 0){
-
             setChatCurrentTempId(1);
         }
 
         if (chatInput !== undefined || chatInput !== ""){
             await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], chatInput, "text", "user");
-
             // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], chatInput, "text", "user","");
         }
 
@@ -1102,10 +1185,6 @@ export default function ChatGPT({experiment}) {
 
         // get the last message from the chatLogNew array
         let lastMessageFromUser = chatLogNew[chatLogNew.length - 1].message;
-
-        // if (modeForChatOrCodeRunning === "code"){
-        //     lastMessageFromUser += " Please give me the python code script. Please put the python code script between ``` and ```. For example, ```print('hello world')```"
-        // }
 
         var feature_importances = {};
         for (var i = 0; i < experiment.data.feature_importances.length; i++) {
@@ -1134,8 +1213,26 @@ export default function ChatGPT({experiment}) {
 
         if (booleanCode){
             let extractedCodeTemp = extractCode(messageFromOpenai);
+            let packagesOfCode = extractPackagesOfCode(extractedCodeTemp); 
+
+            let packagesNotInstalled = await checkCodePackages(packagesOfCode)
             
-            messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+
+            if (packagesNotInstalled.length > 0){
+                setBooleanPackageInstall(true);
+
+                messageFromOpenai = packagesNotInstalled+" "+"package(s) is (are) not installed."+" "+"If you want to install the packages to run the below code, please click the button below" + "\n" + messageFromOpenai;
+
+                
+                
+            }
+            
+
+            // console.log("extractedCodeTemp: ", extractedCodeTemp)
+            else{
+                setBooleanPackageInstall(false);
+                messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+            }
 
             // function for running the code on aliro
             // runCodeOnAliro(extractedCode);
@@ -1192,6 +1289,155 @@ export default function ChatGPT({experiment}) {
         setLanModelReset(false);
     }
 
+
+    // modified handleSubmit to generate code for error handling of running code
+    async function handleRegeneratingCode(e, code) {
+        // prevent page from refreshing
+        e.preventDefault();
+
+        let experimentId = experiment.data._id;
+
+        
+
+        let chatLogNew = chatLog;
+        
+        // chatLogNew = [
+        //     ...chatLog, {
+        //         user: "me",
+        //         message: `${chatInput}`
+        //     }
+        // ]
+
+        setChatInput("");
+        // setChatLog(chatLogNew)
+
+        // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
+        let data = await getChatMessageByExperimentId(experimentId);
+
+        // filter the data using _experiment_id
+        var filteredData= data.filter((item) => item._experiment_id === experimentId)
+
+        // chatCurrentTempId is 1,2,3, ...
+        // there is no 0 chatCurrentTempId.
+        if (chatCurrentTempId === 0){
+            setChatCurrentTempId(1);
+        }
+
+        // if (chatInput !== undefined || chatInput !== ""){
+        //     await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], chatInput, "text", "user");
+        // }
+
+        const messages = chatLogNew
+        .map((message) => message.message)
+        .join("\n")
+
+        // get the last message from the chatLogNew array
+        // in this case, for example, it is "[Errno 2] File theta.csv does not exist: 'theta.csv'"
+        let errorMessageFromMachine = chatLogNew[chatLogNew.length - 1].message;
+
+        var feature_importances = {};
+        for (var i = 0; i < experiment.data.feature_importances.length; i++) {
+            feature_importances[experiment.data.feature_names[i]] = experiment.data.feature_importances[i];
+        }
+
+
+        // my prompt eng
+        let preSet =`assume that you already ran the ${code}. However, you got the following error message: ${errorMessageFromMachine}. Please give me another code which does not have the error message. The code should be able to run on Aliro. Please write the code between 3 backticks python and 3backticks. For example, the format is like this: \`\`\`python\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\`\`\`
+        `;
+    
+        data= await openaiChatCompletions(currentModel,preSet)
+
+        var messageFromOpenai = data.choices[0].message['content'];
+            
+        // process the messageFromOpenai based on...
+        // check if the messageFromOpenai contains python code.
+        // if yes, then add "Do you want to run the code on Aliro?" to the messageFromOpenai in next line
+        // if no, then do nothing
+        
+        let booleanCode = checkIfCode(messageFromOpenai);
+
+        if (booleanCode){
+            let extractedCodeTemp = extractCode(messageFromOpenai);
+            let packagesOfCode = extractPackagesOfCode(extractedCodeTemp); 
+
+            let packagesNotInstalled = await checkCodePackages(packagesOfCode)
+            
+
+            if (packagesNotInstalled.length > 0){
+                setBooleanPackageInstall(true);
+
+                messageFromOpenai = packagesNotInstalled+" "+"package(s) is (are) not installed."+" "+"If you want to install the packages to run the below code, please click the button below" + "\n" + messageFromOpenai;
+
+                
+                
+            }
+            
+
+            // console.log("extractedCodeTemp: ", extractedCodeTemp)
+            else{
+                setBooleanPackageInstall(false);
+                messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+            }
+
+            // function for running the code on aliro
+            // runCodeOnAliro(extractedCode);
+            setExtractedCode({...extractedCode, code: extractedCodeTemp});
+        }
+
+
+        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
+
+        // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt", "");
+        
+        // setChatLog([
+        //     ...chatLogNew, {
+        //         user: "gpt",
+        //         message: `${data.message}`
+        //     }
+        // ])
+
+
+        
+
+
+        const regex = /```([^`]*)```/g;
+        const matches = messageFromOpenai.matchAll(regex);
+
+        for (const match of matches) {
+            //check if the first 6 characters are python
+            if(match[1].substring(0,6) === "python"){
+                //remove the first 6 characters
+                match[1] = match[1].substring(6);
+            }
+            // console.log("python code:",match[1]);
+        }
+
+
+
+
+
+        setChatLog([
+            ...chatLogNew, {
+                user: "gpt",
+                message: `${messageFromOpenai}`
+                // message: messageFromOpenai.split(/\n/).map(
+                //     line => 
+                //     <div key={line}>
+                //     {line}</div>
+                // )
+            }
+        ])
+
+        var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
+        scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+
+        setLanModelReset(false);
+    }
+
+
+
+
+
     async function getFilesURLs(file_id)
     {
         console.log("step-1.getFiles")
@@ -1242,16 +1488,19 @@ export default function ChatGPT({experiment}) {
 
         let resultMessage = resp['result'];
 
+        // if resultMessage is undefined, resultMessage = "Undefined"
+        if (resultMessage === undefined){
+            resultMessage = "There is not returned result from the code."
+        }
+
+
+
         // if (resultMessage === "" && resp['files'].length!==0){
         if (resp['files'].length!==0)
         {
             
 
-            resultMessage = "The result is empty. However, please check below." + "\n" ;
-
-            // generate empty 
-
-            // resultMessage =  "\n" ;
+            resultMessage = "Please check below. Click to download the image." + "\n" ;
 
             let filesarray = [];
             resp['files'].forEach((file) => {
@@ -1291,17 +1540,16 @@ export default function ChatGPT({experiment}) {
                     
                     
 
-                    // Parse tableDataText into an array of rows
+                    // tableDataText into an array of rows
                     const rows = tableDataText.split('\n');
 
-                    // Extract the top 10 rows
+                    // top 11 rows
                     const top10Rows = rows.slice(0, 11);
 
                     // const top10RowsText = top10Rows.join('\n');
-                    const top10RowsText = top10Rows.join('\_');
+                    tableDataText = top10Rows.join('\_');
 
-                    tableDataText = top10RowsText;
-
+                    // tableDataText = top10RowsText;
                 }
 
             
@@ -1320,10 +1568,7 @@ export default function ChatGPT({experiment}) {
                 fni = filesarray[i];
                 // console.log("fni", fni)
                 tui = filesURLsarray[i];
-
-
                 fni_tui = fni+ " "+ tui + "\n";
-
                 resultMessage += fni_tui;
 
             }
@@ -1597,6 +1842,12 @@ async function setTapTitlesFunc(){
 
                 modeForTabluerData = {modeForTabluerData}
                 setModeForTabluerData = {setModeForTabluerData}
+
+                booleanPackageInstall = {booleanPackageInstall}
+                setBooleanPackageInstall = {setBooleanPackageInstall}
+
+
+                handleRegeneratingCode = {handleRegeneratingCode}
 
                 
 

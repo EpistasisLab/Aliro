@@ -7,7 +7,7 @@ import {useState, useEffect} from "react";
 
 
 // Primary Chat Window
-const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,handleRegeneratingCode}) => <section className="chatbox">
+const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall}) => <section className="chatbox">
     <div className="chat-log">
         {
             chatLog.map(
@@ -22,8 +22,6 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 
                     booleanPackageInstall = {booleanPackageInstall}
                     setBooleanPackageInstall = {setBooleanPackageInstall}
-
-                    handleRegeneratingCode = {handleRegeneratingCode}
                     
                 />)
             )
@@ -75,7 +73,7 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 </section>
 
 // Individual Chat Message
-const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, handleRegeneratingCode}) => {
+const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall}) => {
     // console.log("message-ChatMessage", message)
     // console.log("message-ChatMessage.message", message.message)
     // console.log("message-ChatMessage.message.length", message.message.length)
@@ -233,10 +231,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
     function extractCodeFromMess(message) {
 
-        console.log("message-extractCodeFromMess", message)
-        if (message === undefined) {
-            return "";
-        }
+
         let code = "";
         const regex = /```([^`]*)```/g;
         const matches = message.matchAll(regex);
@@ -269,60 +264,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
         // for 
 
         // return code;
-
-    }
-
-
-    async function installPackages(packagesArray,e)
-    {
-        // POST http://localhost:5080/execapi/v1/executions/install
-        // Content-Type: application/json
-
-        // {
-        //     "command": "install",
-        //     "packages": packagesArray
-        // }
-
-
-        let resultFromInstallingPackages= await fetch(`/execapi/v1/executions/install`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "command": "install",
-                "packages": packagesArray
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // console.log("installPackages-response-data-result", data['result'])
-            // console.log("resultFromInstallingPackages-response-data", data)
-            return data;
-        }
-        )
-        .catch(error => {
-            console.log("installPackages-fetch-error", error)
-            return error;
-        }
-        )
-
-
-        console.log("resultFromInstallingPackages", resultFromInstallingPackages)
-        console.log("resultFromInstallingPackages[exec_results][stdout]",resultFromInstallingPackages["exec_results"]["stdout"])
-        // resultFromInstallingPackages["exec_results"]["stdout"]
-    }
-
-
-    function findTheLastCodeMessageFromHTML(element)
-    {
-        console.log("element-findTheLastCodeMessageFromHTML", element)
-        // element is e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2]
-
-        // extract all text from element
-        let text = element.innerText;
-
-        return text;
 
     }
     
@@ -367,11 +308,9 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 
                                 // let tableRowArray = [];
                                 
-                                // console.log("line", line)
-                                // console.log("line-index", index)
-
-
-                                // non code message which includes image
+                                console.log("line", line)
+                                console.log("line-index", index)
+                                
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
                                     console.log("1-if", line)
                                   return (
@@ -391,91 +330,65 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
                                   );
                                 } 
-                                // non code message which includes csv or tsv
                                 else if (line.includes(".csv") && line.includes("http") || line.includes(".tsv") && line.includes("http")) 
+                                // else if (line.includes("http")) 
                                 {
-                                    console.log("2-if", line)
-                                    return (
-                                        <div>
+                                    
+                                    
+
+                                console.log("2-if", line)
+                                  return (
+
+                                    
+                                    <div>
+                                        
+                                        {
+                                            console.log("line-csv", line)
+                                        }
+                                        {/* show me preview of the file  */}
+
+
+                                        {/* make below unvisible */}
+                                        <a style={{marginRight: '10px'}} onClick={async (e) => {
+                                           
+
                                             
+
+                                            if (e.target.parentElement.parentElement.children[3].style.display === "none")
                                             {
-                                                console.log("line-csv", line)
+                                                e.target.parentElement.parentElement.children[3].style.display = "block";
                                             }
-                                            {/* show me preview of the file  */}
 
-
-                                            {/* make below unvisible */}
-                                            <a style={{marginRight: '10px'}} onClick={async (e) => {
+                                            else{
+                                                e.target.parentElement.parentElement.children[3].style.display = "none";
+                                            }
                                             
 
-                                                
+                                            const url = line.substring(line.indexOf("http"));
 
-                                                if (e.target.parentElement.parentElement.children[3].style.display === "none")
-                                                {
-                                                    e.target.parentElement.parentElement.children[3].style.display = "block";
-                                                }
+                                            }}>Preview file</a>
+                                    
+                                      <a href={line.substring(line.indexOf("http"))} download>
+                                        <b style={{color: '#87CEEB'}}>Download {line.substring(0, line.indexOf(","))}</b>
+                                      </a>
 
-                                                else{
-                                                    e.target.parentElement.parentElement.children[3].style.display = "none";
-                                                }
-                                                
-
-                                                const url = line.substring(line.indexOf("http"));
-
-                                                }}>Preview file</a>
-                                        
-                                        <a href={line.substring(line.indexOf("http"))} download>
-                                            <b style={{color: '#87CEEB'}}>Download {line.substring(0, line.indexOf(","))}</b>
-                                        </a>
-
-                                        
+                                      
 
 
-                                        {/* {
-                                                line.substring(line.indexOf("The tabular data is:") + 19).length !== 0  ?
+                                      {/* {
+                                            line.substring(line.indexOf("The tabular data is:") + 19).length !== 0  ?
 
-                                                <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
-                                                
-                                                
-                                                    <table style={{ width: "100%" }}>
-                                                    <thead>
-                                                        <tr>
-                                                        {line.substring(line.indexOf("The tabular data is:") + 19)[0] && line.substring(line.indexOf("The tabular data is:") + 19)[0].map((column) => <th>{column}</th>)}
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {line.substring(line.indexOf("The tabular data is:") + 19).slice(1, 6).map((row) => (
-                                                        <tr>
-                                                            {row.map((cell) => (
-                                                            <td>{cell}</td>
-                                                            ))}
-                                                        </tr>
-                                                        ))}
-                                                    </tbody>
-                                                    </table>
-                                                </div>
-                                                :
-                                                <div></div>
-                                            } */}
-
-                                        
-
-
-                                            {/* if tabluerData is not empty , show the table */}
-                                            {/* {
-                                                tabluerData.length !== 0  ?
-
-                                                <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
-                                                
-                                                
+                                            <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
+                                            
+                                            
                                                 <table style={{ width: "100%" }}>
                                                 <thead>
                                                     <tr>
-                                                    {tabluerData[0] && tabluerData[0].map((column) => <th>{column}</th>)}
+                                                    {line.substring(line.indexOf("The tabular data is:") + 19)[0] && line.substring(line.indexOf("The tabular data is:") + 19)[0].map((column) => <th>{column}</th>)}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {tabluerData.slice(1, 6).map((row) => (
+                                                    {line.substring(line.indexOf("The tabular data is:") + 19).slice(1, 6).map((row) => (
                                                     <tr>
                                                         {row.map((cell) => (
                                                         <td>{cell}</td>
@@ -484,75 +397,105 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                     ))}
                                                 </tbody>
                                                 </table>
-                                                </div>
-                                                :
-                                                <div></div>
-                                            } */}
+                                            </div>
+                                            :
+                                            <div></div>
+                                        } */}
+
+                                      
 
 
+                                        {/* if tabluerData is not empty , show the table */}
+                                        {/* {
+                                            tabluerData.length !== 0  ?
 
-
-
-                                            {/* uploading file button */}
-                                            {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
-                                                e.preventDefault();
-                                                console.log("e.target", e.target);
-                                                document.getElementById('datasetInput').click();
-                                                }}>
-                                                Upload dataset
-                                                </a>
-                                                <input
-                                                type="file"
-                                                id="datasetInput"
-                                                style={{display: 'none'}}
-                                                onChange={(e) => {
-                                                    console.log("upload file",e.target.files)
-
-                                                    // show me preview of the file
-                                                    let file = e.target.files[0];
-                                                    let reader = new FileReader();
-                                                    reader.readAsText(file);
-                                                    reader.onload = function() {
-                                                        console.log("reader.result",reader.result);
-                                                    };
-                                                    reader.onerror = function() {
-                                                        console.log(reader.error);
-                                                    };
-
-
-
-                                                }
-
-                                                }
-                                            /> */}
-
-                                            {/* generating experiment button */}
-                                            <a style={{ marginLeft:'10px'}} onClick={(e) => {
-                                                e.preventDefault();
-                                                console.log("e.target", e.target);
-                                                // parent of e.target
-                                                console.log("e.target.parentElement", e.target.parentElement);
-                                                // second child of parent of e.target
-                                                console.log("e.target.parentElement.children[1]", e.target.parentElement.children[1]);
-
-                                                // get the url of the file
-                                                const url = e.target.parentElement.children[1].href;
-
-                                                console.log("url", url);
-                                                }}>
-                                                Generate experiment
-                                            </a>
-                                                
-                                                
+                                            <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
                                             
+                                            
+                                            <table style={{ width: "100%" }}>
+                                            <thead>
+                                                <tr>
+                                                {tabluerData[0] && tabluerData[0].map((column) => <th>{column}</th>)}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {tabluerData.slice(1, 6).map((row) => (
+                                                <tr>
+                                                    {row.map((cell) => (
+                                                    <td>{cell}</td>
+                                                    ))}
+                                                </tr>
+                                                ))}
+                                            </tbody>
+                                            </table>
+                                            </div>
+                                            :
+                                            <div></div>
+                                        } */}
 
 
-                                        </div>
-                                    );
+
+
+
+                                        {/* uploading file button */}
+                                        {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                            e.preventDefault();
+                                            console.log("e.target", e.target);
+                                            document.getElementById('datasetInput').click();
+                                            }}>
+                                            Upload dataset
+                                            </a>
+                                            <input
+                                            type="file"
+                                            id="datasetInput"
+                                            style={{display: 'none'}}
+                                            onChange={(e) => {
+                                                console.log("upload file",e.target.files)
+
+                                                // show me preview of the file
+                                                let file = e.target.files[0];
+                                                let reader = new FileReader();
+                                                reader.readAsText(file);
+                                                reader.onload = function() {
+                                                    console.log("reader.result",reader.result);
+                                                };
+                                                reader.onerror = function() {
+                                                    console.log(reader.error);
+                                                };
+
+
+
+                                            }
+
+                                            }
+                                        /> */}
+
+                                        {/* generating experiment button */}
+                                        <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                            e.preventDefault();
+                                            console.log("e.target", e.target);
+                                            // parent of e.target
+                                            console.log("e.target.parentElement", e.target.parentElement);
+                                            // second child of parent of e.target
+                                            console.log("e.target.parentElement.children[1]", e.target.parentElement.children[1]);
+
+                                            // get the url of the file
+                                            const url = e.target.parentElement.children[1].href;
+
+                                            console.log("url", url);
+                                            }}>
+                                            Generate experiment
+                                        </a>
+                                            
+                                            
+                                        
+
+
+                                    </div>
+                                  );
                                 } 
 
-                                // if the message includes "The tabular data is:" , set modeForTabluerData to true
-                                // this let us know that the next line is tabluer data
+
                                 else if (line.includes("The tabular data is:") && modeForTabluerData === false)
                                 {   
                                     console.log("3-if", line)
@@ -561,7 +504,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
 
                                 }
-                                // Tabluer data is here. It previews the data by showing top 10 rows.
                                 else if ( modeForTabluerData === true && index ==4 )
                                 {   
 
@@ -713,150 +655,19 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     
                                 }
 
-                                // this is for the normal message
-                                // in this case, there are 2 types of message
-                                // 1. message with "Errno" in it
-                                // 2. message without "Errno" in it
+
                                 else if(!line.includes("The tabular data is:")) {
                                     if (!line.includes("This is the end of the tabular data."))
                                     {
 
                                         console.log("5-if", line)
                                         console.log("5-if-index", index)
+                                        return (
 
-                                        // return (
-
-                                        //     <div id="justmessage" >
-                                        //         {line}
-                                        //     </div>
-                                        // );
-
-                                        // if line includes "Errno" show below
-                                        if (line.includes("Errno")) {
-                                            return (
-                                                <div id="justmessage" >
-                                                    <span style={{ color: '' }}>{line}</span>
-                                                    <br />
-                                                    <button id="runbutton" className="run-code-button" onClick={
-                                                        async (e)=>
-                                                        {
-                                                    
-                                                            // use usestate to change the text of the button
-                                                            // document.getElementById("runbutton").textContent = "Running...";
-                                                            console.log("gen-e.target.textContent",e.target.textContent)
-                                                            // parent of e.target
-                                                            console.log("gen-e.target.parentElement",e.target.parentElement)
-
-                                                            // parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement",e.target.parentElement.parentElement)
-
-                                                            // parent of parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement)
-
-                                                            // parent of parent of parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement)
-
-                                                            // parent of parent of parent of parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
-
-
-                                                            
-
-
-
-                                                            // e.target.textContent = "Running...";
-                                                            // make the button non clickable
-                                                            // e.target.click = false;
-                                                            e.target.disabled = true;
-                                                            // even though the button is disabled, do not change the color of the button.
-                                                            e.target.style.color = "black";
-
-
-                                                            console.log("onClick-extractedCode",extractedCode)
-                                                            console.log("onClick-datasetId",datasetId)
-                                                            console.log("onClick-experimentId",experimentId)
-
-
-                                                            // for now let just assume that code is below
-
-                                                            // let tempCode = "import pandas as pd";
-                                                            let tempText=findTheLastCodeMessageFromHTML(e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
-
-                                                            console.log("text-findTheLastCodeMessageFromHTML", tempText)
-
-                                                            // extrac code from text 
-                                                            // code is between ```python and ```
-
-                                                            let tempCode = extractCodeFromMess(tempText);
-
-                                                            console.log("code-findTheLastCodeMessageFromHTML", tempCode)
-
-                                                        
-
-                                                            await handleRegeneratingCode(e, tempCode)
-
-                                                            // console.log("chatLog-Errno",chatLog)
-
-
-                                                            
-                                                            
-                                                            // call openai api to generate code based on current code and error message
-                                                            // let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
-                                                                                                                        
-                                                            
-                                                            // updateAfterRuningCode(e, resp)
-                                                            
-                                                            
-                                                        
-
-
-                                                        }
-
-                                                        
-                                                    }
-                                                    // mouseover
-                                                    // onMouseOver={(e)=>{
-                                                    //     // parent of parent of parent of parent of parent of e.target
-                                                    //     console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
-
-                                                    //     // children of e.target.parentElement.parentElement.parentElement.parentElement.parentElement
-                                                    //     console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children)
-
-                                                    //     // second child of e.target.parentElement.parentElement.parentElement.parentElement.parentElement from the last child
-                                                    //     console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2]",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
-
-
-
-
-                                                    //     let text=e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2].innerText;
-
-                                                    //     console.log("text-findTheLastCodeMessageFromHTML", text)
-
-                                                    //     let code = extractCodeFromMess(text);
-
-                                                    //     // console.log("code-findTheLastCodeMessageFromHTML", code)
-
-                                                    // }}
-                                                    >
-                                    Generate code
-
-                                        {/* <p>
-                                            {extractedCode.code}{' '}
-                                        
-                                        </p> */}
-                                        
-                                                     </button>
-                                                </div>
-                                            );
-                                        }
-
-                                        else{
-                                            return (
-                                                <div id="justmessage" >
-                                                    {line}
-                                                </div>
-                                            );
-                                        }
+                                            <div id="justmessage" >
+                                                {line}
+                                            </div>
+                                        );
                                     }
                                   }
 
@@ -877,7 +688,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                               })
                         }
                     </div> : 
-
                     // code message
                     <div className="message code">
                         {/* <pre>
@@ -887,90 +697,38 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                         </pre> */}
 
 
-                        
-                            {/* code contents */}
-                            <div style={{ width: '100%', overflowX: 'auto' }}>
-                                <pre style={{ margin: 0 }}>
-                                    <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}>
-                                        {
-                                            message.message.split(/\n/).map((line, index) => {
-                                                return (
-                                                    <div className={`line-${index % 2 === 0 ? 'even' : 'odd'}`}>
-                                                        {line}
-                                                    </div>
-                                                );
-                                            })
-                                        }
-                                    </code>
-                                </pre>
-                            </div>
-
-
-                            {
+                        {
                             message.message.split(/\n/).map(
-                                (line, index) =>
+                                (line) =>
                                 {
-                                    
-                                    if (line.includes("not installed") && index ===0)
+                                    if (line.includes("not installed"))
                                     {
-                                        console.log("temp-button-not installed-line", line)
-                                        console.log("temp-button-not installed-index", index)
+                                        console.log("not installed-line", line)
                                         return (
                                             <div>
                             <button id="installpackagesbutton" className="run-code-button" onClick={
                                 async (e)=>
                                 {
-
-                                    // e.target parent
-                                    console.log("e.target.parentElement", e.target.parentElement)
-
-                                    // e.target parent parent 
-                                    console.log("e.target.parentElement.parentElement", e.target.parentElement.parentElement)
-
-                                    // e.target parent parent first child
-                                    console.log("e.target.parentElement.parentElement.childNodes[0].childNodes[0]", e.target.parentElement.parentElement.childNodes[0].childNodes[0].childNodes[0].childNodes[0])
-
-                                    let packageIncludedString = e.target.parentElement.parentElement.childNodes[0].childNodes[0].childNodes[0].childNodes[0].textContent;
-
-                                    const packageNamesString = packageIncludedString.substring(0, packageIncludedString.indexOf("package"));
-
-                                    console.log("packageNamesString", packageNamesString)
-
-                                    // remove space in the packageNamesString
-                                    
-                                    let packageNamesStringNospace=packageNamesString.replace(/\s/g, '');
-                                    
-
-                                    let packageNames = packageNamesStringNospace.split(",");
-
-                                    console.log("packageNames", packageNames)
-
-
-                                    
                             
                                     // use usestate to change the text of the button
-                                    // e.target.textContent = "Installing...";
+                                    document.getElementById("runbutton").textContent = "Running...";
                                     
                                     e.target.disabled = true;
                                     // even though the button is disabled, do not change the color of the button.
                                     e.target.style.color = "black";
 
+
                                     
-                                    console.log("click-extractedCode",extractedCode)
+
+                                    let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
                                     
-                                    // call install function
-                                    let resp_installPackages = await installPackages(packageNames);  
-                                    let resp_runExtractedCode = await runExtractedCode(extractedCode, datasetId,experimentId);
 
+                                    document.getElementById("runbutton").textContent = "Completed";
 
-                                    console.log("resp_runExtractedCode", resp_runExtractedCode)
-                            
-                                    // e.target.textContent = "Installed";
-
-
-                                    // use setchatlog function to update the chatlog
-                                    // update to the db and refer updateAfterRuningCode function
-                                    updateAfterRuningCode(e, resp_runExtractedCode)
+                                   
+                                    
+                                    
+                                    // updateAfterRuningCode(e, resp)
                                     
                                     
                                 
@@ -978,13 +736,13 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
                                 }
                             }>
-                                Install and Run
+                                Install
                             </button>
                                             </div>
                                         )
                                     }
-                                    else if(!line.includes("not installed") && index ===0){
-                                        // console.log("temp-button-installed-line", line)
+                                    else{
+                                        console.log("installed-line", line)
                                         return (
                                             <div>
                                 <button id="runbutton" className="run-code-button" onClick={
@@ -992,8 +750,8 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     {
                                 
                                         // use usestate to change the text of the button
-                                        // document.getElementById("runbutton").textContent = "Running...";
-                                        console.log("ttt",e.target.textContent)
+                                        document.getElementById("runbutton").textContent = "Running...";
+                                        console.log("ttt",document.getElementById("runbutton").textContent)
                                         // e.target.textContent = "Running...";
                                         // make the button non clickable
                                         // e.target.click = false;
@@ -1010,9 +768,9 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                         let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
                                         
 
-                                        // document.getElementById("runbutton").textContent = "Completed";
+                                        document.getElementById("runbutton").textContent = "Completed";
 
-                                        // console.log("ttt-after",document.getElementById("runbutton").textContent)
+                                        console.log("ttt-after",document.getElementById("runbutton").textContent)
                                         
                                         
                                         updateAfterRuningCode(e, resp)
@@ -1040,6 +798,22 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                             )
                         }
 
+                            <div style={{ width: '100%', overflowX: 'auto' }}>
+                                <pre style={{ margin: 0 }}>
+                                    <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}>
+                                        {
+                                            message.message.split(/\n/).map((line, index) => {
+                                                return (
+                                                    <div className={`line-${index % 2 === 0 ? 'even' : 'odd'}`}>
+                                                        {line}
+                                                    </div>
+                                                );
+                                            })
+                                        }
+                                    </code>
+                                </pre>
+                            </div>
+
                         {/* {message.message} */}
                         
                     
@@ -1048,7 +822,90 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                         {/* if booleanPackageInstall is true, show install button */}
 
 
+                        {
+                            booleanPackageInstall === false ?
+                            <div>
+                                <button id="runbutton" className="run-code-button" onClick={
+                                    async (e)=>
+                                    {
+                                
+                                        // use usestate to change the text of the button
+                                        document.getElementById("runbutton").textContent = "Running...";
+                                        console.log("ttt",document.getElementById("runbutton").textContent)
+                                        // e.target.textContent = "Running...";
+                                        // make the button non clickable
+                                        // e.target.click = false;
+                                        e.target.disabled = true;
+                                        // even though the button is disabled, do not change the color of the button.
+                                        e.target.style.color = "black";
+
+
+                                        console.log("onClick-extractedCode",extractedCode)
+
+                                        console.log("onClick-datasetId",datasetId)
+                                        console.log("onClick-experimentId",experimentId)
+
+                                        let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
+                                        
+
+                                        document.getElementById("runbutton").textContent = "Completed";
+
+                                        console.log("ttt-after",document.getElementById("runbutton").textContent)
+                                        
+                                        
+                                        updateAfterRuningCode(e, resp)
+                                        
+                                        
+                                    
+
+
+                                    }
+                                }>
+                                    Run
+
+                                        {/* <p>
+                                            {extractedCode.code}{' '}
+                                        
+                                        </p> */}
+                                        
+                                </button>
+                            </div>:
+                            <div>
+                                <button id="installpackagesbutton" className="run-code-button" onClick={
+                                    async (e)=>
+                                    {
+                                
+                                        // use usestate to change the text of the button
+                                        document.getElementById("runbutton").textContent = "Running...";
+                                        
+                                        e.target.disabled = true;
+                                        // even though the button is disabled, do not change the color of the button.
+                                        e.target.style.color = "black";
+
+
+                                        
+
+                                        let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
+                                        
+
+                                        document.getElementById("runbutton").textContent = "Completed";
+
+                                    
+                                        
+                                        
+                                        // updateAfterRuningCode(e, resp)
+                                        
+                                        
+                                    
+
+
+                                    }
+                                }>
+                                    Install
+                                </button>
+                            </div>
                         
+                        }
                         
                         
 
