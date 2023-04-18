@@ -7,7 +7,7 @@ import {useState, useEffect} from "react";
 
 
 // Primary Chat Window
-const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,handleRegeneratingCode}) => <section className="chatbox">
+const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn}) => <section className="chatbox">
     <div className="chat-log">
         {
             chatLog.map(
@@ -23,7 +23,8 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
                     booleanPackageInstall = {booleanPackageInstall}
                     setBooleanPackageInstall = {setBooleanPackageInstall}
 
-                    handleRegeneratingCode = {handleRegeneratingCode}
+                    submitErrorWithCode = {submitErrorWithCode}
+                    showCodeRunningMessageWhenClickRunBtn = {showCodeRunningMessageWhenClickRunBtn}
                     
                 />)
             )
@@ -75,16 +76,16 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 </section>
 
 // Individual Chat Message
-const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, handleRegeneratingCode}) => {
-    // console.log("message-ChatMessage", message)
-    // console.log("message-ChatMessage.message", message.message)
-    // console.log("message-ChatMessage.message.length", message.message.length)
+const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn}) => {
+    // // console.log("message-ChatMessage", message)
+    // // console.log("message-ChatMessage.message", message.message)
+    // // console.log("message-ChatMessage.message.length", message.message.length)
 
     let codeIncluded = checkIncludeCode(message.message)
     let extractedCode = extractCodeFromMess(message.message)
 
-    console.log("codeIncluded-checkIfCode", codeIncluded)
-    console.log("extractedCode-checkIfCode", extractedCode)
+    // console.log("codeIncluded-checkIfCode", codeIncluded)
+    // console.log("extractedCode-checkIfCode", extractedCode)
 
     // Nick's code
     // const regex = /```([^`]*)```/g;
@@ -96,7 +97,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
     //         //remove the first 6 characters
     //         match[1] = match[1].substring(6);
     //     }
-    //     // console.log("python code:",match[1]);
+    //     // // console.log("python code:",match[1]);
     // }
 
     // message: messageFromOpenai.split(/\n/).map(
@@ -118,7 +119,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
     const handleDoubleClick = () => {
 
-        console.log("handleDoubleClick")
+        // console.log("handleDoubleClick")
         setIsExpanded(!isExpanded);
     };
 
@@ -156,11 +157,11 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
         // })
         // .then(response => response.json())
         // .then(data => {
-        //     console.log("response-data-result", data['result'])
+        //     // console.log("response-data-result", data['result'])
         //     return data;
         // })
         // .catch(error => {
-        //     console.log("runExtractedCode-fetch-error", error)
+        //     // console.log("runExtractedCode-fetch-error", error)
         //     return error;
         // })
 
@@ -187,13 +188,14 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
         })
         .then(response => response.json())
         .then(data => {
-            console.log("response-data-result", data['result'])
-            console.log("response-data", data)
+            // console.log("response-data-result", data['result'])
+            // console.log("response-data", data)
             // e.target.textContent = "Completed";
+            console.log('star-1. runExtractedCode', data)
             return data;
         })
         .catch(error => {
-            console.log("runExtractedCode-fetch-error", error)
+            // console.log("runExtractedCode-fetch-error", error)
             return error;
         })
 
@@ -216,7 +218,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
         if (message !== undefined) {
 
-            console.log("message-checkIncludeCode", message)
+            // console.log("message-checkIncludeCode", message)
             let codeIncluded = false;
             if (message.includes("```python")) {
                 codeIncluded = true;
@@ -233,7 +235,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
     function extractCodeFromMess(message) {
 
-        console.log("message-extractCodeFromMess", message)
+        // console.log("message-extractCodeFromMess", message)
         if (message === undefined) {
             return "";
         }
@@ -242,13 +244,13 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
         const matches = message.matchAll(regex);
 
         for (const match of matches) {
-            console.log("match-extractCodeFromMess", match)
+            // console.log("match-extractCodeFromMess", match)
             //check if the first 6 characters are python
             if(match[1].substring(0,6) === "python"){
                 //remove the first 6 characters
                 match[1] = match[1].substring(6);
             }
-            console.log("python code:",match[1]);
+            // console.log("python code:",match[1]);
             code = match[1];
 
         }
@@ -261,10 +263,10 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
         // const code = match[1];
 
-        // console.log("extractCode",code);
+        // // console.log("extractCode",code);
 
-        // console.log("match-extractCodeFromMess[0]", match[0]);
-        // console.log("match-extractCodeFromMess[1]", match[1]);
+        // // console.log("match-extractCodeFromMess[0]", match[0]);
+        // // console.log("match-extractCodeFromMess[1]", match[1]);
 
         // for 
 
@@ -296,27 +298,27 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
         })
         .then(response => response.json())
         .then(data => {
-            // console.log("installPackages-response-data-result", data['result'])
-            // console.log("resultFromInstallingPackages-response-data", data)
+            // // console.log("installPackages-response-data-result", data['result'])
+            // // console.log("resultFromInstallingPackages-response-data", data)
             return data;
         }
         )
         .catch(error => {
-            console.log("installPackages-fetch-error", error)
+            // console.log("installPackages-fetch-error", error)
             return error;
         }
         )
 
 
-        console.log("resultFromInstallingPackages", resultFromInstallingPackages)
-        console.log("resultFromInstallingPackages[exec_results][stdout]",resultFromInstallingPackages["exec_results"]["stdout"])
+        // console.log("resultFromInstallingPackages", resultFromInstallingPackages)
+        // console.log("resultFromInstallingPackages[exec_results][stdout]",resultFromInstallingPackages["exec_results"]["stdout"])
         // resultFromInstallingPackages["exec_results"]["stdout"]
     }
 
 
     function findTheLastCodeMessageFromHTML(element)
     {
-        console.log("element-findTheLastCodeMessageFromHTML", element)
+        // console.log("element-findTheLastCodeMessageFromHTML", element)
         // element is e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2]
 
         // extract all text from element
@@ -324,6 +326,20 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
         return text;
 
+    }
+
+
+    function booleanErrorMessageorNot(line)
+    {
+       if (line.includes("Errno") || line.includes("Error") || line.includes("No module named")|line.includes("invalid syntax") ||line.includes("not"))
+       {
+        return true;
+       }
+
+       else
+       {
+        return false;
+       }
     }
     
 
@@ -367,13 +383,13 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 
                                 // let tableRowArray = [];
                                 
-                                // console.log("line", line)
-                                // console.log("line-index", index)
+                                // // console.log("line", line)
+                                // // console.log("line-index", index)
 
 
                                 // non code message which includes image
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
-                                    console.log("1-if", line)
+                                    // console.log("1-if", line)
                                   return (
                                     // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
                                     //   <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
@@ -394,12 +410,12 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 // non code message which includes csv or tsv
                                 else if (line.includes(".csv") && line.includes("http") || line.includes(".tsv") && line.includes("http")) 
                                 {
-                                    console.log("2-if", line)
+                                    // console.log("2-if", line)
                                     return (
                                         <div>
                                             
                                             {
-                                                console.log("line-csv", line)
+                                                // console.log("line-csv", line)
                                             }
                                             {/* show me preview of the file  */}
 
@@ -496,7 +512,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                             {/* uploading file button */}
                                             {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
                                                 e.preventDefault();
-                                                console.log("e.target", e.target);
+                                                // console.log("e.target", e.target);
                                                 document.getElementById('datasetInput').click();
                                                 }}>
                                                 Upload dataset
@@ -506,17 +522,17 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                 id="datasetInput"
                                                 style={{display: 'none'}}
                                                 onChange={(e) => {
-                                                    console.log("upload file",e.target.files)
+                                                    // console.log("upload file",e.target.files)
 
                                                     // show me preview of the file
                                                     let file = e.target.files[0];
                                                     let reader = new FileReader();
                                                     reader.readAsText(file);
                                                     reader.onload = function() {
-                                                        console.log("reader.result",reader.result);
+                                                        // console.log("reader.result",reader.result);
                                                     };
                                                     reader.onerror = function() {
-                                                        console.log(reader.error);
+                                                        // console.log(reader.error);
                                                     };
 
 
@@ -527,21 +543,13 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                             /> */}
 
                                             {/* generating experiment button */}
-                                            <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                            {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
                                                 e.preventDefault();
-                                                console.log("e.target", e.target);
-                                                // parent of e.target
-                                                console.log("e.target.parentElement", e.target.parentElement);
-                                                // second child of parent of e.target
-                                                console.log("e.target.parentElement.children[1]", e.target.parentElement.children[1]);
-
                                                 // get the url of the file
                                                 const url = e.target.parentElement.children[1].href;
-
-                                                console.log("url", url);
                                                 }}>
                                                 Generate experiment
-                                            </a>
+                                            </a> */}
                                                 
                                                 
                                             
@@ -555,7 +563,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 // this let us know that the next line is tabluer data
                                 else if (line.includes("The tabular data is:") && modeForTabluerData === false)
                                 {   
-                                    console.log("3-if", line)
+                                    // console.log("3-if", line)
                                     setModeForTabluerData(true);
 
 
@@ -565,7 +573,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 else if ( modeForTabluerData === true && index ==4 )
                                 {   
 
-                                    console.log("4-if", line)
+                                    // console.log("4-if", line)
 
                                     // check there is \t or not to check the file is csv or tsv
                                     if (line.includes("\t"))
@@ -575,7 +583,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     // line = line.replace(/_/g, "\n");
                                     line = line.replace(/_/g, "\n");
                                     
-                                    console.log("4-if-replace", line)
+                                    // console.log("4-if-replace", line)
                                     // make line as array
                                     const rows = line.split("\n");
                                     const data = rows.map((row) => row.split(","));
@@ -721,8 +729,8 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     if (!line.includes("This is the end of the tabular data."))
                                     {
 
-                                        console.log("5-if", line)
-                                        console.log("5-if-index", index)
+                                        // console.log("5-if", line)
+                                        // console.log("5-if-index", index)
 
                                         // return (
 
@@ -732,7 +740,8 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                         // );
 
                                         // if line includes "Errno" show below
-                                        if (line.includes("Errno")) {
+                                        // error message check
+                                        if (line.includes("Errno") || line.includes("Error") || line.includes("No module named")|line.includes("invalid syntax"))  {
                                             return (
                                                 <div id="justmessage" >
                                                     <span style={{ color: '' }}>{line}</span>
@@ -743,21 +752,21 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                     
                                                             // use usestate to change the text of the button
                                                             // document.getElementById("runbutton").textContent = "Running...";
-                                                            console.log("gen-e.target.textContent",e.target.textContent)
+                                                            // console.log("gen-e.target.textContent",e.target.textContent)
                                                             // parent of e.target
-                                                            console.log("gen-e.target.parentElement",e.target.parentElement)
+                                                            // console.log("gen-e.target.parentElement",e.target.parentElement)
 
                                                             // parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement",e.target.parentElement.parentElement)
+                                                            // console.log("gen-e.target.parentElement.parentElement",e.target.parentElement.parentElement)
 
                                                             // parent of parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement)
+                                                            // console.log("gen-e.target.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement)
 
                                                             // parent of parent of parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement)
+                                                            // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement)
 
                                                             // parent of parent of parent of parent of parent of e.target
-                                                            console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
+                                                            // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
 
 
                                                             
@@ -772,9 +781,9 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                             e.target.style.color = "black";
 
 
-                                                            console.log("onClick-extractedCode",extractedCode)
-                                                            console.log("onClick-datasetId",datasetId)
-                                                            console.log("onClick-experimentId",experimentId)
+                                                            // console.log("onClick-extractedCode",extractedCode)
+                                                            // console.log("onClick-datasetId",datasetId)
+                                                            // console.log("onClick-experimentId",experimentId)
 
 
                                                             // for now let just assume that code is below
@@ -782,20 +791,20 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                             // let tempCode = "import pandas as pd";
                                                             let tempText=findTheLastCodeMessageFromHTML(e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
 
-                                                            console.log("text-findTheLastCodeMessageFromHTML", tempText)
+                                                            // console.log("text-findTheLastCodeMessageFromHTML", tempText)
 
                                                             // extrac code from text 
                                                             // code is between ```python and ```
 
                                                             let tempCode = extractCodeFromMess(tempText);
 
-                                                            console.log("code-findTheLastCodeMessageFromHTML", tempCode)
+                                                            // console.log("code-findTheLastCodeMessageFromHTML", tempCode)
 
                                                         
 
-                                                            await handleRegeneratingCode(e, tempCode)
+                                                            await submitErrorWithCode(e, tempCode)
 
-                                                            // console.log("chatLog-Errno",chatLog)
+                                                            // // console.log("chatLog-Errno",chatLog)
 
 
                                                             
@@ -817,28 +826,28 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                     // mouseover
                                                     // onMouseOver={(e)=>{
                                                     //     // parent of parent of parent of parent of parent of e.target
-                                                    //     console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
+                                                    //     // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
 
                                                     //     // children of e.target.parentElement.parentElement.parentElement.parentElement.parentElement
-                                                    //     console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children)
+                                                    //     // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children)
 
                                                     //     // second child of e.target.parentElement.parentElement.parentElement.parentElement.parentElement from the last child
-                                                    //     console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2]",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
+                                                    //     // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2]",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
 
 
 
 
                                                     //     let text=e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2].innerText;
 
-                                                    //     console.log("text-findTheLastCodeMessageFromHTML", text)
+                                                    //     // console.log("text-findTheLastCodeMessageFromHTML", text)
 
                                                     //     let code = extractCodeFromMess(text);
 
-                                                    //     // console.log("code-findTheLastCodeMessageFromHTML", code)
+                                                    //     // // console.log("code-findTheLastCodeMessageFromHTML", code)
 
                                                     // }}
                                                     >
-                                    Generate code
+                                    Submit error
 
                                         {/* <p>
                                             {extractedCode.code}{' '}
@@ -913,28 +922,28 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     
                                     if (line.includes("not installed") && index ===0)
                                     {
-                                        console.log("temp-button-not installed-line", line)
-                                        console.log("temp-button-not installed-index", index)
+                                        // // console.log("temp-button-not installed-line", line)
+                                        // // console.log("temp-button-not installed-index", index)
                                         return (
                                             <div>
                             <button id="installpackagesbutton" className="run-code-button" onClick={
                                 async (e)=>
                                 {
 
-                                    // e.target parent
-                                    console.log("e.target.parentElement", e.target.parentElement)
+                                    // // e.target parent
+                                    // // console.log("e.target.parentElement", e.target.parentElement)
 
-                                    // e.target parent parent 
-                                    console.log("e.target.parentElement.parentElement", e.target.parentElement.parentElement)
+                                    // // e.target parent parent 
+                                    // // console.log("e.target.parentElement.parentElement", e.target.parentElement.parentElement)
 
-                                    // e.target parent parent first child
-                                    console.log("e.target.parentElement.parentElement.childNodes[0].childNodes[0]", e.target.parentElement.parentElement.childNodes[0].childNodes[0].childNodes[0].childNodes[0])
+                                    // // e.target parent parent first child
+                                    // // console.log("e.target.parentElement.parentElement.childNodes[0].childNodes[0]", e.target.parentElement.parentElement.childNodes[0].childNodes[0].childNodes[0].childNodes[0])
 
                                     let packageIncludedString = e.target.parentElement.parentElement.childNodes[0].childNodes[0].childNodes[0].childNodes[0].textContent;
 
                                     const packageNamesString = packageIncludedString.substring(0, packageIncludedString.indexOf("package"));
 
-                                    console.log("packageNamesString", packageNamesString)
+                                    // // console.log("packageNamesString", packageNamesString)
 
                                     // remove space in the packageNamesString
                                     
@@ -943,7 +952,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
                                     let packageNames = packageNamesStringNospace.split(",");
 
-                                    console.log("packageNames", packageNames)
+                                    // // console.log("packageNames", packageNames)
 
 
                                     
@@ -956,14 +965,16 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     e.target.style.color = "black";
 
                                     
-                                    console.log("click-extractedCode",extractedCode)
+                                    // // console.log("click-extractedCode",extractedCode)
+
+                                    await showCodeRunningMessageWhenClickRunBtn(e);
                                     
                                     // call install function
                                     let resp_installPackages = await installPackages(packageNames);  
                                     let resp_runExtractedCode = await runExtractedCode(extractedCode, datasetId,experimentId);
 
 
-                                    console.log("resp_runExtractedCode", resp_runExtractedCode)
+                                    // console.log("resp_runExtractedCode", resp_runExtractedCode)
                             
                                     // e.target.textContent = "Installed";
 
@@ -984,7 +995,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                         )
                                     }
                                     else if(!line.includes("not installed") && index ===0){
-                                        // console.log("temp-button-installed-line", line)
+                                        // // console.log("temp-button-installed-line", line)
                                         return (
                                             <div>
                                 <button id="runbutton" className="run-code-button" onClick={
@@ -993,7 +1004,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 
                                         // use usestate to change the text of the button
                                         // document.getElementById("runbutton").textContent = "Running...";
-                                        console.log("ttt",e.target.textContent)
+                                        // console.log("ttt",e.target.textContent)
                                         // e.target.textContent = "Running...";
                                         // make the button non clickable
                                         // e.target.click = false;
@@ -1002,20 +1013,22 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                         e.target.style.color = "black";
 
 
-                                        console.log("onClick-extractedCode",extractedCode)
+                                        // console.log("onClick-extractedCode",extractedCode)
 
-                                        console.log("onClick-datasetId",datasetId)
-                                        console.log("onClick-experimentId",experimentId)
+                                        // console.log("onClick-datasetId",datasetId)
+                                        // console.log("onClick-experimentId",experimentId)
+
+
+                                        await showCodeRunningMessageWhenClickRunBtn(e)
+                                        
+
+
 
                                         let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
                                         
-
-                                        // document.getElementById("runbutton").textContent = "Completed";
-
-                                        // console.log("ttt-after",document.getElementById("runbutton").textContent)
                                         
                                         
-                                        updateAfterRuningCode(e, resp)
+                                        await updateAfterRuningCode(e, resp)
                                         
                                         
                                     

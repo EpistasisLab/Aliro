@@ -1848,3 +1848,24 @@ th, td {
   border: 1px solid transparent;
   padding: 0.5em;
 }
+
+
+
+
+
+/* blink for waiting message */
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blinking {
+  animation: blink 1.5s infinite;
+}

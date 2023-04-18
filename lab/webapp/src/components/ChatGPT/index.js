@@ -139,25 +139,24 @@ export default function ChatGPT({experiment}) {
         const match = regex.exec(messageFromOpenai);
         const code = match[1];
 
-        console.log("extractCode",code);
+        // console.log("extractCode",code);
 
-        console.log("match", match);
+        // console.log("match", match);
 
         return code;
 
 
+        // const regex = /```([^`]*)```/g;
+        // const matches = messageFromOpenai.matchAll(regex);
 
-
-        /* Step 1: Import the required modules
-
-        You will need the urllib and beautifulSoup modules to crawl and parse web pages, respectively. You can use the following code to import these modules:
-
-        ```
-        import urllib.request
-        from bs4 import BeautifulSoup
-        ```
-
-        Step 2: Define the website to crawl */
+        // for (const match of matches) {
+        //     //check if the first 6 characters are python
+        //     if(match[1].substring(0,6) === "python"){
+        //         //remove the first 6 characters
+        //         match[1] = match[1].substring(6);
+        //     }
+        //     console.log("python code:",match[1]);
+        // }
 
     }
 
@@ -201,11 +200,11 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("postChats", data);
+                // console.log("postChats", data);
                 return data;
             })
             .catch(err => {
-                console.log("err--postChats",err);
+                // console.log("err--postChats",err);
                 return err;
             })
 
@@ -223,11 +222,11 @@ export default function ChatGPT({experiment}) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log("step.1-getAllChatsFromDB", data);
+                // console.log("step.1-getAllChatsFromDB", data);
                 return data;
             })
             .catch(err => {
-                console.log("err--getAllChatsFromDB",err);
+                // console.log("err--getAllChatsFromDB",err);
                 return err;
             })
         
@@ -235,7 +234,6 @@ export default function ChatGPT({experiment}) {
 
     }
 
-    // get all chats and filter out the chats that has the same experiment id
     // function getAllChatsFromDBFilterbyExpIdSetChatbox(){
     //     // GET http://localhost:5080/chatapi/v1/chats
 
@@ -339,7 +337,7 @@ export default function ChatGPT({experiment}) {
 
         let data=await getAllChatsFromDB();
 
-        console.log("step.2", data)
+        // console.log("step.2", data)
 
         let experimentId = experiment.data._id;
 
@@ -361,7 +359,7 @@ export default function ChatGPT({experiment}) {
         })
 
 
-        console.log("getAllChatsFromDBFilterbyExpIdSetChatbox", filteredChatsWithoutNull)
+        // console.log("getAllChatsFromDBFilterbyExpIdSetChatbox", filteredChatsWithoutNull)
 
         setNumChatBox(filteredChatsWithoutNull.length);
         setChatCurrentTempId(filteredChatsWithoutNull.length);
@@ -751,8 +749,8 @@ export default function ChatGPT({experiment}) {
 
         // experimentId = experiment.data._id
 
-        console.log("experiment.data._id", experiment.data._id )
-        console.log("experimentId",experimentId)
+        // console.log("experiment.data._id", experiment.data._id )
+        // console.log("experimentId",experimentId)
 
         // experimentId = urlSplit[urlSplit.length - 1]
 
@@ -937,9 +935,9 @@ export default function ChatGPT({experiment}) {
 
         // console.log("checkCodePackages-packagesNotInstalled",packagesNotInstalled)
 
-        console.log("checkCodePackages-allInstalledPackages",allInstalledPackages)
+        // console.log("checkCodePackages-allInstalledPackages",allInstalledPackages)
 
-        console.log("checkCodePackages-result",result)
+        // console.log("checkCodePackages-result",result)
 
         // convert result to array
         let packagesNotInstalled = Array.from(result);
@@ -1196,11 +1194,51 @@ export default function ChatGPT({experiment}) {
         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
 
         // my prompt eng
-        let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate one script of python code.   
+        let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. Put the code between three backticks python and three backticks. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed.   
         "
         `;
-    
+
+        console.log("preSet",preSet);
+
+        let waitingMessage = "Please wait while I am thinking...";
+        let typingDelay = 10; // milliseconds per character
+        
+        // Before making the API call
+        setChatLog(chatLogNew => [
+            ...chatLogNew,
+            {
+            user: "gpt",
+            message: "",
+            className: "blinking"
+            }
+        ]);
+  
+        // Gradually update the message (waitingMessage) with a delay
+        let messageIndex = 0;
+        let intervalId = setInterval(() => {
+        if (messageIndex < waitingMessage.length) {
+            setChatLog(chatLogNew => [
+            ...chatLogNew.slice(0, -1),
+            {
+                user: "gpt",
+                message: waitingMessage.slice(0, messageIndex + 1),
+                className: "blinking"
+            }
+            ]);
+            messageIndex++;
+        } else {
+            clearInterval(intervalId);
+        }
+        }, typingDelay);
+
+
+
+        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
+
+        
         data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
+
+
 
         var messageFromOpenai = data.choices[0].message['content'];
             
@@ -1240,6 +1278,128 @@ export default function ChatGPT({experiment}) {
         }
 
 
+
+
+        
+
+
+        // const regex = /```([^`]*)```/g;
+        // const matches = messageFromOpenai.matchAll(regex);
+
+        // for (const match of matches) {
+        //     //check if the first 6 characters are python
+        //     if(match[1].substring(0,6) === "python"){
+        //         //remove the first 6 characters
+        //         match[1] = match[1].substring(6);
+        //     }
+        //     console.log("python code:",match[1]);
+        // }
+
+
+
+          // Set up the initial blinking message
+        //   setChatLog(prevChatLog => [
+        //     ...prevChatLog, {
+        //     user: "gpt",
+        //     message: "",
+        //     className: "blinking"
+        //     }
+        // ]);
+
+        // setChatLog([
+        //     ...chatLogNew, {
+        //         user: "gpt",
+        //         message: `${messageFromOpenai}`
+        //     }
+        // ])
+
+        // setChatLog(prevChatLog => prevChatLog.slice(0, -1).concat({
+        //     user: "gpt",
+        //     message: `${messageFromOpenai}`,
+        //     className: ""
+        //   }));
+
+
+
+
+
+
+
+          // Set up the initial blinking message
+        // setChatLog(prevChatLog => [
+        //     ...prevChatLog, {
+        //     user: "gpt",
+        //     message: "",
+        //     className: "blinking"
+        //     }
+        // ]);
+
+
+        // setChatLog(prevChatLog => [
+        //     ...prevChatLog, {
+        //     user: "gpt",
+        //     message: messageFromOpenai,
+        //     className: ""
+        //     }
+        // ]);
+
+        setChatLog(chatLog => [
+            ...chatLog, {
+            user: "gpt",
+            message: messageFromOpenai,
+            className: ""
+            }
+        ]);
+  
+        // let messageIndex2 = 0;
+        // let intervalId2 = setInterval(() => {
+        // setChatLog(prevChatLog => {
+        //     let lastMessage = prevChatLog[prevChatLog.length - 1];
+        //     if (lastMessage.user === "gpt" && lastMessage.className === "blinking") {
+        //     let currentMessage = lastMessage.message;
+        //     if (messageIndex2 < messageFromOpenai.length) {
+        //         currentMessage += messageFromOpenai[messageIndex2];
+        //         messageIndex2++;
+        //     }
+        //     return prevChatLog.slice(0, -1).concat({
+        //         user: "gpt",
+        //         message: currentMessage,
+        //         className: "blinking"
+        //     });
+        //     } else {
+        //     clearInterval(intervalId2);
+        //     if (lastMessage.message === "Please wait while I am thinking...") {
+        //         // Add a delay before showing the message
+        //         setTimeout(() => {
+        //         setChatLog(prevChatLog => [
+        //             ...prevChatLog, {
+        //             user: "gpt",
+        //             message: messageFromOpenai,
+        //             className: ""
+        //             }
+        //         ]);
+        //         }, typingDelay * 2);
+        //         // Return the previous chat log for now
+        //         return prevChatLog;
+        //     } else {
+        //         // Show the message immediately
+        //         return [
+        //         ...prevChatLog, {
+        //             user: "gpt",
+        //             message: messageFromOpenai,
+        //             className: ""
+        //         }
+        //         ];
+        //     }
+        //     }
+        // });
+        // }, typingDelay);
+
+
+
+
+
+
         await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
 
         // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt", "");
@@ -1252,36 +1412,8 @@ export default function ChatGPT({experiment}) {
         // ])
 
 
-        
 
-
-        const regex = /```([^`]*)```/g;
-        const matches = messageFromOpenai.matchAll(regex);
-
-        for (const match of matches) {
-            //check if the first 6 characters are python
-            if(match[1].substring(0,6) === "python"){
-                //remove the first 6 characters
-                match[1] = match[1].substring(6);
-            }
-            // console.log("python code:",match[1]);
-        }
-
-
-
-
-
-        setChatLog([
-            ...chatLogNew, {
-                user: "gpt",
-                message: `${messageFromOpenai}`
-                // message: messageFromOpenai.split(/\n/).map(
-                //     line => 
-                //     <div key={line}>
-                //     {line}</div>
-                // )
-            }
-        ])
+          
 
         var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
         scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
@@ -1291,7 +1423,7 @@ export default function ChatGPT({experiment}) {
 
 
     // modified handleSubmit to generate code for error handling of running code
-    async function handleRegeneratingCode(e, code) {
+    async function submitErrorWithCode(e, code) {
         // prevent page from refreshing
         e.preventDefault();
 
@@ -1342,9 +1474,52 @@ export default function ChatGPT({experiment}) {
 
 
         // my prompt eng
-        let preSet =`assume that you already ran the ${code}. However, you got the following error message: ${errorMessageFromMachine}. Please give me another code which does not have the error message. The code should be able to run on Aliro. Please write the code between 3 backticks python and 3backticks. For example, the format is like this: \`\`\`python\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\`\`\`
+        let preSet =`assume that you already ran the ${code}. However, you got the following error message: ${errorMessageFromMachine}. Please give me another code which does not have the error message. The code should be able to run on Aliro. 
+        When the error is related to the missing file, please use the current df as the input. However this does not mean df is csv file or tsv file. df is a variable name. 
+        For example, if the error is related to the missing file "theta.csv", please use the current df as the input. Here is another code example. pd.read_csv('path/to/your/csv/file'). This code will cause error because the file does not exist. However, if you change the code to pd.read_csv(df), it will not cause error.
+        Please write the code between 3 backticks python and 3backticks. For example, the format is like this: \`\`\`python\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\`\`\`
         `;
-    
+
+
+
+
+        let waitingMessage = "Please wait while I am thinking...";
+        let typingDelay = 10; // milliseconds per character
+        
+        // Before making the API call
+        setChatLog(chatLogNew => [
+            ...chatLogNew,
+            {
+            user: "gpt",
+            message: "",
+            className: "blinking"
+            }
+        ]);
+  
+        // Gradually update the message (waitingMessage) with a delay
+        let messageIndex = 0;
+        let intervalId = setInterval(() => {
+        if (messageIndex < waitingMessage.length) {
+            setChatLog(chatLogNew => [
+            ...chatLogNew.slice(0, -1),
+            {
+                user: "gpt",
+                message: waitingMessage.slice(0, messageIndex + 1),
+                className: "blinking"
+            }
+            ]);
+            messageIndex++;
+        } else {
+            clearInterval(intervalId);
+        }
+        }, typingDelay);
+
+
+
+        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
+
+
+
         data= await openaiChatCompletions(currentModel,preSet)
 
         var messageFromOpenai = data.choices[0].message['content'];
@@ -1366,7 +1541,9 @@ export default function ChatGPT({experiment}) {
             if (packagesNotInstalled.length > 0){
                 setBooleanPackageInstall(true);
 
-                messageFromOpenai = packagesNotInstalled+" "+"package(s) is (are) not installed."+" "+"If you want to install the packages to run the below code, please click the button below" + "\n" + messageFromOpenai;
+                messageFromOpenai = packagesNotInstalled+" "+"package(s) is (are) not installed!" 
+                + "\n" +
+                +" "+"If you want to install the packages to run the below code, please click the button below" + "\n" + messageFromOpenai;
 
                 
                 
@@ -1385,9 +1562,6 @@ export default function ChatGPT({experiment}) {
         }
 
 
-        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
-
-        // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt", "");
         
         // setChatLog([
         //     ...chatLogNew, {
@@ -1400,38 +1574,249 @@ export default function ChatGPT({experiment}) {
         
 
 
-        const regex = /```([^`]*)```/g;
-        const matches = messageFromOpenai.matchAll(regex);
+        // const regex = /```([^`]*)```/g;
+        // const matches = messageFromOpenai.matchAll(regex);
 
-        for (const match of matches) {
-            //check if the first 6 characters are python
-            if(match[1].substring(0,6) === "python"){
-                //remove the first 6 characters
-                match[1] = match[1].substring(6);
+        // for (const match of matches) {
+        //     //check if the first 6 characters are python
+        //     if(match[1].substring(0,6) === "python"){
+        //         //remove the first 6 characters
+        //         match[1] = match[1].substring(6);
+        //     }
+        //     // console.log("python code:",match[1]);
+        // }
+
+
+
+
+
+        // setChatLog([
+        //     ...chatLogNew, {
+        //         user: "gpt",
+        //         message: `${messageFromOpenai}`
+        //         // message: messageFromOpenai.split(/\n/).map(
+        //         //     line => 
+        //         //     <div key={line}>
+        //         //     {line}</div>
+        //         // )
+        //     }
+        // ])
+
+
+        setChatLog(chatLog => [
+            ...chatLog, {
+            user: "gpt",
+            message: messageFromOpenai,
+            className: ""
             }
-            // console.log("python code:",match[1]);
-        }
+        ]);
 
 
 
 
 
-        setChatLog([
-            ...chatLogNew, {
-                user: "gpt",
-                message: `${messageFromOpenai}`
-                // message: messageFromOpenai.split(/\n/).map(
-                //     line => 
-                //     <div key={line}>
-                //     {line}</div>
-                // )
-            }
-        ])
+        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
+
+        // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt", "");
 
         var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
         scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
 
         setLanModelReset(false);
+    }
+
+
+    async function showCodeRunningMessageWhenClickRunBtn(e) {
+
+        console.log("star-0. showCodeRunningMessageWhenClickRunBtn")
+        // prevent page from refreshing
+        e.preventDefault();
+
+        let experimentId = experiment.data._id;
+
+        
+
+        let chatLogNew = chatLog;
+        
+        // chatLogNew = [
+        //     ...chatLog, {
+        //         user: "me",
+        //         message: `${chatInput}`
+        //     }
+        // ]
+
+        setChatInput("");
+        // setChatLog(chatLogNew)
+
+        // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
+        let data = await getChatMessageByExperimentId(experimentId);
+
+        // filter the data using _experiment_id
+        var filteredData= data.filter((item) => item._experiment_id === experimentId)
+
+        // chatCurrentTempId is 1,2,3, ...
+        // there is no 0 chatCurrentTempId.
+        if (chatCurrentTempId === 0){
+            setChatCurrentTempId(1);
+        }
+
+        // if (chatInput !== undefined || chatInput !== ""){
+        //     await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], chatInput, "text", "user");
+        // }
+
+        // const messages = chatLogNew
+        // .map((message) => message.message)
+        // .join("\n")
+
+        // get the last message from the chatLogNew array
+        // in this case, for example, it is "[Errno 2] File theta.csv does not exist: 'theta.csv'"
+        // let errorMessageFromMachine = chatLogNew[chatLogNew.length - 1].message;
+
+        
+
+
+
+
+        let waitingMessage = "Please wait while I am running your code on Aliro...";
+        let typingDelay = 10; // milliseconds per character
+        
+        // Before making the API call
+        setChatLog(chatLogNew => [
+            ...chatLogNew,
+            {
+            user: "gpt",
+            message: "",
+            className: "blinking"
+            }
+        ]);
+  
+        // Gradually update the message (waitingMessage) with a delay
+        let messageIndex = 0;
+        let intervalId = setInterval(() => {
+        if (messageIndex < waitingMessage.length) {
+            setChatLog(chatLogNew => [
+            ...chatLogNew.slice(0, -1),
+            {
+                user: "gpt",
+                message: waitingMessage.slice(0, messageIndex + 1),
+                className: "blinking"
+            }
+            ]);
+            messageIndex++;
+        } else {
+            clearInterval(intervalId);
+        }
+        }, typingDelay);
+
+
+
+        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
+
+
+
+        // data= await openaiChatCompletions(currentModel,preSet)
+
+        // var messageFromOpenai = data.choices[0].message['content'];
+            
+        // process the messageFromOpenai based on...
+        // check if the messageFromOpenai contains python code.
+        // if yes, then add "Do you want to run the code on Aliro?" to the messageFromOpenai in next line
+        // if no, then do nothing
+        
+        // let booleanCode = checkIfCode(messageFromOpenai);
+
+        // if (booleanCode){
+        //     let extractedCodeTemp = extractCode(messageFromOpenai);
+        //     let packagesOfCode = extractPackagesOfCode(extractedCodeTemp); 
+
+        //     let packagesNotInstalled = await checkCodePackages(packagesOfCode)
+            
+
+        //     if (packagesNotInstalled.length > 0){
+        //         setBooleanPackageInstall(true);
+
+        //         messageFromOpenai = packagesNotInstalled+" "+"package(s) is (are) not installed!" 
+        //         + "\n" +
+        //         +" "+"If you want to install the packages to run the below code, please click the button below" + "\n" + messageFromOpenai;
+
+                
+                
+        //     }
+            
+
+        //     // console.log("extractedCodeTemp: ", extractedCodeTemp)
+        //     else{
+        //         setBooleanPackageInstall(false);
+        //         messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+        //     }
+
+        //     // function for running the code on aliro
+        //     // runCodeOnAliro(extractedCode);
+        //     setExtractedCode({...extractedCode, code: extractedCodeTemp});
+        // }
+
+
+        
+        // setChatLog([
+        //     ...chatLogNew, {
+        //         user: "gpt",
+        //         message: `${data.message}`
+        //     }
+        // ])
+
+
+        
+
+
+        // const regex = /```([^`]*)```/g;
+        // const matches = messageFromOpenai.matchAll(regex);
+
+        // for (const match of matches) {
+        //     //check if the first 6 characters are python
+        //     if(match[1].substring(0,6) === "python"){
+        //         //remove the first 6 characters
+        //         match[1] = match[1].substring(6);
+        //     }
+        //     // console.log("python code:",match[1]);
+        // }
+
+
+
+
+
+        // setChatLog([
+        //     ...chatLogNew, {
+        //         user: "gpt",
+        //         message: `${messageFromOpenai}`
+        //         // message: messageFromOpenai.split(/\n/).map(
+        //         //     line => 
+        //         //     <div key={line}>
+        //         //     {line}</div>
+        //         // )
+        //     }
+        // ])
+
+
+        // setChatLog(chatLog => [
+        //     ...chatLog, {
+        //     user: "gpt",
+        //     message: messageFromOpenai,
+        //     className: ""
+        //     }
+        // ]);
+
+
+
+
+
+        // await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
+
+        // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt", "");
+
+        // var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
+        // scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+
+        // setLanModelReset(false);
     }
 
 
@@ -1472,6 +1857,8 @@ export default function ChatGPT({experiment}) {
 
     async function updateAfterRuningCode(e,resp) {
 
+        console.log("star-2. updateAfterRuningCode")
+
 
         console.log("updateAfterRuningCode-resp['result']", resp['result'])
 
@@ -1489,7 +1876,7 @@ export default function ChatGPT({experiment}) {
         let resultMessage = resp['result'];
 
         // if resultMessage is undefined, resultMessage = "Undefined"
-        if (resultMessage === undefined){
+        if (resultMessage === undefined || resultMessage === null || resultMessage === ""){
             resultMessage = "There is not returned result from the code."
         }
 
@@ -1586,7 +1973,7 @@ export default function ChatGPT({experiment}) {
             resultMessage += "\n";
             resultMessage += "This is the end of the tabular data.";
 
-            console.log("step-3.resultMessage", resultMessage)
+            // console.log("step-3.resultMessage", resultMessage)
 
             console.log("step-4.resultMessage", resultMessage.substring(resultMessage.indexOf("The tabular data is:") + 19))
             
@@ -1711,16 +2098,19 @@ export default function ChatGPT({experiment}) {
 
 
 
-        setChatLog([
+        // setChatLog([
+        //     ...chatLog, {
+        //         user: "gpt",
+        //         execution_id: resp['_id'],
+        //         message: resultMessage
+        //     }
+        // ])
+
+        setChatLog(chatLog=>[
             ...chatLog, {
                 user: "gpt",
                 execution_id: resp['_id'],
                 message: resultMessage
-                // message: messageFromOpenai.split(/\n/).map(
-                //     line => 
-                //     <div key={line}>
-                //     {line}</div>
-                // )
             }
         ])
 
@@ -1745,22 +2135,38 @@ export default function ChatGPT({experiment}) {
 async function setTapTitlesFunc(){
         console.log("setTapTitlesFunc");
         let tempTapTitles = [];
-        let url = window.location.href;
-        let urlSplit = url.split('/');
         let experimentID = experiment.data._id;
         
-        // test
+         
         let data = await getChatMessageByExperimentId(experimentID);
 
+        // if numChatBox > dataFiltered.length, call getChatMessageByExperimentId again
         // filter data based on experiment id
         let dataFiltered = data.filter(function (el) {
             return el._experiment_id == experimentID;
         });
+
+        while (numChatBox > dataFiltered.length) {
+            console.log("numChatBox > dataFiltered.length")
+            const newData = await getChatMessageByExperimentId(experimentID);
+            data = data.concat(newData);
+            dataFiltered = data.filter(function (el) {
+                return el._experiment_id == experimentID;
+            });
+        }
+
+
+        console.log(`data length: ${data.length}`);
+        console.log(`filtered data length: ${dataFiltered.length}`);
         
         // get the title of each chat from data
         for (let i = 0; i < dataFiltered.length; i++){
             tempTapTitles[i] = dataFiltered[i]['title'];
         }
+
+        //
+
+        console.log("tempTapTitles", tempTapTitles)
 
         setTapTitles({...tapTitles, taptitles: tempTapTitles});   
     }
@@ -1847,7 +2253,9 @@ async function setTapTitlesFunc(){
                 setBooleanPackageInstall = {setBooleanPackageInstall}
 
 
-                handleRegeneratingCode = {handleRegeneratingCode}
+                submitErrorWithCode = {submitErrorWithCode}
+
+                showCodeRunningMessageWhenClickRunBtn = {showCodeRunningMessageWhenClickRunBtn}
 
                 
 

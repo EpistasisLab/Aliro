@@ -66,8 +66,32 @@ export default function SideMenu({
         setTapTitlesFunc();
     },
     [window.location.href, numChatBox]
+    // [window.location.href]
     
     );
+
+
+    // useEffect(() => {
+    //     console.log("useEffect-numChatBox")
+
+    //     let experimentID = experiment.data._id ;
+
+    //     checkNumChatBox();
+        
+    //     setBoldUnderlineAndInitTraIc();
+    //     setCurrentExpId(experimentID);
+
+    //     // //set tapTitles
+    //     setTapTitlesFunc();
+    // },
+    // // [window.location.href, numChatBox]
+    // [numChatBox]
+    
+    // );
+
+
+
+
 
 
 async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
@@ -180,6 +204,8 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
 
 async function checkClickedChatboxTab(e) {
 
+    console.log("e.target.childNodes[0].nodeValue",e.target.childNodes[0].nodeValue)
+
 
     // first, clear the context of the chat completions endpoint. (refer to the jay's message on slack)
         // in the openai api, is there a way to clear the context of the chat completions endpoint?
@@ -211,7 +237,7 @@ async function checkClickedChatboxTab(e) {
         console.log("siblings",siblings)
 
         for (var i = 1; i < siblings.length-1; i++) {
-            console.log("siblings[i]",siblings[i])
+            // console.log("siblings[i]",siblings[i])
 
             if (e.target.parentNode === siblings[i]) {
                 siblings[i].style.fontWeight = "bold";
@@ -486,7 +512,7 @@ async function postChatNameToDB(chatboxtapname){
 
                 {/* <div className="side-menu-button" onClick={() => setNumChatBox(numChatBox + 1)}> */}
                 <div className="side-menu-button" id="newchatbutton" onClick={ 
-                    (e) =>
+                    async (e) =>
                     {   
                         
                         setNumChatBox(numChatBox + 1)
