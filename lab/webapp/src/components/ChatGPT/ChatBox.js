@@ -447,69 +447,14 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                         
 
 
-                                        {/* {
-                                                line.substring(line.indexOf("The tabular data is:") + 19).length !== 0  ?
-
-                                                <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
-                                                
-                                                
-                                                    <table style={{ width: "100%" }}>
-                                                    <thead>
-                                                        <tr>
-                                                        {line.substring(line.indexOf("The tabular data is:") + 19)[0] && line.substring(line.indexOf("The tabular data is:") + 19)[0].map((column) => <th>{column}</th>)}
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {line.substring(line.indexOf("The tabular data is:") + 19).slice(1, 6).map((row) => (
-                                                        <tr>
-                                                            {row.map((cell) => (
-                                                            <td>{cell}</td>
-                                                            ))}
-                                                        </tr>
-                                                        ))}
-                                                    </tbody>
-                                                    </table>
-                                                </div>
-                                                :
-                                                <div></div>
-                                            } */}
-
                                         
-
-
-                                            {/* if tabluerData is not empty , show the table */}
-                                            {/* {
-                                                tabluerData.length !== 0  ?
-
-                                                <div style={{ overflowX: "auto", overflowY: "auto",backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}>
-                                                
-                                                
-                                                <table style={{ width: "100%" }}>
-                                                <thead>
-                                                    <tr>
-                                                    {tabluerData[0] && tabluerData[0].map((column) => <th>{column}</th>)}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {tabluerData.slice(1, 6).map((row) => (
-                                                    <tr>
-                                                        {row.map((cell) => (
-                                                        <td>{cell}</td>
-                                                        ))}
-                                                    </tr>
-                                                    ))}
-                                                </tbody>
-                                                </table>
-                                                </div>
-                                                :
-                                                <div></div>
-                                            } */}
 
 
 
 
 
                                             {/* uploading file button */}
+                                            {/* Or... like below, it is better provide to generate the new experiment with the processed dataset, which means that skipping the step where users upload the dataset. */}
                                             {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
                                                 e.preventDefault();
                                                 // console.log("e.target", e.target);
@@ -547,6 +492,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                                 e.preventDefault();
                                                 // get the url of the file
                                                 const url = e.target.parentElement.children[1].href;
+                                                
                                                 }}>
                                                 Generate experiment
                                             </a>
