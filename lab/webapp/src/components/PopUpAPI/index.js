@@ -15,7 +15,7 @@ export default function PopUpAPI(
                 "Content-Type": "application/json"
             }
         })
-            .then((response) => {
+        .then((response) => {
                 
                 if (!response.ok) {
 
@@ -39,7 +39,7 @@ export default function PopUpAPI(
                     setopenaiApiState(openaiApiState => openaiApiState + 1);
 
                 }
-            });
+        });
 
 
 
