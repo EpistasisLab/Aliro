@@ -543,13 +543,13 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                             /> */}
 
                                             {/* generating experiment button */}
-                                            {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                            <a style={{ marginLeft:'10px'}} onClick={(e) => {
                                                 e.preventDefault();
                                                 // get the url of the file
                                                 const url = e.target.parentElement.children[1].href;
                                                 }}>
                                                 Generate experiment
-                                            </a> */}
+                                            </a>
                                                 
                                                 
                                             
