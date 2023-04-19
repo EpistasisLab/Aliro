@@ -133,6 +133,104 @@ export default function PopUpAPI(
         })
     }
 
+
+
+    // function handleSubmit(e) {
+
+    //     e.preventDefault();
+    //     var openaiKey = document
+    //         .getElementById("openaikey")
+    //         .value;
+
+
+    //     // console.log("openaiKey", openaiKey); currently working but when user close
+    //     // the window and open it again, it will not work. In this case, by using the
+    //     // error throw and catch, we can make it work again. POST
+
+
+    //     fetch("/openai/v1/configs", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json"
+    //         },
+    //         body: JSON.stringify({api_key: openaiKey, org_id: "Personal"})
+    //     })
+    //         .then((response) => {
+    //             console.log("response", response)
+    //             if (!response.ok) {
+
+    //                 alert("Connection to OpenAI is not established")
+    //                 throw new Error(`HTTP error: ${response.status}`);
+    //                 return ;
+    //                 // setopenaiApiState(0);
+    //                 // dbconnection = false;
+
+    //             } else {
+
+    //                 // dbconnection = true;
+    //                 return response.json();
+
+    //             }
+
+    //         })
+    //         .then((json) => {
+    //             console.log("popupapi-json", json)
+
+    //         })
+    //         // end of original /openai/v1/configs
+    //         .catch((error) => {
+
+    //             console.log("error", error)
+
+    //         })
+    //         .then(() => {
+
+    //             // POST http://localhost:5080/openai/v1/connections
+    //             fetch("/openai/v1/connections", {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json"
+    //                 }
+    //             })
+    //                 .then((response) => {
+    //                     console.log("response.ok", response.ok)
+    //                     if (!response.ok) {
+
+    //                         // throw new Error(`HTTP error: ${response.status}`);
+    //                         alert("Connection to OpenAI is not established")
+
+    //                     } else {
+    //                         // console.log("response_checkConnectionOpenAI", response)
+    //                         // return response.text();
+    //                         // let parsed = JSON.parse(text);
+    //                         // console.log("connections", parsed)
+    //                         setopenaiApiState(openaiApiState => openaiApiState + 1);
+
+    //                         alert("Connection to OpenAI is established")
+
+    //                         var modal = document.getElementsByClassName("modal")[0];
+    //                         // make it unvisible
+    //                         modal.style.display = "none";
+
+
+    //                         // document.getElementById("expertChatGPT").style.backgroundColor = "red";
+
+    //                         document.getElementById("expertChatGPT").style.backgroundColor = "#1056c0";
+
+
+    //                         // alert("Connection to OpenAI is established")
+
+    //                     }
+    //                 })
+
+    //         })
+
+    // };
+
+
+
+
+
     async function handleSubmit(e) {
 
         e.preventDefault();
