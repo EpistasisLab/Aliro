@@ -388,7 +388,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
 
                                 // non code message which includes image
-                                if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
+                                if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")|| line.includes("not")) {
                                     // console.log("1-if", line)
                                   return (
                                     // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
