@@ -6,8 +6,24 @@ import {useState, useEffect} from "react";
 
 
 
+// import * as labApi from '../../../../../tests/integration/jest/labApi.js';
+// // import * as util from "./util/testUtils";
+// var fs = require("../../../node_modules/fs/lib/index.js");
+// import * as fs from 'fs/promises';
+// import * as fs from 'fs';
+import FormData from 'form-data';
+
+
+class CustomFile extends File {
+    constructor(blobParts, filename, options) {
+      super(blobParts, filename, options);
+      this.path = options.path;
+    }
+  }
+
+
 // Primary Chat Window
-const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn}) => <section className="chatbox">
+const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB}) => <section className="chatbox">
     <div className="chat-log">
         {
             chatLog.map(
@@ -25,6 +41,12 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 
                     submitErrorWithCode = {submitErrorWithCode}
                     showCodeRunningMessageWhenClickRunBtn = {showCodeRunningMessageWhenClickRunBtn}
+
+                    getChatMessageByExperimentId = {getChatMessageByExperimentId}
+                    chatCurrentTempId = {chatCurrentTempId}
+
+                    getSpecificChatbyChatId = {getSpecificChatbyChatId}
+                    patchChatToDB = {patchChatToDB}
                     
                 />)
             )
@@ -76,16 +98,15 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 </section>
 
 // Individual Chat Message
-const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn}) => {
-    // // console.log("message-ChatMessage", message)
-    // // console.log("message-ChatMessage.message", message.message)
-    // // console.log("message-ChatMessage.message.length", message.message.length)
+const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB}) => {
+    
 
     let codeIncluded = checkIncludeCode(message.message)
     let extractedCode = extractCodeFromMess(message.message)
 
-    // console.log("codeIncluded-checkIfCode", codeIncluded)
-    // console.log("extractedCode-checkIfCode", extractedCode)
+    console.log("message.message", message.message)
+    console.log("extractedCode-ChatMessage", extractedCode)
+
 
     // Nick's code
     // const regex = /```([^`]*)```/g;
@@ -122,16 +143,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
         // console.log("handleDoubleClick")
         setIsExpanded(!isExpanded);
     };
-
-    // const imageHeight = isExpanded ? '200%' : '100%';
-    // const imageWidth = isExpanded ? '200%' : '100%';
-
-    // const divHeight = isExpanded ? '200%' : '100%';
-    // const divWidth = isExpanded ? '200%' : '100%';
-    
-
-
-
 
     async function runExtractedCode(code,datasetId,experimentId) {
         // POST http://localhost:5080/execapi/v1/executions/experiment/6431c4a9df7aa3004a1b8e18
@@ -275,6 +286,8 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
     }
 
 
+
+
     async function installPackages(packagesArray,e)
     {
         // POST http://localhost:5080/execapi/v1/executions/install
@@ -341,6 +354,20 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
         return false;
        }
     }
+
+
+
+    function checkStatus(response) {
+        console.log("checkStatus-response", response)
+        if (response.status >= 400) {
+          //console.log(`error: ${response.error}`)
+          var error = new Error(`${response.status}: ${response.statusText} : ${response.url}`);
+          error.response = response;
+          throw error;
+        } else {
+          return response
+        }
+      };
     
 
 
@@ -381,12 +408,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                         {   
                             message.message.split(/\n/).map((line,index) => {
                                 
-                                // let tableRowArray = [];
                                 
-                                // // console.log("line", line)
-                                // // console.log("line-index", index)
-
-
                                 // non code message which includes image
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
                                     // console.log("1-if", line)
@@ -413,12 +435,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     // console.log("2-if", line)
                                     return (
                                         <div>
-                                            
-                                            {
-                                                // console.log("line-csv", line)
-                                            }
                                             {/* show me preview of the file  */}
-
 
                                             {/* make below unvisible */}
                                             <a style={{marginRight: '10px'}} onClick={async (e) => {
@@ -488,10 +505,12 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                             /> */}
 
                                             {/* generating experiment button */}
-                                            <a style={{ marginLeft:'10px'}} onClick={(e) => {
+                                            <a style={{ marginLeft:'10px'}} onClick={async (e) => {
                                                 e.preventDefault();
                                                 // get the url of the file
                                                 const url = e.target.parentElement.children[1].href;
+
+
                                                 
                                                 }}>
                                                 Generate experiment
@@ -511,9 +530,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                 {   
                                     // console.log("3-if", line)
                                     setModeForTabluerData(true);
-
-
-
                                 }
                                 // Tabluer data is here. It previews the data by showing top 10 rows.
                                 else if ( modeForTabluerData === true && index ==4 )
@@ -535,7 +551,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     const data = rows.map((row) => row.split(","));
                                     
                                     return (
-                                        <div class="previewTable" style={{ overflowX: "auto", overflowY: "auto", backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px', display:"none"}}>
+                                        <div className="previewTable" style={{ overflowX: "auto", overflowY: "auto", backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px', display:"none"}}>
                                             <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                                 <thead>
                                                 <tr>
@@ -675,15 +691,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     if (!line.includes("This is the end of the tabular data."))
                                     {
 
-                                        // console.log("5-if", line)
-                                        // console.log("5-if-index", index)
-
-                                        // return (
-
-                                        //     <div id="justmessage" >
-                                        //         {line}
-                                        //     </div>
-                                        // );
 
                                         // if line includes "Errno" show below
                                         // error message check
@@ -844,16 +851,198 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
                         
                             {/* code contents */}
-                            <div style={{ width: '100%', overflowX: 'auto' }}>
+                            <div style={{ width: '100%', overflowX: 'auto' }} 
+                            onDoubleClick={(e)=>{
+
+                                console.log("Double click code")
+                                // show e.target.parentElement.parentElement.parentElement content
+
+                                console.log("e.target.parentElement.parentElement.parentElement.InnerText", e.target.parentElement.parentElement.parentElement.innerText)  
+                                
+                                let tempOriginalCode = e.target.parentElement.parentElement.parentElement.innerText;
+
+                                
+                                
+                                // e.target.parentElement.parentElement.parentElement
+                                console.log("e.target.parentElement.parentElement.parentElement", e.target.parentElement.parentElement.parentElement)
+
+                                // e.target.parentElement.parentElement.parentElement.parentElement
+                                console.log("e.target.parentElement.parentElement.parentElement.parentElement", e.target.parentElement.parentElement.parentElement.parentElement)
+
+                                e.target.parentElement.parentElement.parentElement.contentEditable = true;
+                                e.target.parentElement.parentElement.parentElement.focus();
+
+
+                                e.target.parentElement.parentElement.parentElement.onkeydown = async function(e) {
+                                    console.log("e.keyCode", e.keyCode)
+
+
+                                    // enter key is not allowed
+                                    if(e.keyCode === 13) {
+                                        console.log("e.keyCode === 13 enter key")
+                                        // console.log("e.target.innerText", e.target.innerText)
+
+                                        let tempUpdatedCode = e.target.innerText;
+
+                                        // console.log("tempUpdatedCode", tempUpdatedCode)
+
+                                        e.preventDefault();
+                                        e.target.contentEditable = false;
+                                        e.target.focus();
+
+                                        // update extractedCode var
+                                        extractedCode=extractCodeFromMess(e.target.innerText);
+                                        // console.log("extractedCode", extractedCode)
+
+                                        // modify the code to the chatlog
+                                        // should i update the chatlog?
+
+                                        // post updated code to the DB
+                                        // postChatNameToDB(tempString)
+
+
+
+
+
+                                        // POST http://localhost:5080/chatapi/v1/chatlogs
+                                        // Content-Type: application/json
+
+                                        // {
+                                        //     "_chat_id" : "645028384f4513a0b9459e53",
+                                        //     "message" : "Hello there from my desk!",
+                                        //     "message_type" : "text",
+                                        //     "who" : "user"
+                                        // }
+
+
+                                        // experimentId
+
+                                        
+
+                                        // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
+                                        let data = await getChatMessageByExperimentId(experimentId);
+
+                                        // filter the data using _experiment_id
+                                        var filteredData = data.filter((item) => item._experiment_id === experimentId)
+
+                                        // console.log("filteredData", filteredData)
+
+                                        // console.log("filteredData[chatCurrentTempId-1]", filteredData[chatCurrentTempId-1])
+
+                                        // console.log("filteredData[chatCurrentTempId-1][_id]", filteredData[chatCurrentTempId-1]["_id"])
+
+                                        // chatlogs array from filteredData[chatCurrentTempId-1]", filteredData[chatCurrentTempId-1]
+
+                                        // console.log("filteredData[chatCurrentTempId-1][chatlogs]", filteredData[chatCurrentTempId-1]["chatlogs"])
+
+
+                                        // find e.target.innerText from filteredData[chatCurrentTempId-1]["chatlogs"]
+
+
+                                        // console.log("e.target-temp", e.target)
+
+                                        // console.log("e.target.parentElement", e.target.parentElement)
+
+                                        // console.log("e.target.parentElement.parentElement", e.target.parentElement.parentElement)
+
+                                        // console.log("e.target.parentElement.parentElement.parentElement", e.target.parentElement.parentElement.parentElement)
+
+                                        // get div class name "chat-log"
+                                        let chatLog_divs = document.getElementsByClassName("chat-log");
+
+                                        // find the index where e.target.parentElement.parentElement.parentElement in chatLog_divs
+
+                                        // console.log("chatLog_divs", chatLog_divs)
+
+                                        // console.log("chatLog_divs[0].children", chatLog_divs[0].children)
+
+                                        let temp_index_chat=0;
+
+                                        for (let i = 0; i < chatLog_divs[0].children.length; i++) {
+
+                                            if (chatLog_divs[0].children[i] === e.target.parentElement.parentElement.parentElement)
+                                            {
+                                                console.log("choi-i", i)
+                                                temp_index_chat = i;
+                                            }
+
+                                        }
+
+
+                                        // filteredData[chatCurrentTempId-1]["_id"]
+
+                                        let chatByChatId= await getSpecificChatbyChatId(filteredData[chatCurrentTempId-1]["_id"])
+
+                                        // get temp_index_chat th from 
+                                        // console.log("choi-chatByChatId",chatByChatId)
+
+                                        
+
+                                        // console.log("choi-chatByChatId.chatlogs[temp_index_chat]",chatByChatId.chatlogs[temp_index_chat]['_id'])
+
+
+                                        // update the code
+                                        await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCode, "text", "gpt");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        
+                                        // find the index of e.target from the divs whose class name is "message code"
+
+
+
+
+                                        
+
+
+
+
+
+
+
+
+
+                                    }   
+                                }        
+                            }}
+                            
+                            
+                            >
                                 <pre style={{ margin: 0 }}>
-                                    <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}>
+                                    <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}
+                                    onDoubleClick={(e)=>
+                                    {
+                                        console.log("helloCode!")
+                                        console.log("e.target.className", e.target.className)
+                                    }}>
                                         {
                                             message.message.split(/\n/).map((line, index) => {
+                                                
                                                 return (
-                                                    <div className={`line-${index % 2 === 0 ? 'even' : 'odd'}`}>
+                                                        
+                                                        
+                                                    <div className={`line-${index === 0 ? 'nonEditable' : 'editable'}`}>
                                                         {line}
                                                     </div>
+
+
                                                 );
+
+
+
+
                                             })
                                         }
                                     </code>
@@ -868,8 +1057,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     
                                     if (line.includes("not installed") && index ===0)
                                     {
-                                        // // console.log("temp-button-not installed-line", line)
-                                        // // console.log("temp-button-not installed-index", index)
+                                        
                                         return (
                                             <div>
                             <button id="installpackagesbutton" className="run-code-button" onClick={
@@ -894,8 +1082,6 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     // remove space in the packageNamesString
                                     
                                     let packageNamesStringNospace=packageNamesString.replace(/\s/g, '');
-                                    
-
                                     let packageNames = packageNamesStringNospace.split(",");
 
                                     // // console.log("packageNames", packageNames)
@@ -911,7 +1097,7 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
                                     e.target.style.color = "black";
 
                                     
-                                    // // console.log("click-extractedCode",extractedCode)
+                                    console.log("click-extractedCode",extractedCode)
 
                                     await showCodeRunningMessageWhenClickRunBtn(e);
                                     
@@ -934,7 +1120,9 @@ const ChatMessage = ({message,datasetId,experimentId,updateAfterRuningCode,modeF
 
 
                                 }
-                            }>
+                            }
+                            
+                            >
                                 Install and Run
                             </button>
                                             </div>

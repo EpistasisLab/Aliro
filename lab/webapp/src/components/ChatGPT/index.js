@@ -6,7 +6,6 @@ import ChatBox from "./ChatBox";
 import { locales } from 'moment';
 
 
-
 export default function ChatGPT({experiment}) {
 
     var limitNumChatBox = 5;
@@ -578,7 +577,7 @@ export default function ChatGPT({experiment}) {
 
     }
 
-    async function patchChatlog(chatlogId, message, message_type, who){
+    async function patchChatToDB(chatId, message, message_type, who){
         // PATCH http://localhost:5080/chatapi/v1/chatlogs/641e148dc5abc90a3b2b2221
         // Content-Type: application/json
 
@@ -588,7 +587,7 @@ export default function ChatGPT({experiment}) {
         //     "who" : "openai"
         // }
 
-        await fetch("/chatapi/v1/chatlogs/641e148dc5abc90a3b2b2221", 
+        await fetch(`/chatapi/v1/chatlogs/${chatId}`, 
             {
                 method: "PATCH",
                 headers: {
@@ -948,192 +947,6 @@ export default function ChatGPT({experiment}) {
     }
 
 
-
-
-    
-    //     e.preventDefault();
-
-    //     let url = window.location.href;
-    //     let urlSplit = url.split("/");
-    //     let experimentId = urlSplit[urlSplit.length - 1];
-
-
-    //     let chatLogNew =[
-    //         {
-    //             user: "gpt",
-    //             message: "How can I help you today?"
-    //         }
-    //     ]
-        
-
-        
-
-    //     chatLogNew = [
-    //         ...chatLog, {
-    //             user: "me",
-    //             message: `${chatInput}`
-    //         }
-    //     ]
-
-    //     setChatInput("");
-    //     setChatLog(chatLogNew)
-
-
-    //     // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
-
-    //     await fetch(`/chatapi/v1/chats/experiment/${experimentId}`, {
-    //         method: "GET",
-    //         headers: {
-    //             "Content-Type": "application/json"
-    //         },
-    //         })
-    //         .then(res => res.json())
-    //         .then(async data => {
-    //             // console.log("data--best--experiment", data);
-    //             // filter the data using _experiment_id
-    //             var filteredData= data.filter((item) => item._experiment_id === experimentId)
-
-    //             console.log("filteredData-handleSubmit", filteredData)
-    //             console.log("experimentId-handleSubmit", experimentId)
-    //             console.log("chatCurrentTempId-handleSubmit",chatCurrentTempId)
-
-    //             if (chatCurrentTempId === 0){
-
-    //                 setChatCurrentTempId(1);
-    //             }
-
-    //             if (chatInput !== undefined || chatInput !== ""){
-    //                 postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], chatInput, "text", "user");
-    //             }
-
-    //             const messages = chatLogNew
-    //             .map((message) => message.message)
-    //             .join("\n")
-
-    //             // get the last message from the chatLogNew array
-    //             let lastMessageFromUser = chatLogNew[chatLogNew.length - 1].message;
-
-    //             // if (modeForChatOrCodeRunning === "code"){
-    //             //     lastMessageFromUser += " Please give me the python code script. Please put the python code script between ``` and ```. For example, ```print('hello world')```"
-    //             // }
-
-    //         var feature_importances = {};
-    //         for (var i = 0; i < experiment.data.feature_importances.length; i++) {
-    //             feature_importances[experiment.data.feature_names[i]] = experiment.data.feature_importances[i];
-    //         }
-
-    //         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv to /data/lab/`+experiment.data._dataset_id;
-
-    //         let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
-            
-    //         // jay's api 
-    //         await fetch("openai/v1/chat/completions", {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify(
-    //                 {
-    //                     "model": currentModel,
-    //                     // "messages": [{"role": "user", "content": "Say this is a test!"},{"role": "user", "content": "Say this is a test!"}],
-    //                     // original
-    //                     "messages": [{"role": "user", "content":preSet+lastMessageFromUser}],
-
-    //                     // "messages": [{"role": "user", "content": messages}],
-    //                     // "temperature": 0.7
-    //                     // "reset_context": "true"
-    //                 }
-    //             )
-    //         })
-    //         .then(res => res.json())
-    //         .then(data => {
-                
-    //             var messageFromOpenai = data.choices[0].message['content'];
-                
-    //             // process the messageFromOpenai based on...
-    //             // check if the messageFromOpenai contains python code.
-    //             // if yes, then add "Do you want to run the code on Aliro?" to the messageFromOpenai in next line
-    //             // if no, then do nothing
-                
-    //             let booleanPythonCode = checkIfCode(messageFromOpenai);
-
-    //             if (booleanPythonCode){
-    //                 let extractedCodeTemp = extractCode(messageFromOpenai);
-    //                 // messageFromOpenai = "Running the below code on Aliro..." + "\n" + messageFromOpenai;
-    //                 messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
-
-    //                 // function for running the code on aliro
-    //                 // runCodeOnAliro(extractedCode);
-    //                 setExtractedCode({...extractedCode, code: extractedCodeTemp});
-    //             }
-
-    //             // postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], data.message, "text", "gpt");
-    //             postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt");
-                
-    //             // setChatLog([
-    //             //     ...chatLogNew, {
-    //             //         user: "gpt",
-    //             //         message: `${data.message}`
-    //             //     }
-    //             // ])
-
-
-    //             const regex = /```([^`]*)```/g;
-    //             const matches = messageFromOpenai.matchAll(regex);
-        
-    //             for (const match of matches) {
-    //                 //check if the first 6 characters are python
-    //                 if(match[1].substring(0,6) === "python"){
-    //                     //remove the first 6 characters
-    //                     match[1] = match[1].substring(6);
-    //                 }
-    //                 console.log("python code:",match[1]);
-            
-    //             }
-
-    //             // setChatLog([
-    //             //     ...chatLogNew, {
-    //             //         user: "assistant",
-    //             //         messageType: "text",
-    //             //         message: data.content.split(/\n/).map(line => <div key={line}>{line}</div>)
-    //             //     }
-    //             // ]);
-
-    //             setChatLog([
-    //                 ...chatLogNew, {
-    //                     user: "gpt",
-    //                     // message: `${messageFromOpenai}`
-    //                     message: messageFromOpenai.split(/\n/).map(line => <div key={line}>{line}</div>)
-    //                 }
-    //             ])
-
-
-
-    //             var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
-    //             scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
-    //         })
-
-    //         })
-    //         .catch(err => {
-    //             console.log("err--handleSubmit",err);
-    //         })
-
-        
-    //     // getChatMessageByExperimentId(experimentId);
-
-
-    //         setLanModelReset(false);
-
-    //     // setChatInput("");
-    //     // setChatLog(chatLogNew)
-
-    // }
-
-    
-    
-    
-    
-    
     // simple
     async function handleSubmit(e) {
         // prevent page from refreshing
@@ -1164,7 +977,7 @@ export default function ChatGPT({experiment}) {
         let data = await getChatMessageByExperimentId(experimentId);
 
         // filter the data using _experiment_id
-        var filteredData= data.filter((item) => item._experiment_id === experimentId)
+        var filteredData = data.filter((item) => item._experiment_id === experimentId)
 
         // chatCurrentTempId is 1,2,3, ...
         // there is no 0 chatCurrentTempId.
@@ -1269,7 +1082,7 @@ export default function ChatGPT({experiment}) {
             // console.log("extractedCodeTemp: ", extractedCodeTemp)
             else{
                 setBooleanPackageInstall(false);
-                messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+                messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
             }
 
             // function for running the code on aliro
@@ -1553,7 +1366,7 @@ export default function ChatGPT({experiment}) {
             // console.log("extractedCodeTemp: ", extractedCodeTemp)
             else{
                 setBooleanPackageInstall(false);
-                messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+                messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
             }
 
             // function for running the code on aliro
@@ -1747,7 +1560,7 @@ export default function ChatGPT({experiment}) {
         //     // console.log("extractedCodeTemp: ", extractedCodeTemp)
         //     else{
         //         setBooleanPackageInstall(false);
-        //         messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+        //         messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
         //     }
 
         //     // function for running the code on aliro
@@ -1818,9 +1631,6 @@ export default function ChatGPT({experiment}) {
 
         // setLanModelReset(false);
     }
-
-
-
 
 
     async function getFilesURLs(file_id)
@@ -1909,6 +1719,8 @@ export default function ChatGPT({experiment}) {
                 // console.log("temp-file",file)
                 
                 const resp2 = await getFilesURLs(file['_id']);
+
+
                 filesURLsarray.push(resp2['url'])
                 // for now i assume that it generates one csv or tsv.
 
@@ -2054,7 +1866,7 @@ export default function ChatGPT({experiment}) {
         // if (booleanCode){
         //     let extractedCodeTemp = extractCode(messageFromOpenai);
         //     // messageFromOpenai = "Running the below code on Aliro..." + "\n" + messageFromOpenai;
-        //     messageFromOpenai = "If you want to run the code on Aliro, please click the run button below." + "\n" + messageFromOpenai;
+        //     messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
 
         //     // function for running the code on aliro
         //     // runCodeOnAliro(extractedCode);
@@ -2132,7 +1944,7 @@ export default function ChatGPT({experiment}) {
     }
 
 
-async function setTapTitlesFunc(){
+    async function setTapTitlesFunc(){
         console.log("setTapTitlesFunc");
         let tempTapTitles = [];
         let experimentID = experiment.data._id;
@@ -2170,6 +1982,18 @@ async function setTapTitlesFunc(){
 
         setTapTitles({...tapTitles, taptitles: tempTapTitles});   
     }
+
+    function checkStatus(response) {
+        console.log("checkStatus-response", response)
+        if (response.status >= 400) {
+          //console.log(`error: ${response.error}`)
+          var error = new Error(`${response.status}: ${response.statusText} : ${response.url}`);
+          error.response = response;
+          throw error;
+        } else {
+          return response
+        }
+      };
 
     return (
         <div className="ChatGPT">
@@ -2232,7 +2056,7 @@ async function setTapTitlesFunc(){
                 // handleSubmit={handleSubmit}
                 handleSubmit={handleSubmit}
 
-                // experiment={experiment}
+                
 
                 modeForChatOrCodeRunning = {modeForChatOrCodeRunning}
                 setModeForChatOrCodeRunning = {setModeForChatOrCodeRunning}
@@ -2256,6 +2080,14 @@ async function setTapTitlesFunc(){
                 submitErrorWithCode = {submitErrorWithCode}
 
                 showCodeRunningMessageWhenClickRunBtn = {showCodeRunningMessageWhenClickRunBtn}
+
+                getChatMessageByExperimentId = {getChatMessageByExperimentId}
+                chatCurrentTempId = {chatCurrentTempId}
+
+                getSpecificChatbyChatId = {getSpecificChatbyChatId}
+
+                patchChatToDB = {patchChatToDB}
+                
 
                 
 
