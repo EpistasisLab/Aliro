@@ -14,12 +14,12 @@ import {useState, useEffect} from "react";
 import FormData from 'form-data';
 
 
-// class CustomFile extends File {
-//     constructor(blobParts, filename, options) {
-//       super(blobParts, filename, options);
-//       this.path = options.path;
-//     }
-//   }
+class CustomFile extends File {
+    constructor(blobParts, filename, options) {
+      super(blobParts, filename, options);
+      this.path = options.path;
+    }
+  }
 
 
 // Primary Chat Window
@@ -413,7 +413,11 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
                                     // console.log("1-if", line)
                                   return (
-                                    
+                                    // <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                    //   <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                    //     <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
+                                    //   </svg>
+                                    // </div>
 
                                     <a href={line.substring(line.indexOf("http"))} download>
                                         <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
@@ -421,7 +425,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             <image href={line.substring(line.indexOf("http"))} height="100%" width="100%" />
                                             </svg>
                                         </div>
-                                    </a>
+                                        </a>
 
                                   );
                                 } 
@@ -699,7 +703,45 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                         async (e)=>
                                                         {
                                                     
+                                                            // use usestate to change the text of the button
+                                                            // document.getElementById("runbutton").textContent = "Running...";
+                                                            // console.log("gen-e.target.textContent",e.target.textContent)
+                                                            // parent of e.target
+                                                            // console.log("gen-e.target.parentElement",e.target.parentElement)
+
+                                                            // parent of parent of e.target
+                                                            // console.log("gen-e.target.parentElement.parentElement",e.target.parentElement.parentElement)
+
+                                                            // parent of parent of parent of e.target
+                                                            // console.log("gen-e.target.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement)
+
+                                                            // parent of parent of parent of parent of e.target
+                                                            // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement)
+
+                                                            // parent of parent of parent of parent of parent of e.target
+                                                            // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
+
+
                                                             
+
+
+
+                                                            // e.target.textContent = "Running...";
+                                                            // make the button non clickable
+                                                            // e.target.click = false;
+                                                            e.target.disabled = true;
+                                                            // even though the button is disabled, do not change the color of the button.
+                                                            e.target.style.color = "black";
+
+
+                                                            // console.log("onClick-extractedCode",extractedCode)
+                                                            // console.log("onClick-datasetId",datasetId)
+                                                            // console.log("onClick-experimentId",experimentId)
+
+
+                                                            // for now let just assume that code is below
+
+                                                            // let tempCode = "import pandas as pd";
                                                             let tempText=findTheLastCodeMessageFromHTML(e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
 
                                                             // console.log("text-findTheLastCodeMessageFromHTML", tempText)
@@ -780,55 +822,70 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     }
                                   }
 
+
+                                  
+
+                                
+
+
+                                // else {
+                                //   return (
+                                //     // make the message hidden
+                                //     <div id="justmessage" >
+                                //       {line}
+                                //     </div>
+                                //   );
+                                // }
                               })
                         }
                     </div> : 
 
                     // code message
                     <div className="message code">
-                        {
-                            message.message.split(/\n/).map((line, index) => {
-                                if (index === 0) {
-                                    return (
-                                      <div className="message-nonEditable">
-                                        {line}
-                                      </div>
-                                    );
-                                  }
+                        {/* <pre>
+                            <code>
+                                {message.message}
+                            </code>
+                        </pre> */}
 
-                            })
-                        }
+
                         
                             {/* code contents */}
-                            {/* make background color of this div black */}
-                            <div className="code-editable" style={{ width: '100%', overflowX: 'auto' , backgroundColor: '#343a40', borderRadius: '10px', padding: '10px', marginTop: '10px'}}
+                            <div style={{ width: '100%', overflowX: 'auto' }} 
                             
                             onDoubleClick={(e)=>{
 
                                 console.log("Double click code")
+                                // show e.target.parentElement.parentElement.parentElement content
+
+                                console.log("e.target.parentElement.parentElement.parentElement.InnerText", e.target.parentElement.parentElement.parentElement.innerText)  
                                 
+                                let tempOriginalCode = e.target.parentElement.parentElement.parentElement.innerText;
+
+                                
+                                
+                                // e.target.parentElement.parentElement.parentElement
+                                console.log("e.target.parentElement.parentElement.parentElement", e.target.parentElement.parentElement.parentElement)
+
+                                // e.target.parentElement.parentElement.parentElement.parentElement
+                                console.log("e.target.parentElement.parentElement.parentElement.parentElement", e.target.parentElement.parentElement.parentElement.parentElement)
+
                                 e.target.parentElement.parentElement.parentElement.contentEditable = true;
                                 e.target.parentElement.parentElement.parentElement.focus();
 
-                                // e.target.parentElement.parentElement.parentElement.onkeydown
+
                                 e.target.parentElement.parentElement.parentElement.onkeydown = async function(e) {
                                     console.log("e.keyCode", e.keyCode)
-                                    console.log("e.button", e.button)
-                                    console.log("e.target.parentElement", e.target.parentElement)
+
 
                                     // enter key is not allowed
-                                    if(e.keyCode === 27) {
-                                        console.log("e.keyCode === 27 esc key")
+                                    if(e.keyCode === 13) {
+                                        console.log("e.keyCode === 13 enter key")
                                         // console.log("e.target.innerText", e.target.innerText)
 
-                                        let tempChatCodeExplain = e.target.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
+                                        let tempUpdatedCode = e.target.innerText;
 
-                                        // console.log("tempChatCodeExplain", tempChatCodeExplain)
-                                  
-                                        
-                                        let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+e.target.innerText+"\n"+"```";
-
-                                        // console.log("tempUpdatedCodewithChat", tempUpdatedCodewithChat)
+                                        // console.log("tempUpdatedCode", tempUpdatedCode)
 
                                         e.preventDefault();
                                         e.target.contentEditable = false;
@@ -913,10 +970,50 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         }
 
 
+                                        // filteredData[chatCurrentTempId-1]["_id"]
+
                                         let chatByChatId= await getSpecificChatbyChatId(filteredData[chatCurrentTempId-1]["_id"])
 
+                                        // get temp_index_chat th from 
+                                        // console.log("choi-chatByChatId",chatByChatId)
+
+                                        
+
+                                        // console.log("choi-chatByChatId.chatlogs[temp_index_chat]",chatByChatId.chatlogs[temp_index_chat]['_id'])
+
+
                                         // update the code
-                                        await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCodewithChat, "text", "gpt");
+                                        await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCode, "text", "gpt");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        
+                                        // find the index of e.target from the divs whose class name is "message code"
+
+
+
+
+                                        
+
+
+
+
+
+
+
+
 
                                     }   
                                 }        
@@ -927,34 +1024,25 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 <pre style={{ margin: 0 }}>
                                     <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}
                                     
-                                    >
-
+                                    onDoubleClick={(e)=>
+                                    {
+                                        console.log("helloCode!")
+                                        console.log("e.target.className", e.target.className)
+                                    }}>
+                                        
                                         {
-                                            
                                             message.message.split(/\n/).map((line, index) => {
                                                 
+                                                return (
+                                                    <div className={`line-${index === 0 ? 'nonEditable' : 'editable'}`}>
+                                                        {line}
+                                                    </div>
+                                                );
 
-                                                if (index !== 0) {
-                                                    if (line.includes("```python") || line.includes("```")) {
-                                                    //   return null; // return null to render nothing
-                                                    return (
-                                                        // non visible
-                                                        <div className="line-editable" style={{display: 'none'}}>
-                                                          {line}
-                                                        </div>
-                                                    )
-                                                    } else {
-                                                      return (
-                                                        <div className="line-editable">
-                                                          {line}
-                                                        </div>
-                                                      );
-                                                    }
-                                                  } 
-                                                  
-                                                  
-                                                
-                                              })
+
+
+
+                                            })
                                         }
                                     </code>
                                 </pre>
@@ -974,10 +1062,17 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                             <button id="installpackagesbutton" className="run-code-button" onClick={
                                 async (e)=>
                                 {
-                                    console.log("installpackagesbutton-click")
 
-                                    
-                                    let packageIncludedString = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].textContent;
+                                    // // e.target parent
+                                    // // console.log("e.target.parentElement", e.target.parentElement)
+
+                                    // // e.target parent parent 
+                                    // // console.log("e.target.parentElement.parentElement", e.target.parentElement.parentElement)
+
+                                    // // e.target parent parent first child
+                                    // // console.log("e.target.parentElement.parentElement.childNodes[0].childNodes[0]", e.target.parentElement.parentElement.childNodes[0].childNodes[0].childNodes[0].childNodes[0])
+
+                                    let packageIncludedString = e.target.parentElement.parentElement.childNodes[0].childNodes[0].childNodes[0].childNodes[0].textContent;
 
                                     const packageNamesString = packageIncludedString.substring(0, packageIncludedString.indexOf("package"));
 
@@ -996,14 +1091,12 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     // use usestate to change the text of the button
                                     // e.target.textContent = "Installing...";
                                     
-                                    // e.target.disabled = true;
-                                    // e.target.style.color = "black";
+                                    e.target.disabled = true;
+                                    // even though the button is disabled, do not change the color of the button.
+                                    e.target.style.color = "black";
 
-                                    let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-
-                                    extractedCode = tempCode.replace(/```python/g, "").replace(/```/g, "");
                                     
-                                    console.log("INS-extractedCode",extractedCode)
+                                    console.log("click-extractedCode",extractedCode)
 
                                     await showCodeRunningMessageWhenClickRunBtn(e);
                                     
@@ -1021,6 +1114,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     // update to the db and refer updateAfterRuningCode function
                                     updateAfterRuningCode(e, resp_runExtractedCode)
                                     
+                                    
+                                
+
 
                                 }
                             }
@@ -1045,33 +1141,12 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         // e.target.textContent = "Running...";
                                         // make the button non clickable
                                         // e.target.click = false;
-                                        // e.target.disabled = true;
-                                        // e.target.style.color = "black";
-
-                                        // console.log("RUN-extractedCode",e.target.parentElement.parentElement)
-                                        // get children who has className code-editable from e.target.parentElement.parentElement
-                                        // console.log("RUN-extractedCode",e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].textContent)
-
-                                        // remove ```python and ``` from e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].textContent
+                                        e.target.disabled = true;
+                                        // even though the button is disabled, do not change the color of the button.
+                                        e.target.style.color = "black";
 
 
-
-
-                                        
-                                        let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-
-                                        extractedCode = tempCode.replace(/```python/g, "").replace(/```/g, "");
-
-
-
-
-
-
-
-
-                                        // extractedCode=extractCodeFromMess(e.target.innerText);
-
-                                        // console.log("RUN-extractedCode",extractedCode)
+                                        // console.log("onClick-extractedCode",extractedCode)
 
                                         // console.log("onClick-datasetId",datasetId)
                                         // console.log("onClick-experimentId",experimentId)
@@ -1095,6 +1170,11 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     }
                                 }>
                                     Run
+
+                                        {/* <p>
+                                            {extractedCode.code}{' '}
+                                        
+                                        </p> */}
                                         
                                 </button>
                                             </div>
@@ -1120,8 +1200,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
 
                     </div>
-
-
                 }
 
             </div>

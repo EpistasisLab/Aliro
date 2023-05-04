@@ -1007,7 +1007,8 @@ export default function ChatGPT({experiment}) {
         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
 
         // my prompt eng
-        let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. Put the code between three backticks python and three backticks. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed.   
+        let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. Put the code between three backticks python and three backticks. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
+        In the case where you need to save csv, for each colum name, if it has _ in the name, replace _ with -.
         "
         `;
 
@@ -1082,7 +1083,7 @@ export default function ChatGPT({experiment}) {
             // console.log("extractedCodeTemp: ", extractedCodeTemp)
             else{
                 setBooleanPackageInstall(false);
-                messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
+                messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the esc key." + "\n" + messageFromOpenai;
             }
 
             // function for running the code on aliro
@@ -1366,7 +1367,7 @@ export default function ChatGPT({experiment}) {
             // console.log("extractedCodeTemp: ", extractedCodeTemp)
             else{
                 setBooleanPackageInstall(false);
-                messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
+                messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the esc key." + "\n" + messageFromOpenai;
             }
 
             // function for running the code on aliro
@@ -1560,7 +1561,7 @@ export default function ChatGPT({experiment}) {
         //     // console.log("extractedCodeTemp: ", extractedCodeTemp)
         //     else{
         //         setBooleanPackageInstall(false);
-        //         messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
+        //         messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the esc key." + "\n" + messageFromOpenai;
         //     }
 
         //     // function for running the code on aliro
@@ -1697,7 +1698,7 @@ export default function ChatGPT({experiment}) {
         {
             
 
-            resultMessage = "Please check below. Click to download the image." + "\n" ;
+            resultMessage = "Please check below. If the output is an image file, you can download the image(s) by clicking on them." + "\n" ;
 
             let filesarray = [];
             resp['files'].forEach((file) => {
@@ -1866,7 +1867,7 @@ export default function ChatGPT({experiment}) {
         // if (booleanCode){
         //     let extractedCodeTemp = extractCode(messageFromOpenai);
         //     // messageFromOpenai = "Running the below code on Aliro..." + "\n" + messageFromOpenai;
-        //     messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the enter key." + "\n" + messageFromOpenai;
+        //     messageFromOpenai = "If you wish to execute the code on Aliro, please click on the button located below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the esc key." + "\n" + messageFromOpenai;
 
         //     // function for running the code on aliro
         //     // runCodeOnAliro(extractedCode);
