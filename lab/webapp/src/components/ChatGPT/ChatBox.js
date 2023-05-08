@@ -1,6 +1,14 @@
 import AISVGLogo from './AISVGLogo'
 import React from 'react';
 import {useState, useEffect} from "react";
+
+// import './style.css';
+
+// import Prism from "prismjs";
+// import "prismjs/themes/prism.css";
+// import "../../../node_modules/prismjs/
+
+
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 
@@ -11,7 +19,7 @@ import {useState, useEffect} from "react";
 // var fs = require("../../../node_modules/fs/lib/index.js");
 // import * as fs from 'fs/promises';
 // import * as fs from 'fs';
-import FormData from 'form-data';
+// import FormData from 'form-data';
 
 
 // class CustomFile extends File {
@@ -23,7 +31,66 @@ import FormData from 'form-data';
 
 
 // Primary Chat Window
-const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB}) => <section className="chatbox">
+const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB}) => 
+
+{
+    useEffect(() => {
+    //     const highlightScript = document.createElement('script');
+    // highlightScript.src = 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js';
+    // document.body.appendChild(highlightScript);
+
+    // const highlightStylesheet = document.createElement('link');
+    // highlightStylesheet.rel = 'stylesheet';
+    // highlightStylesheet.href = 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css';
+    // document.head.appendChild(highlightStylesheet);
+
+    // // <script>hljs.highlightAll();</script>
+
+    // const highlightAll = document.createElement('script');
+    // highlightAll.innerHTML = 'hljs.highlightAll();';
+    // document.body.appendChild(highlightAll);
+
+    // return () => {
+    //   document.body.removeChild(highlightScript);
+    //   document.head.removeChild(highlightStylesheet);
+    //     document.body.removeChild(highlightAll);
+    // };
+
+
+
+
+
+//     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+// <!-- and it's easy to individually load additional languages -->
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
+
+    //  const highlightlink = document.createElement('link');
+    //     highlightlink.rel = 'stylesheet';
+    //     highlightlink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css';
+    //     document.head.appendChild(highlightlink);
+
+    // const highlightScript = document.createElement('script');
+    // highlightScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js';
+    // document.body.appendChild(highlightScript);
+
+    // const highlightGoScript = document.createElement('script');
+    // highlightGoScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js';
+    // document.body.appendChild(highlightGoScript);
+
+    // return () => {
+    //     document.head.removeChild(highlightlink);
+    //     document.body.removeChild(highlightScript);
+    //     document.body.removeChild(highlightGoScript);
+    // };
+
+    
+        
+      }, []);
+
+
+    return (
+    <section className="chatbox">
     <div className="chat-log">
         {
             chatLog.map(
@@ -95,7 +162,9 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 
         
     </div>
-</section>
+    </section>
+)
+}
 
 // Individual Chat Message
 const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB}) => {
@@ -434,7 +503,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             {/* show me preview of the file  */}
 
                                             {/* make below unvisible */}
-                                            <a style={{marginRight: '10px'}} onClick={async (e) => {
+                                            <a style={{marginRight: '10px',fontWeight
+                                            :'bold'}} onClick={async (e) => {
                                             
 
                                                 
@@ -501,7 +571,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             /> */}
 
                                             {/* generating experiment button */}
-                                            <a style={{ marginLeft:'10px'}} onClick={async (e) => {
+                                            {/* <a style={{ marginLeft:'10px'}} onClick={async (e) => {
                                                 e.preventDefault();
                                                 // get the url of the file
                                                 const url = e.target.parentElement.children[1].href;
@@ -510,7 +580,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                 
                                                 }}>
                                                 Generate experiment
-                                            </a>
+                                            </a> */}
                                                 
                                                 
                                             
@@ -925,9 +995,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                             
                             >
                                 <pre style={{ margin: 0 }}>
-                                    <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}
-                                    
-                                    >
+                                    <code style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: 'deepskyblue' }}>
+                                    {/* <code className='language-python'> */}
 
                                         {
                                             
