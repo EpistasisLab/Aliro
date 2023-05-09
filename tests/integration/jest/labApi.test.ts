@@ -39,6 +39,9 @@ describe('lab', () => {
 					form.append('_metadata', metadata)
 					form.append('_files', fs.createReadStream(filepath));
 
+					console.log('fs.createReadStream(filepath)',fs.createReadStream(filepath))
+					console.log(`form:`, form)
+
 					let result
 
 					try {

@@ -168,14 +168,42 @@ function Navbar({ preferences }) {
   
   }
 
+  // const checkConnectionOpenAI = () => {
+    
+  //   fetch('openai/v1/configs')
+  //       .then((response) => {
+  //           console.log("response.ok", response.ok)
+  //           if (!response.ok) {
+                
+  //               return 0;
+                
+  //           } else {
+  //               return response.text();
+  //           }
+
+  //       })
+  //       .then((text) => {
+  //           let parsed = JSON.parse(text);
+  //           console.log("parsed", parsed)
+           
+  //       });
+
+  // }
+
+
   const checkConnectionOpenAI = () => {
     
-    fetch('openai/v1/configs')
+    // fetch('openai/v1/configs')
+    fetch("/openai/v1/connections", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      }
+      })
         .then((response) => {
             console.log("response.ok", response.ok)
             if (!response.ok) {
                 
-                // throw new Error(`HTTP error: ${response.status}`);
                 return 0;
                 
             } else {
@@ -187,8 +215,6 @@ function Navbar({ preferences }) {
             let parsed = JSON.parse(text);
             console.log("parsed", parsed)
            
-
-
         });
 
   }

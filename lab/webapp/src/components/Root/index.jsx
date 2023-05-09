@@ -52,10 +52,6 @@ import testTest from '../testTest';
 */
 function Root({ store }) {
 
-  console.log("store", store)
-
-  console.log("hashHistory", hashHistory)
-
   
 
   // var [eventsEnabled, setEventsEnabled] = React.useState(true)

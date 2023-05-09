@@ -43,16 +43,6 @@ import { Link } from 'react-router';
 
 const AddNewDatasetCard = () => {
 	
-  // console.log('header', header);
-  // console.log('subheader', subheader);
-  // console.log('btnText', btnText);
-  // console.log('btnIcon', btnIcon);
-  // console.log('linkText', linkText);
-
-  // console.log("Link", Link);
-
-	// var icon_type = "question circle";
-  // console.log("localStorage.getItem(addNewPopup)",localStorage.getItem("addNewPopup"))
 	
   function openTrueOrFalse_addNewPopup(){
     if (localStorage.getItem("addNewPopup") == "true"){
@@ -87,39 +77,6 @@ const AddNewDatasetCard = () => {
 
 
         <Grid.Column className="dataset-card" id= "gridAddNewdataCard"  >
-          
-          {/* <Popup 
-            // id ="aiTooglePopup"
-            trigger={
-              // make Segment color blue
-
-            <Segment inverted attached="top" className="panel-header" id ="segmentAddNewdataCard">
-              <Popup
-                position="right center"
-              //   header={formatDataset(dataset.name)}
-              //   content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}, Classes: ${dataset.metafeatures.n_classes}  Prediction type: ${dataset.files[0].prediction_type}`}
-              // content="Add a new dataset"  
-              trigger={
-                  <Header
-                    as="a"
-                    inverted
-                    size="large"
-                  
-                    className="title"
-                    
-                  />
-                }
-              />
-              
-            </Segment>
-            }
-            position="bottom right"
-            // header={formatDataset(dataset.name)}
-            content = "Step 2: If you want to generate machine learning experiments automatically, please click to toggle AI button"
-            
-            
-  
-          /> */}
 
       <Segment inverted attached="top" className="panel-header" id ="testheader">
           <Header
@@ -171,17 +128,11 @@ const AddNewDatasetCard = () => {
               to={"/upload_datasets"}
               content="Add New Dataset"
               onClick={() => {
-
                 localStorage.setItem("addNewPopup", "true")
               }
                 
               }
-              // positioning content "bottom right"
-              // position="bottom right"
              >
-
-              
-
              </Button> 
             
           }

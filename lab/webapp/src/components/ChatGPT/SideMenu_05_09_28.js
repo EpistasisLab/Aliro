@@ -66,8 +66,32 @@ export default function SideMenu({
         setTapTitlesFunc();
     },
     [window.location.href, numChatBox]
-
+    // [window.location.href]
+    
     );
+
+
+    // useEffect(() => {
+    //     console.log("useEffect-numChatBox")
+
+    //     let experimentID = experiment.data._id ;
+
+    //     checkNumChatBox();
+        
+    //     setBoldUnderlineAndInitTraIc();
+    //     setCurrentExpId(experimentID);
+
+    //     // //set tapTitles
+    //     setTapTitlesFunc();
+    // },
+    // // [window.location.href, numChatBox]
+    // [numChatBox]
+    
+    // );
+
+
+
+
 
 
 async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
@@ -180,6 +204,9 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
 
 async function checkClickedChatboxTab(e) {
 
+    console.log("e.target.childNodes[0].nodeValue",e.target.childNodes[0].nodeValue)
+
+
     // first, clear the context of the chat completions endpoint. (refer to the jay's message on slack)
         // in the openai api, is there a way to clear the context of the chat completions endpoint?
         // Yes, in the OpenAI API, you can clear the context of the chat completions endpoint by sending an empty string as the value for the context parameter.
@@ -194,6 +221,7 @@ async function checkClickedChatboxTab(e) {
             // In getAllChatsAndGetSpecificChatBasedOnExpID function, in the case where data[clickedChatBoxNum] != undefined, // clear the context of the chat completions endpoint. And then, post with chatlog of clicked chatbox to the openai api (chat/completions).
     
     if (e.target.childNodes[0].nodeValue === '+ New Chat') {
+        console.log("e.target.childNodes[0].nodeValue is + New Chat")
 
         // this is the number of chat boxes in the result page
         // numChatBox, setNumChatBox
@@ -204,7 +232,9 @@ async function checkClickedChatboxTab(e) {
     }
     else{
 
+        console.log("e.target.childNodes[0].nodeValue is not + New Chat")
         var siblings = e.target.parentNode.parentNode.childNodes;
+        console.log("siblings",siblings)
 
         for (var i = 1; i < siblings.length-1; i++) {
             // console.log("siblings[i]",siblings[i])
@@ -222,9 +252,12 @@ async function checkClickedChatboxTab(e) {
         // var currentClickedChatBoxID = parseInt(e.target.childNodes[1].nodeValue);
 
         var currentClickedChatBoxID = parseInt(e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue);
+        console.log("currentClickedChatBoxID",currentClickedChatBoxID)
+
     
         // Add 1 to currentClickedChatBoxID
         var countClickedChatBoxID = currentClickedChatBoxID + 1;
+        console.log("countClickedChatBoxID",countClickedChatBoxID)
 
         
     } 
@@ -239,6 +272,7 @@ async function checkClickedChatboxTab(e) {
     // user clicks + New Chat
     else if (e.target.childNodes.length == 1){
 
+        // console.log("e.target.childNodes[1].nodeValue", e.target.childNodes[1].nodeValue)
         var clickedChatBoxNum = e.target.childNodes[0].nodeValue;
 
     }
@@ -259,15 +293,6 @@ function clearAllTrashIcons (nodes) {
 }
 
 
-function clearAllCheckIcons (nodes) {
-
-    for (var i = 1; i < nodes.childNodes.length-1; i++) {
-        nodes.childNodes[i].childNodes[2].style.display = "none";
-        nodes.childNodes[i].childNodes[2].innerHTML = "🖋";
-    }
-}
-
-
 // This function is to check if the number of chat boxes is equal to or greater than the limit, and if so, make the + New Chat button not clickable
 function checkNumChatBox() {
     
@@ -284,17 +309,6 @@ function checkNumChatBox() {
 function changeTrashToCheck(node, reverse) {
     if (reverse==true){
         node.innerHTML = "🗑️";
-        // console.log("node.innerHTML",node.innerHTML)
-    }
-    else{
-        node.innerHTML = "✔︎";
-        // console.log("node.innerHTML",node.innerHTML)
-    }
-}
-
-function changePenToCheck(node, reverse) {
-    if (reverse==true){
-        node.innerHTML = "🖋";
         // console.log("node.innerHTML",node.innerHTML)
     }
     else{
@@ -449,17 +463,9 @@ function setBoldUnderlineAndInitTraIc() {
         // Trash emoji for each chatboxtap
         for (var i = 0; i < sidemenu.length; i++) {
             
-            // trash emoji 
             sidemenu[i].childNodes[1].style.display = "none";
-            // check emoji
-            sidemenu[i].childNodes[2].style.display = "none";
-            
-
         }
-        // trash emoji for the last chatboxtap
         sidemenu[sidemenu.length-1].childNodes[1].style.display = "block";
-        // check emoji for each chatboxtap
-        sidemenu[sidemenu.length-1].childNodes[2].style.display = "block";
     }
 }
 
@@ -533,21 +539,11 @@ async function postChatNameToDB(chatboxtapname){
                                 onClick={
                                     
                                     (e)=>{
-                                        // console.log("One clicked!")
-                                        // console.log("e.target",e.target)
-
-                                        // console.log("wer-e.target.parentNode.parentNode",e.target.parentNode.parentNode)
-
+                                        console.log("One clicked!")
+                                        console.log("e.target",e.target)
                                         checkClickedChatboxTab(e)
-                                        
                                         clearAllTrashIcons(e.target.parentNode.parentNode)
-
-                                        clearAllCheckIcons(e.target.parentNode.parentNode)
-
-
                                         e.target.parentNode.childNodes[1].style.display = 'block'
-
-                                        e.target.parentNode.childNodes[2].style.display = 'block'
                                     }
                                 }
 
@@ -555,10 +551,10 @@ async function postChatNameToDB(chatboxtapname){
                                     (e)=>{
 
                                         
-                                        // console.log("Double clicked!")
-                                        // console.log("e.target.parentNode.childNodes[1]-Double",e.target.parentNode.childNodes[1].textContent)
+                                        console.log("Double clicked!")
+                                        console.log("e.target.parentNode.childNodes[1]-Double",e.target.parentNode.childNodes[1].textContent)
 
-                                        // console.log("e.keyCode",e.keyCode)
+                                        console.log("e.keyCode",e.keyCode)
 
                                         // e.keyCode
                                         // e.mouse
@@ -580,12 +576,18 @@ async function postChatNameToDB(chatboxtapname){
                                         // do not allow user to use delete key when the text is empty
                                         e.target.onkeydown = function(e) {
                                             // split e.target.textContent with & and _ to get the text
-                                            // console.log("0509-e.target.childNodes[0].textContent",e.target.textContent)
+                                            console.log("e.target.childNodes[0].textContent",e.target.textContent)
                                             let tempString = e.target.textContent.split("&")[0].split("_")[0];
+
+                                            // length of tempString
+                                            console.log("tempString.length",tempString.length)
+
+
+                                            console.log("tempString",tempString)
 
                                             // e.keyCode === 8 is the delete key
                                             if(tempString === "" && e.keyCode === 8) {
-                                                // console.log("tempString ===  && e.keyCode === 8)")
+                                                console.log("tempString ===  && e.keyCode === 8)")
                                                 e.preventDefault();
                                                 
 
@@ -593,8 +595,7 @@ async function postChatNameToDB(chatboxtapname){
                                             }
                                             // enter key is not allowed
                                             if(e.keyCode === 13) {
-                                            // if(e.keyCode === 13) {
-                                                // console.log("e.keyCode === 13 enter key is not allowed")
+                                                console.log("e.keyCode === 13 enter key is not allowed")
                                                 e.preventDefault();
                                                 e.target.contentEditable = false;
                                                 e.target.focus();
@@ -603,13 +604,11 @@ async function postChatNameToDB(chatboxtapname){
                                                 postChatNameToDB(tempString)
                                             }
 
-                                           
-
 
 
                                             // cannot enter more than 20 characters
                                             if(e.target.textContent.length >25) {
-                                                console.log("Please do not enter more than 25")
+                                                console.log("e.target.textContent.length >25")
                                                 e.preventDefault();
                                             }
 
@@ -726,39 +725,6 @@ async function postChatNameToDB(chatboxtapname){
                                     }
                                     style={{display: 'none'}}
                                     >🗑</div>
-                                
-
-                                {/* make unvisible */}
-                                <div className="side-menu-button-trash check" style={{display: 'none'}}
-
-                                onMouseEnter={
-                                    (e) => {
-                                        changePenToCheck(e.target.parentNode.childNodes[2], false);
-                                    }
-                                }
-                                onMouseLeave={
-                                    (e) => {
-                                        changePenToCheck(e.target.parentNode.childNodes[2], true);
-                                    }
-                                }
-                                
-                                onClick={
-                                    (e)=> {
-
-
-
-                                        // find element by className side-menu-button from the e.target.parentNode
-
-                                        let tempSideMenuButtonText = e.target.parentNode.getElementsByClassName("side-menu-button")[0].textContent.split("&")[0].split("_")[0];
-
-                                        postChatNameToDB(tempSideMenuButtonText)
-
-
-
-                                    }
-                                }>🖋</div>
-
-
                             </div>
                         )
                 }

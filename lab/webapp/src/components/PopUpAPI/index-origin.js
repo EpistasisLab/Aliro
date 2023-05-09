@@ -6,10 +6,6 @@ export default class PopUpAPI extends Component {
   
 
   handleClick = () => {
-    // this.props.toggle();
-    // console.log("handleClick");
-    // console.log("this.props.openaiApiState", this.props.openaiApiState);
-    // console.log("e.target.textContent", e.target.textContent);
 
     // get className modal
     var modal = document.getElementsByClassName("modal")[0];

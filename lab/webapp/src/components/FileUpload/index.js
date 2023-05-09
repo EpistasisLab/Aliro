@@ -854,6 +854,7 @@ handleCatFeaturesUserTextCancel() {
   handleSelectedFile = files => {
 
     console.log("handleSelectedFile")
+    console.log("handleSelectedFile-files",files)
     if (files !=null)
     {
       console.log("it is null")
@@ -888,7 +889,7 @@ handleCatFeaturesUserTextCancel() {
         this.handleSelectedFileCompletedStub();
       }
     };
-
+    
     // check for selected file
     if(files && files[0]) {
       // immediately try to get dataset preview on file input html element change
@@ -961,9 +962,22 @@ handleCatFeaturesUserTextCancel() {
     this.setState({uploadButtonDisabled:true});
 
     const { uploadDataset } = this.props;
+    console.log("uploadDataset",uploadDataset)
+    console.log("this.state.selectedFile",this.state.selectedFile)
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let data = this.generateFileData(); // should be FormData
+      console.log("this.generateFileData()-data",data)
+      // show each key/value pair in FormData
+      
+      // show all values and keys in FormData
+      for (var value of data.values()) {
+        console.log("value-data",value);
+      }
+      // show _metadata in FormData
+      console.log("data._metadata",data._metadata);
+      // show _files in FormData
+      console.log("data._files",data._files);
       // if trying to create FormData results in error, don't attempt upload
       if (data.errorResp) {
         this.showErrorModal("Error with file metadata", data.errorResp);

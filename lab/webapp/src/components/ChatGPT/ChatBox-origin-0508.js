@@ -880,27 +880,11 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 e.target.parentElement.parentElement.parentElement.contentEditable = true;
                                 e.target.parentElement.parentElement.parentElement.focus();
 
-                                
-
                                 // e.target.parentElement.parentElement.parentElement.onkeydown
                                 e.target.parentElement.parentElement.parentElement.onkeydown = async function(e) {
                                     console.log("e.keyCode", e.keyCode)
                                     console.log("e.button", e.button)
                                     console.log("e.target.parentElement", e.target.parentElement)
-                                    console.log("e.target", e.target)
-
-                                    // find element id runbutton from the e.target.parentElement child
-
-                                    
-                                    console.log("e.code",e.code)
-
-
-
-
-                                    
-
-                                    
-
 
                                     // enter key is not allowed
                                     if(e.keyCode === 27) {
@@ -909,7 +893,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                         let tempChatCodeExplain = e.target.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
 
-                                        console.log("tempChatCodeExplain", tempChatCodeExplain)
+                                        // console.log("tempChatCodeExplain", tempChatCodeExplain)
                                   
                                         
                                         let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+e.target.innerText+"\n"+"```";
@@ -920,11 +904,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         e.target.contentEditable = false;
                                         e.target.focus();
 
-                                        console.log("inner-text", e.target.innerText)
-
                                         // update extractedCode var
                                         extractedCode=extractCodeFromMess(e.target.innerText);
-                                        console.log("extractedCode-test-27", extractedCode)
+                                        // console.log("extractedCode", extractedCode)
 
                                         // modify the code to the chatlog
                                         // should i update the chatlog?
@@ -957,15 +939,38 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         // filter the data using _experiment_id
                                         var filteredData = data.filter((item) => item._experiment_id === experimentId)
 
-                                        
+                                        // console.log("filteredData", filteredData)
+
+                                        // console.log("filteredData[chatCurrentTempId-1]", filteredData[chatCurrentTempId-1])
+
+                                        // console.log("filteredData[chatCurrentTempId-1][_id]", filteredData[chatCurrentTempId-1]["_id"])
+
+                                        // chatlogs array from filteredData[chatCurrentTempId-1]", filteredData[chatCurrentTempId-1]
+
+                                        // console.log("filteredData[chatCurrentTempId-1][chatlogs]", filteredData[chatCurrentTempId-1]["chatlogs"])
+
+
+                                        // find e.target.innerText from filteredData[chatCurrentTempId-1]["chatlogs"]
+
+
+                                        // console.log("e.target-temp", e.target)
+
+                                        // console.log("e.target.parentElement", e.target.parentElement)
+
+                                        // console.log("e.target.parentElement.parentElement", e.target.parentElement.parentElement)
+
+                                        // console.log("e.target.parentElement.parentElement.parentElement", e.target.parentElement.parentElement.parentElement)
 
                                         // get div class name "chat-log"
                                         let chatLog_divs = document.getElementsByClassName("chat-log");
 
+                                        // find the index where e.target.parentElement.parentElement.parentElement in chatLog_divs
+
+                                        // console.log("chatLog_divs", chatLog_divs)
+
+                                        // console.log("chatLog_divs[0].children", chatLog_divs[0].children)
 
                                         let temp_index_chat=0;
-
-                                        console.log("e.target.parentElement.parentElement.parentElement", e.target.parentElement.parentElement.parentElement)
 
                                         for (let i = 0; i < chatLog_divs[0].children.length; i++) {
 
@@ -983,10 +988,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         // update the code
                                         await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCodewithChat, "text", "gpt");
 
-                                    }
-
-                                    
-                                    
+                                    }   
                                 }        
                             }}
                             
@@ -1041,110 +1043,10 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                             <button id="installpackagesbutton" className="run-code-button" onClick={
                                 async (e)=>
                                 {
-
-                                    let currentEvent = e;
-                                    let packageIncludedString = currentEvent.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].textContent;
-
-                                    let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-                                    
-                                    if(currentEvent) {
-                                            
-                                            
-    
-                                    let tempChatCodeExplain = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
-
-
-    
-                                    // console.log("tempChatCodeExplain", tempChatCodeExplain)
-                              
-                                    
-                                    let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-
-
-
-                                    let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+tempCode+"\n"+"```";
-
-                                    // console.log("tempUpdatedCodewithChat", tempUpdatedCodewithChat)
-                                    
-                                    let tempElement = e.target.parentElement.parentElement.parentElement.parentElement;
-
-                                    e.preventDefault();
-                                    e.target.contentEditable = false;
-                                    e.target.focus();
-
-                                    // update extractedCode var
-                                    extractedCode=extractCodeFromMess(e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText);
-                                    
-
-
-                                    // modify the code to the chatlog
-                                    // should i update the chatlog?
-
-                                    // post updated code to the DB
-                                    // postChatNameToDB(tempString)
-
-
-
-
-
-                                    // POST http://localhost:5080/chatapi/v1/chatlogs
-                                    // Content-Type: application/json
-
-                                    // {
-                                    //     "_chat_id" : "645028384f4513a0b9459e53",
-                                    //     "message" : "Hello there from my desk!",
-                                    //     "message_type" : "text",
-                                    //     "who" : "user"
-                                    // }
-
-
-                                    // experimentId
-
-                                    
-
-                                    // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
-                                    let data = await getChatMessageByExperimentId(experimentId);
-
-                                    // filter the data using _experiment_id
-                                    var filteredData = data.filter((item) => item._experiment_id === experimentId)
-
-                                    
-
-                                    // get div class name "chat-log"
-                                    let chatLog_divs = document.getElementsByClassName("chat-log");
-
-
-                                    let temp_index_chat=0;
-
-                                    console.log("tempElement",tempElement)
-
-                                    for (let i = 0; i < chatLog_divs[0].children.length; i++) {
-
-                                        if (chatLog_divs[0].children[i] === tempElement)
-                                        {
-                                            console.log("choi-i", i)
-                                            temp_index_chat = i;
-                                        }
-
-                                    }
-
-
-                                    let chatByChatId= await getSpecificChatbyChatId(filteredData[chatCurrentTempId-1]["_id"])
-
-                                    // update the code
-                                    await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCodewithChat, "text", "gpt");
-
-                                    }
-
-
-
-
                                     console.log("installpackagesbutton-click")
 
                                     
-                                    // let packageIncludedString = currentEvent.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].textContent;
-
-                                    console.log("packageIncludedString", packageIncludedString)
+                                    let packageIncludedString = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].textContent;
 
                                     const packageNamesString = packageIncludedString.substring(0, packageIncludedString.indexOf("package"));
 
@@ -1166,13 +1068,13 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     // e.target.disabled = true;
                                     // e.target.style.color = "black";
 
-                                    // let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
+                                    let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
 
                                     extractedCode = tempCode.replace(/```python/g, "").replace(/```/g, "");
                                     
                                     console.log("INS-extractedCode",extractedCode)
 
-                                    await showCodeRunningMessageWhenClickRunBtn(currentEvent);
+                                    await showCodeRunningMessageWhenClickRunBtn(e);
                                     
                                     // call install function
                                     let resp_installPackages = await installPackages(packageNames);  
@@ -1186,7 +1088,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                     // use setchatlog function to update the chatlog
                                     // update to the db and refer updateAfterRuningCode function
-                                    updateAfterRuningCode(currentEvent, resp_runExtractedCode)
+                                    updateAfterRuningCode(e, resp_runExtractedCode)
+                                    
+
                                 }
                             }
                             
@@ -1203,97 +1107,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 <button id="runbutton" className="run-code-button" onClick={
                                     async (e)=>
                                     {
-
-                                        let currentEvent = e;
-                                        
-                                        // if(e) {
-                                            
-                                            
-    
-                                            let tempChatCodeExplain = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
-    
-                                            // console.log("tempChatCodeExplain", tempChatCodeExplain)
-                                      
-                                            
-                                            let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-
-
-                                            let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+tempCode+"\n"+"```";
-    
-                                            // console.log("tempUpdatedCodewithChat", tempUpdatedCodewithChat)
-                                            
-                                            let tempElement = e.target.parentElement.parentElement.parentElement.parentElement;
-
-                                            e.preventDefault();
-                                            e.target.contentEditable = false;
-                                            e.target.focus();
-    
-                                            // update extractedCode var
-                                            extractedCode=extractCodeFromMess(e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText);
-                                            
-
-    
-                                            // modify the code to the chatlog
-                                            // should i update the chatlog?
-    
-                                            // post updated code to the DB
-                                            // postChatNameToDB(tempString)
-    
-    
-    
-    
-    
-                                            // POST http://localhost:5080/chatapi/v1/chatlogs
-                                            // Content-Type: application/json
-    
-                                            // {
-                                            //     "_chat_id" : "645028384f4513a0b9459e53",
-                                            //     "message" : "Hello there from my desk!",
-                                            //     "message_type" : "text",
-                                            //     "who" : "user"
-                                            // }
-    
-    
-                                            // experimentId
-    
-                                            
-    
-                                            // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
-                                            let data = await getChatMessageByExperimentId(experimentId);
-    
-                                            // filter the data using _experiment_id
-                                            var filteredData = data.filter((item) => item._experiment_id === experimentId)
-    
-                                            
-    
-                                            // get div class name "chat-log"
-                                            let chatLog_divs = document.getElementsByClassName("chat-log");
-    
-    
-                                            let temp_index_chat=0;
-
-                                            console.log("tempElement",tempElement)
-    
-                                            for (let i = 0; i < chatLog_divs[0].children.length; i++) {
-    
-                                                if (chatLog_divs[0].children[i] === tempElement)
-                                                {
-                                                    console.log("choi-i", i)
-                                                    temp_index_chat = i;
-                                                }
-    
-                                            }
-    
-    
-                                            let chatByChatId= await getSpecificChatbyChatId(filteredData[chatCurrentTempId-1]["_id"])
-    
-                                            // update the code
-                                            await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCodewithChat, "text", "gpt");
-    
-                                        // }
-
-
-                                        // e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
                                 
                                         // use usestate to change the text of the button
                                         // document.getElementById("runbutton").textContent = "Running...";
@@ -1314,7 +1127,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
 
                                         
-                                        // let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
+                                        let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
 
                                         extractedCode = tempCode.replace(/```python/g, "").replace(/```/g, "");
 
@@ -1322,7 +1135,18 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
 
 
-                                        await showCodeRunningMessageWhenClickRunBtn( currentEvent)
+
+
+
+                                        // extractedCode=extractCodeFromMess(e.target.innerText);
+
+                                        // console.log("RUN-extractedCode",extractedCode)
+
+                                        // console.log("onClick-datasetId",datasetId)
+                                        // console.log("onClick-experimentId",experimentId)
+
+
+                                        await showCodeRunningMessageWhenClickRunBtn(e)
                                         
 
 
@@ -1331,7 +1155,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         
                                         
                                         
-                                        await updateAfterRuningCode( currentEvent, resp)
+                                        await updateAfterRuningCode(e, resp)
                                         
                                         
                                     
