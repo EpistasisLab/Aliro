@@ -1073,7 +1073,7 @@ export default function ChatGPT({experiment}) {
             if (packagesNotInstalled.length > 0){
                 setBooleanPackageInstall(true);
 
-                messageFromOpenai = packagesNotInstalled+" "+"package(s) is (are) not installed."+" "+"If you want to install the packages to run the below code, please click the button below" + "\n" + messageFromOpenai;
+                messageFromOpenai = packagesNotInstalled+" "+"package(s) is (are) not installed."+" "+"If you want to install the packages to run the below code, please click the button below. Conversely, if you want to modify the code, simply double-click on it, make the necessary changes, and then save by pressing the esc key." + "\n" + messageFromOpenai;
 
                 
                 
