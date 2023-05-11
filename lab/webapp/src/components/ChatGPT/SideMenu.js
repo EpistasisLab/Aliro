@@ -55,12 +55,8 @@ export default function SideMenu(
         // //set tapTitles
         setTapTitlesFunc();
 
-
-
-        
     },
     [window.location.href, numChatBox]
-
     );
 
 
@@ -77,10 +73,7 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
     });
 
     // data=dataFiltered;
-
     console.log("clickedChatBoxNum",clickedChatBoxNum)
-
-    // console.log("data[clickedChatBoxNum]", data[clickedChatBoxNum])
 
     // when user click + + New Chat button
     if (clickedChatBoxNum == "+ New Chat" ) {
@@ -192,9 +185,7 @@ async function checkClickedChatboxTab(e) {
         // this is the number of chat boxes in the result page
         // numChatBox, setNumChatBox
 
-        var countClickedChatBoxID = numChatBox+1
-
-            
+        var countClickedChatBoxID = numChatBox+1;
     }
     else{
 
@@ -214,13 +205,10 @@ async function checkClickedChatboxTab(e) {
         }
 
         // var currentClickedChatBoxID = parseInt(e.target.childNodes[1].nodeValue);
-
         var currentClickedChatBoxID = parseInt(e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue);
     
         // Add 1 to currentClickedChatBoxID
-        var countClickedChatBoxID = currentClickedChatBoxID + 1;
-
-        
+        var countClickedChatBoxID = currentClickedChatBoxID + 1;  
     } 
     // first chatbox is 1, second chatbox is 2, third chatbox is 3, etc.
     setChatCurrentTempId(countClickedChatBoxID)
@@ -232,16 +220,12 @@ async function checkClickedChatboxTab(e) {
 
     // user clicks + New Chat
     else if (e.target.childNodes.length == 1){
-
         var clickedChatBoxNum = e.target.childNodes[0].nodeValue;
-
     }
-
     // getAllChatsAndGetSpecificChat(clickedChatBoxNum, setChatLog);
     getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog);
-
     // make lanModelReset true
-    setLanModelReset(lanModelReset=true)
+    setLanModelReset(true)
 }
 
 function clearAllTrashIcons (nodes) {
@@ -525,14 +509,17 @@ async function postChatNameToDB(chatboxtapname){
                             (_, i) =>
                             <div className="sidemenu chatboxtap"> 
                                 <div className="side-menu-button" 
-                                key={i} 
+                                // key={i} 
                                 onClick={
                                     
                                     (e)=>{
                                         // console.log("One clicked!")
-                                        // console.log("e.target",e.target)
+                                        console.log("wer-ee.target.parentNode",e.target.parentNode)
 
-                                        // console.log("wer-e.target.parentNode.parentNode",e.target.parentNode.parentNode)
+                                        // background color of e.target.parentNode transpalent lighter blue
+                                        // e.target.parentNode.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
+
+                                        console.log("wer-e.target.parentNode.parentNode",e.target.parentNode.parentNode)
 
                                         checkClickedChatboxTab(e)
                                         

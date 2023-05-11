@@ -99,7 +99,8 @@ const ChatBox = () =>
         {
             chatLog.map(
                 (message, index) => (
-                    <ChatMessage key={index} 
+                    <ChatMessage 
+                    // key={index} 
                     message={message}
                     datasetId={datasetId}
                     experimentId={experimentId}
@@ -156,8 +157,25 @@ const ChatBox = () =>
             <input
                 rows="1"
                 value={chatInput}
-                onChange={(e) => 
-                    setChatInput(e.target.value)
+                onChange={(e) => {
+                    const input = e.target.value;
+                    console.log("input-length", input.length)
+
+                    if (input.length <= 200) {
+                        // document.querySelector(".submit").disabled = false;
+                        // find child who has className .submit from  current e.target 
+                        e.target.parentNode.querySelector(".submit").disabled = false;
+                        setChatInput(input);
+                    }
+
+                    if (input.length > 200) {
+
+                        // make the submit button disabled
+                        e.target.parentNode.querySelector(".submit").disabled = true;
+                    
+                    }
+                }
+                    
                 }
                 className="chat-input-textarea"
                 placeholder="Type your message here. "
@@ -177,31 +195,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
     let codeIncluded = checkIncludeCode(message.message)
     let extractedCode = extractCodeFromMess(message.message)
-
-    console.log("message.message", message.message)
-    console.log("extractedCode-ChatMessage", extractedCode)
-
-
-    // Nick's code
-    // const regex = /```([^`]*)```/g;
-    // const matches = messageFromOpenai.matchAll(regex);
-
-    // for (const match of matches) {
-    //     //check if the first 6 characters are python
-    //     if(match[1].substring(0,6) === "python"){
-    //         //remove the first 6 characters
-    //         match[1] = match[1].substring(6);
-    //     }
-    //     // // console.log("python code:",match[1]);
-    // }
-
-    // message: messageFromOpenai.split(/\n/).map(
-    //     line => 
-    //     <div key={line}>
-    //     {line}</div>
-    // )
-
-
 
 
     const [isExpanded, setIsExpanded] = useState(false);
@@ -1103,6 +1096,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                     let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
 
+                                    console.log("installandrun-tempCode", tempCode)
+
                                     // get package from the tempCode
                                     let packagesFromTempCode=getPackagesFromTempCode(tempCode);
 
@@ -1296,6 +1291,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                       
                                             
                                             let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
+
+                                            console.log("run-tempCode", tempCode)
 
                                             // get package from the tempCode
                                             let packagesFromTempCode=getPackagesFromTempCode(tempCode);
