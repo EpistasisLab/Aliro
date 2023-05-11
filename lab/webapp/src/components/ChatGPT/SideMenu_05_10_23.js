@@ -1,46 +1,56 @@
-import React, { useState, useEffect, useContext } from 'react';
-
-import { ThemeContext } from './context/ThemeContext';
-
-import { AllContext } from './context/AllContext';
+import React, { useState, useEffect } from "react";
 
 
 
 
 
-export default function SideMenu(
+export default function SideMenu({
+    clearChat,
+    currentModel,
+    setCurrentModel,
+    models,
+    setTemperature,
+    temperature,
+
+    chatLog,
+    setChatLog,
+
+    chatCurrentTempId, 
+    setChatCurrentTempId,
+
+    
+    numChatBox,
+    setNumChatBox,
+
+    lanModelReset, 
+    setLanModelReset,
+
+    limitNumChatBox,
+
+    currentExpId,
+    setCurrentExpId,
+
+    tapTitles, 
+    setTapTitles,
+    setTapTitlesFunc,
+
+    getChatMessageByExperimentId,
+    getSpecificChatbyChatId,
+    getAllChatsFromDB,
+    
+    postChats,
+    postInChatlogsToDB,
+    // postInChatlogsToDBWithExeId,
+
+    deleteSpecificChat,
+    patchSpecificChat,
+
+    experiment
+
+
+}
     
 ) {
-    const {
-        currentModel,
-        setCurrentModel,
-        models,
-        handleTemp,
-        temperature,
-        clearChat,
-        chatLog,
-        setChatLog,
-        chatCurrentTempId,
-        setChatCurrentTempId,
-        numChatBox,
-        setNumChatBox,
-        lanModelReset,
-        setLanModelReset,
-        limitNumChatBox,
-        currentExpId,
-        setCurrentExpId,
-        tapTitles,
-        setTapTitles,
-        setTapTitlesFunc,
-        getChatMessageByExperimentId,
-        getSpecificChatbyChatId,
-        getAllChatsFromDB,
-        postChats,
-        postInChatlogsToDB,
-        deleteSpecificChat,
-        patchSpecificChat,
-        experiment,
-      }= useContext(AllContext);
 
     useEffect(() => {
         console.log("useEffect-SideMenu")
@@ -494,7 +504,6 @@ async function postChatNameToDB(chatboxtapname){
 
 }
 
-
     return (
         <div className="divsidemenu">
             <aside className="sidemenu">
@@ -564,9 +573,16 @@ async function postChatNameToDB(chatboxtapname){
 
                                         // console.log("e.keyCode",e.keyCode)
 
+                                        // e.keyCode
+                                        // e.mouse
+
+
                                         // change e.target.parentNode.childNodes[1]  to 
                                         // ✔︎
-                                        
+                                        // add new div to e.target.parentNode.childNodes
+
+
+
 
                                         // e.target.parentNode.childNodes[1].textContent = "✔︎"
 
@@ -574,7 +590,7 @@ async function postChatNameToDB(chatboxtapname){
                                         e.target.contentEditable = true;
                                         e.target.focus();
 
-                                        //not allow user to use delete key when the text is empty
+                                        // do not allow user to use delete key when the text is empty
                                         e.target.onkeydown = function(e) {
                                             // split e.target.textContent with & and _ to get the text
                                             // console.log("0509-e.target.childNodes[0].textContent",e.target.textContent)
@@ -600,6 +616,10 @@ async function postChatNameToDB(chatboxtapname){
                                                 postChatNameToDB(tempString)
                                             }
 
+                                           
+
+
+
                                             // cannot enter more than 20 characters
                                             if(e.target.textContent.length >25) {
                                                 console.log("Please do not enter more than 25")
@@ -608,6 +628,10 @@ async function postChatNameToDB(chatboxtapname){
 
                                             
                                         }
+
+                                        
+
+                                        
                                     }
                                 
                                 }
@@ -672,6 +696,13 @@ async function postChatNameToDB(chatboxtapname){
                                     {tapTitles.taptitles[i]}<p style={{display: 'none'}}
                                     contentEditable={false}>_{i}</p>
                                     
+                                    {/* <p>ChatBox</p>
+                                    <p className ="numUnvisPele" style={{display: 'none'}}
+                                    contentEditable={false}>_{i}</p> */}
+
+
+                                    {/* ChatBox{i} */}
+                                    {/* ChatBox */}
                                     
                                     <div className ="numUnvisPele" style={{display: 'none'}}
                                     contentEditable={false}>

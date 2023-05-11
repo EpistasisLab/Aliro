@@ -1,8 +1,6 @@
 import AISVGLogo from './AISVGLogo'
-
-import React,{useState, useEffect,useContext} from "react";
-
-import { AllContext } from './context/AllContext';
+import React from 'react';
+import {useState, useEffect} from "react";
 
 // import './style.css';
 
@@ -33,11 +31,9 @@ import { AllContext } from './context/AllContext';
 
 
 // Primary Chat Window
-const ChatBox = () => 
+const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages}) => 
 
 {
-    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages} = useContext(AllContext);
-
     useEffect(() => {
     //     const highlightScript = document.createElement('script');
     // highlightScript.src = 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js';
@@ -200,6 +196,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
     //     <div key={line}>
     //     {line}</div>
     // )
+
+
+
 
 
 
@@ -1443,7 +1442,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                             )
                         }
 
-                       
+                        {/* {message.message} */}
+                        
+                    
                         {/* Run button */}
                         {/* if booleanPackageInstall is false, show run button */}
                         {/* if booleanPackageInstall is true, show install button */}
