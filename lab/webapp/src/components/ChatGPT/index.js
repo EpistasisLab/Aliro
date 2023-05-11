@@ -554,6 +554,39 @@ export default function ChatGPT({experiment}) {
         return data;
 
     }
+
+
+
+    function tokenChekcerForGPT3Point5Turbo(chatLogNewFormatFiltered){
+
+        // convert chatLogNewFormatFiltered to string
+        // print data type of chatLogNewFormatFiltered
+
+        let newChatLogNewFormatFiltered = chatLogNewFormatFiltered;
+
+
+
+        let str = chatLogNewFormatFiltered.map((item) => item.content).join(" ");
+        console.log("tokenChekcerForGPT3Point5Turbo-str", str);
+        const tokens = str.split(" ");
+        const tokenCount = tokens.length;
+
+        console.log("tokenCount", tokenCount);
+
+        // if tokenCount > 1000 make new by taking  first three chatLogNewFormatFiltered[0], chatLogNewFormatFiltered[1], chatLogNewFormatFiltered[2] and last three chatLogNewFormatFiltered[-1], chatLogNewFormatFiltered[-2], chatLogNewFormatFiltered[-3]
+
+
+
+        if (tokenCount > 1000){
+
+            newChatLogNewFormatFiltered = chatLogNewFormatFiltered.slice(0,3).concat(chatLogNewFormatFiltered.slice(-3));
+            console.log("newChatLogNewFormatFiltered", newChatLogNewFormatFiltered);
+            // return newChatLogNewFormatFiltered;
+        }
+
+        return newChatLogNewFormatFiltered;
+
+    }
     
     
 
@@ -722,11 +755,11 @@ export default function ChatGPT({experiment}) {
 
         // push {"role": "system", "content":preSet} to the head of chatLogNewFormat
         // {"role": "system", "content":preSet} should be located at the head of chatLogNewFormat
-        chatLogNewFormat.unshift({"role": "system", "content":preSet})
-        chatLogNewFormat.push({"role": "user", "content":lastMessageFromUser})
+        chatLogNewFormatFiltered.unshift({"role": "system", "content":preSet})
+        chatLogNewFormatFiltered.push({"role": "user", "content":lastMessageFromUser})
 
         // console.log("preSetLastMessageFromUser",preSetLastMessageFromUser)
-        console.log("chatLogNewFormat",chatLogNewFormat)
+        console.log("chatLogNewFormatFiltered",chatLogNewFormatFiltered)
 
 
         // get only message by user from chatLogNewFormat
@@ -735,9 +768,12 @@ export default function ChatGPT({experiment}) {
 
         // calculate token of chatLogNewFormat
         let token = 0
-        chatLogNewFormat.forEach((item) => {
+        chatLogNewFormatFiltered.forEach((item) => {
             token = token + item.content.length
         })
+
+
+        chatLogNewFormatFiltered=tokenChekcerForGPT3Point5Turbo(chatLogNewFormatFiltered)
 
 
         let data=await fetch("openai/v1/chat/completions", {
@@ -1093,6 +1129,9 @@ export default function ChatGPT({experiment}) {
         console.log("chatLogNew",chatLogNew)
 
 
+        disableReadingInput();
+
+
         await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
 
         
@@ -1309,6 +1348,9 @@ export default function ChatGPT({experiment}) {
         scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
 
         setLanModelReset(false);
+        enableReadingInput();
+
+
     }
 
 
@@ -2091,6 +2133,39 @@ export default function ChatGPT({experiment}) {
           return response
         }
       };
+
+
+    function disableReadingInput()
+      {
+  
+          // make submit button disabled
+          let submitButton = document.getElementsByClassName("submit")[0];
+          console.log("submitButton", submitButton)
+          submitButton.disabled = true;
+  
+  
+          // make chat-input-textarea disabled
+          let chatInputTextarea = document.getElementsByClassName("chat-input-textarea")[0];
+          // console.log("chat-input-textarea", chat-input-textarea)
+          chatInputTextarea.disabled = true;
+  
+    }
+  
+  
+  
+    function enableReadingInput()
+      {
+  
+  
+          let submitButton = document.getElementsByClassName("submit")[0];
+         // make submit button abled
+         submitButton.disabled = false;
+  
+         let chatInputTextarea = document.getElementsByClassName("chat-input-textarea")[0];
+         // make chatInputTextarea abled
+         chatInputTextarea.disabled = false;
+  
+    }
     
     let datasetId = experiment.data._dataset_id;
     let experimentId = experiment.data._id;
@@ -2153,6 +2228,8 @@ export default function ChatGPT({experiment}) {
                             getSpecificChatbyChatId,
                             patchChatToDB,
                             checkCodePackages,
+                            disableReadingInput,
+                            enableReadingInput
                             }}>
             <ChatBox/>
             </AllContext.Provider>
