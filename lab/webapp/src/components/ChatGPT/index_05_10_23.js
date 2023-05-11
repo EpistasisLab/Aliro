@@ -936,7 +936,7 @@ export default function ChatGPT({experiment}) {
         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
 
         // my prompt eng
-        let preSet =`assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. I strongly ask you to always write the code between three backticks python and three backticks always. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
+        let preSet =`assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. Put the code between three backticks python and three backticks. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
         In the case where you need to save csv, for each colum name, if it has _ in the name, replace _ with -.
         please make sure that any commenets should be in the form of #. For example, # this is a comment. or # Note: Please make sure to install the necessary libraries before running this code such as imblearn, pandas, matplotlib and sklearn.
 
@@ -1962,77 +1962,109 @@ export default function ChatGPT({experiment}) {
         }
       };
     
-    let datasetId = experiment.data._dataset_id;
-    let experimentId = experiment.data._id;
+    let data_id = experiment.data._dataset_id;
+    let experiment_data_id = experiment.data._id;
 
     return (
         <div className="ChatGPT">
             {
-                <AllContext.Provider value={{ currentModel,
-                    setCurrentModel,
-                    models,
-                    handleTemp,
-                    temperature,
-                    clearChat,
-                    chatLog,
-                    setChatLog,
-                    chatCurrentTempId,
-                    setChatCurrentTempId,
-                    numChatBox,
-                    setNumChatBox,
-                    lanModelReset,
-                    setLanModelReset,
-                    limitNumChatBox,
-                    currentExpId,
-                    setCurrentExpId,
-                    tapTitles,
-                    setTapTitles,
-                    setTapTitlesFunc,
-                    getChatMessageByExperimentId,
-                    getSpecificChatbyChatId,
-                    getAllChatsFromDB,
-                    postChats,
-                    postInChatlogsToDB,
-                    deleteSpecificChat,
-                    patchSpecificChat,
-                    experiment
-                  }}>
-                <SideMenu/>
-                </AllContext.Provider>
+                // <AllContext.Provider value={{}}>
+                <SideMenu
+                    currentModel={currentModel} 
+                    setCurrentModel={setCurrentModel} 
+                    models={models}
+                    setTemperature={handleTemp}
+                    temperature={temperature}
+                    clearChat={clearChat}
+                    
+                    chatLog={chatLog}
+                    setChatLog = {setChatLog}
+
+                    chatCurrentTempId = {chatCurrentTempId}
+                    setChatCurrentTempId = {setChatCurrentTempId}
+
+                    
+                    numChatBox={numChatBox}
+                    setNumChatBox={setNumChatBox}
+
+                    lanModelReset = {lanModelReset}
+                    setLanModelReset = {setLanModelReset}
+
+                    limitNumChatBox={limitNumChatBox}
+
+                    currentExpId={currentExpId}
+                    setCurrentExpId={setCurrentExpId}
+
+                    tapTitles = {tapTitles}
+                    setTapTitles = {setTapTitles}
+                    setTapTitlesFunc = {setTapTitlesFunc}
+
+                    getChatMessageByExperimentId = {getChatMessageByExperimentId}
+
+                    getSpecificChatbyChatId = {getSpecificChatbyChatId}
+
+                    getAllChatsFromDB = {getAllChatsFromDB}
+
+                    postChats = {postChats}
+                    postInChatlogsToDB = {postInChatlogsToDB}
+                    // postInChatlogsToDBWithExeId = {postInChatlogsToDBWithExeId}
+
+                    deleteSpecificChat={deleteSpecificChat}
+                    patchSpecificChat = {patchSpecificChat}
+
+                    experiment = {experiment}
+                    
+                />
+                // </AllContext.Provider>
             }
 
+            {/* chatLog, setChatInput, handleSubmit, chatInput */}
+            <ChatBox
+                chatInput={chatInput}
+                chatLog={chatLog}
+                // setChatLog={setChatLog}
+                setChatInput={setChatInput}
+                // handleSubmit={handleSubmit}
+                handleSubmit={handleSubmit}
 
-            <AllContext.Provider value={{
-                            chatInput,
-                            chatLog,
-                            setChatInput,
-                            handleSubmit,
-                            modeForChatOrCodeRunning,
-                            setModeForChatOrCodeRunning,
-                            datasetId,
-                            experimentId,
-                            updateAfterRuningCode,
-                            modeForTabluerData,
-                            setModeForTabluerData,
-                            booleanPackageInstall,
-                            setBooleanPackageInstall,
-                            submitErrorWithCode,
-                            showCodeRunningMessageWhenClickRunBtn,
-                            getChatMessageByExperimentId,
-                            chatCurrentTempId,
-                            getSpecificChatbyChatId,
-                            patchChatToDB,
-                            checkCodePackages,
-                            }}>
-            <ChatBox/>
-            </AllContext.Provider>
+                
+
+                modeForChatOrCodeRunning = {modeForChatOrCodeRunning}
+                setModeForChatOrCodeRunning = {setModeForChatOrCodeRunning}
+
+                // extractedCode = {extractedCode}
+                // checkIfCode = {checkIfCode}
+                // extractCode = {extractCode}
+
+                datasetId = {experiment.data._dataset_id}
+                experimentId = {experiment.data._id}
+
+                updateAfterRuningCode = {updateAfterRuningCode}
+
+                modeForTabluerData = {modeForTabluerData}
+                setModeForTabluerData = {setModeForTabluerData}
+
+                booleanPackageInstall = {booleanPackageInstall}
+                setBooleanPackageInstall = {setBooleanPackageInstall}
 
 
+                submitErrorWithCode = {submitErrorWithCode}
 
+                showCodeRunningMessageWhenClickRunBtn = {showCodeRunningMessageWhenClickRunBtn}
 
-            {/* <ThemeContext.Provider value={{isDark, setIsDark, currentModel,setCurrentModel,experimentId}}>
+                getChatMessageByExperimentId = {getChatMessageByExperimentId}
+                chatCurrentTempId = {chatCurrentTempId}
+
+                getSpecificChatbyChatId = {getSpecificChatbyChatId}
+
+                patchChatToDB = {patchChatToDB}
+
+                checkCodePackages = {checkCodePackages}
+
+            />
+            <ThemeContext.Provider value={{isDark, setIsDark, currentModel,setCurrentModel,experiment_data_id}}>
                 <TestPage/>
-            </ThemeContext.Provider> */}
+            </ThemeContext.Provider>
 
 
 
