@@ -36,7 +36,7 @@ import { AllContext } from './context/AllContext';
 const ChatBox = () => 
 
 {
-    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages} = useContext(AllContext);
+    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput} = useContext(AllContext);
 
     useEffect(() => {
     //     const highlightScript = document.createElement('script');
@@ -120,6 +120,8 @@ const ChatBox = () =>
                     getSpecificChatbyChatId = {getSpecificChatbyChatId}
                     patchChatToDB = {patchChatToDB}
                     checkCodePackages = {checkCodePackages}
+                    disableReadingInput = {disableReadingInput}
+                    enableReadingInput = {enableReadingInput}
                     
                 />)
             )
@@ -179,8 +181,9 @@ const ChatBox = () =>
                 }
                 className="chat-input-textarea"
                 placeholder="Type your message here. "
+                disabled ={false}
                 ></input>
-            <button className="submit" type="submit">Submit</button>
+            <button className="submit" type="submit" disabled={false}>Submit</button>
         </form>
 
         
@@ -190,7 +193,7 @@ const ChatBox = () =>
 }
 
 // Individual Chat Message
-const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages}) => {
+const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput}) => {
     
 
     let codeIncluded = checkIncludeCode(message.message)
@@ -486,6 +489,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
         }
         return Array.from(packages);
       }
+
+
+
 
 
 
@@ -1242,16 +1248,27 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     await showCodeRunningMessageWhenClickRunBtn(currentEvent);
 
 
+                                    disableReadingInput();
+
+
+                                    
+
+
 
                                     // checkCodePackages
                                     let packagesNotInstalled = await checkCodePackages(packageNames);
 
                                     console.log("install-packagesNotInstalled", packagesNotInstalled)
                                     
+
+
+
                                     // call install function
                                     let resp_installPackages = await installPackages(packagesNotInstalled); 
                                     console.log("resp_installPackages", resp_installPackages) 
                                     let resp_runExtractedCode = await runExtractedCode(extractedCode, datasetId,experimentId);
+
+
 
 
                                     // console.log("resp_runExtractedCode", resp_runExtractedCode)
@@ -1262,6 +1279,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     // use setchatlog function to update the chatlog
                                     // update to the db and refer updateAfterRuningCode function
                                     updateAfterRuningCode(currentEvent, resp_runExtractedCode)
+
+                                    enableReadingInput();
+                                    
                                 }
                             }
                             
@@ -1408,6 +1428,10 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                         await showCodeRunningMessageWhenClickRunBtn( currentEvent)
 
+
+                                        disableReadingInput();
+
+
                                         console.log("run-packagesFromTempCode", packagesFromTempCode)
 
                                         let packagesNotInstalled = await checkCodePackages(packagesFromTempCode)
@@ -1421,6 +1445,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         
                                         
                                         await updateAfterRuningCode( currentEvent, resp)
+
+                                        enableReadingInput();
                                         
                                         
                                     
@@ -1444,11 +1470,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                         {/* Run button */}
                         {/* if booleanPackageInstall is false, show run button */}
                         {/* if booleanPackageInstall is true, show install button */}
-
-
-                        
-                        
-                        
 
 
                     </div>

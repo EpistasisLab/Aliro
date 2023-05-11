@@ -514,12 +514,12 @@ async function postChatNameToDB(chatboxtapname){
                                     
                                     (e)=>{
                                         // console.log("One clicked!")
-                                        console.log("wer-ee.target.parentNode",e.target.parentNode)
+                                        // console.log("wer-ee.target.parentNode",e.target.parentNode)
 
                                         // background color of e.target.parentNode transpalent lighter blue
                                         // e.target.parentNode.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
 
-                                        console.log("wer-e.target.parentNode.parentNode",e.target.parentNode.parentNode)
+                                       
 
                                         checkClickedChatboxTab(e)
                                         
