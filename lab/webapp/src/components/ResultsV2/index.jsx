@@ -129,7 +129,8 @@ function moveSlidermakeBlack(e) {
                     block.style.width = block.offsetWidth + e.clientX - dragX + "px";
                     dragX = e.clientX;
 
-
+                    // if e.target.parentElement.childNodes[0].childNodes[1] is not undefined
+                    
                     if (e.target.parentElement.childNodes[0].childNodes[1].className === "ui stackable two column grid") {
 
                         e.target.parentElement.childNodes[0].childNodes[1].className = "ui stackable three column grid"
