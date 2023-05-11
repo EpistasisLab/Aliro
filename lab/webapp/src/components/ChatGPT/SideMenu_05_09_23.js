@@ -281,7 +281,7 @@ async function checkClickedChatboxTab(e) {
     getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog);
 
     // make lanModelReset true
-    setLanModelReset(lanModelReset=true)
+    setLanModelReset(true)
 }
 
 function clearAllTrashIcons (nodes) {

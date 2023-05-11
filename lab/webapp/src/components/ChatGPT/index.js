@@ -62,7 +62,7 @@ export default function ChatGPT({experiment}) {
     // language model reset
     // This is a boolean value that indicates whether the language model should be reset
     // when user moves to a new experiment or new chat box, the lanModelReset should be true
-    // 
+    
     const [lanModelReset, setLanModelReset] = useState(false);
 
     // current experiment id
@@ -149,7 +149,9 @@ export default function ChatGPT({experiment}) {
         const match = regex.exec(messageFromOpenai);
         const code = match[1];
 
-        // console.log("extractCode",code);
+        console.log("messageFromOpenai",messageFromOpenai)
+
+        console.log("extractCode",code);
 
         // console.log("match", match);
 
@@ -875,6 +877,95 @@ export default function ChatGPT({experiment}) {
 
     }
 
+    // check there is first Three backticks and python
+
+    // function checkThreeBackticksFromMessage(message){
+
+
+    function replaceFirstBackticks(message) {
+
+        // let str = "example string";
+        let index = message.indexOf("```");
+        
+        // if index is -1, return
+        if (index === -1){
+            return message;
+        }
+        else {
+
+            // get string from index to 10
+            let str = message.slice(index,index+10)
+            // if str does not include python, replace the first triple backtick with triple backtick + "python"
+            if (!str.includes("python")){
+
+                // console.log("replaceFirstBackticks-before-message",message)
+                message=message.replace(/```/, "```python");
+                // console.log("replaceFirstBackticks-before-message",message)
+
+                return message;
+            }
+            else {
+                return message;
+            }
+
+        }
+        
+        
+      
+    }
+
+
+    function addComments(codeSnippet) {
+        const lines = codeSnippet.split('\n');
+        const commentedLines = [];
+        let isCodeBlock = false;
+        for (const line of lines) {
+
+            if (line.includes('```python')) {
+                isCodeBlock = true;
+              }
+
+
+
+
+            if (isCodeBlock==false){
+
+                // if first character is not #, add #
+                if (line[0]!="#"){
+                    commentedLines.push(`# ${line}`);
+                }
+
+                else {
+                    commentedLines.push(`${line}`);
+                }
+
+
+                
+
+            }
+
+            if (isCodeBlock==true){
+                
+                commentedLines.push(`${line}`);
+
+                if (line.includes('```') && !line.includes('```python') && isCodeBlock==true) {
+                    isCodeBlock = false;
+                }
+
+            
+            }
+
+
+
+          
+        }
+        return commentedLines.join('\n');
+    
+    }
+      
+
+
+
 
     // simple
     async function handleSubmit(e) {
@@ -950,6 +1041,18 @@ export default function ChatGPT({experiment}) {
         df = sns.load_dataset("tips")
         # Get column names
         cols = df.columns
+
+        If you give me a code like this, I will give you a score of 0. Please make sure to comment out any explanation between \`\`\`python \n and \n \`\`\` . For example,
+
+        \`\`\`python \n import pandas as pd \n
+        from sklearn.model_selection import train_test_split \n
+        from sklearn.preprocessing import StandardScaler \n
+        from keras.models import Sequential \n
+        from keras.layers import Dense \n
+        import matplotlib.pyplot as plt \n
+        # load the DataFrame \n
+        df = pd.read_csv('your_dataframe.csv') \n \`\`\`
+
         
         `;
 
@@ -1004,6 +1107,31 @@ export default function ChatGPT({experiment}) {
 
 
         var messageFromOpenai = data.choices[0].message['content'];
+
+        console.log("messageFromOpenai",messageFromOpenai)
+
+        // if messageFromOpenai is undefined, then set messageFromOpenai to "Sorry, I am not sure what you mean. Please try again."
+
+        if (messageFromOpenai === undefined){
+
+            console.log("messageFromOpenai is undefined")
+            messageFromOpenai = "Sorry, I am not sure what you mean. Please try again."
+        }
+
+
+        messageFromOpenai= replaceFirstBackticks(messageFromOpenai);
+
+        // if ```python in the messageFromOpenai, then run addComments(messageFromOpenai)
+
+
+        if (messageFromOpenai.includes("```python")) {
+            messageFromOpenai=addComments(messageFromOpenai);
+        }
+
+        console.log("messageFromOpenai",messageFromOpenai)
+
+        // check```python and ``` in the messageFromOpenai
+        
             
         // process the messageFromOpenai based on...
         // check if the messageFromOpenai contains python code.
@@ -1014,6 +1142,7 @@ export default function ChatGPT({experiment}) {
 
         if (booleanCode){
             let extractedCodeTemp = extractCode(messageFromOpenai);
+            
             let packagesOfCode = extractPackagesOfCode(extractedCodeTemp); 
 
             let packagesNotInstalled = await checkCodePackages(packagesOfCode)
@@ -1239,6 +1368,7 @@ export default function ChatGPT({experiment}) {
         When the error is related to the missing file, please use the current df as the input. However this does not mean df is csv file or tsv file. df is a variable name. 
         For example, if the error is related to the missing file "theta.csv", please use the current df as the input. Here is another code example. pd.read_csv('path/to/your/csv/file'). This code will cause error because the file does not exist. However, if you change the code to pd.read_csv(df), it will not cause error.
         Please write the code between 3 backticks python and 3backticks. For example, the format is like this: \`\`\`python\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\`\`\`
+        Please remember that df is already defined. You do not need to load the csv file.
         `;
 
 
