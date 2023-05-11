@@ -31,7 +31,7 @@ import {useState, useEffect} from "react";
 
 
 // Primary Chat Window
-const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB}) => 
+const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages}) => 
 
 {
     useEffect(() => {
@@ -114,6 +114,7 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 
                     getSpecificChatbyChatId = {getSpecificChatbyChatId}
                     patchChatToDB = {patchChatToDB}
+                    checkCodePackages = {checkCodePackages}
                     
                 />)
             )
@@ -167,7 +168,7 @@ const ChatBox = ({chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOr
 }
 
 // Individual Chat Message
-const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB}) => {
+const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages}) => {
     
 
     let codeIncluded = checkIncludeCode(message.message)
@@ -354,9 +355,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
     }
 
-
-
-
     async function installPackages(packagesArray,e)
     {
         // POST http://localhost:5080/execapi/v1/executions/install
@@ -396,7 +394,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
         // console.log("resultFromInstallingPackages[exec_results][stdout]",resultFromInstallingPackages["exec_results"]["stdout"])
         // resultFromInstallingPackages["exec_results"]["stdout"]
     }
-
 
     function findTheLastCodeMessageFromHTML(element)
     {
@@ -438,6 +435,63 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
         }
       };
     
+
+
+    
+
+    // get packages from the tempCode
+
+    // function getPackagesFromTempCode(tempCode)
+    // {
+    
+    //     pattern = r"import\s+(\w+)\s+as\s+\w+"
+    
+    //     matches = re.findall(pattern, code)
+    
+    //     return set(matches)
+    // }
+
+
+    // function getPackagesFromTempCode(tempCode)
+    // {
+    //     // Regular expression pattern to match package imports
+    //     const pattern = /import\s+(\w+)\s+/g;
+        
+    //     // Find all matches of the pattern in the code
+    //     const matches = tempCode.matchAll(pattern);
+        
+    //     // Initialize an empty set to store the package names
+    //     const packages = new Set();
+        
+    //     // Loop through each match and add the package name to the set
+    //     for (const match of matches) {
+    //       packages.add(match[1]);
+    //     }
+        
+    //     // Return an array of unique package names
+    //     return Array.from(packages);
+    //   }
+
+
+    function getPackagesFromTempCode(tempCode)
+    {
+        const packageRegex = /(import|from) (\w+)/g;
+        const matches = tempCode.match(packageRegex);
+        console.log("matches", matches)
+        const packages = new Set();
+        if (matches) {
+          for (let match of matches) {
+            const [importType, packageName] = match.split(' ');
+            console.log("importType, packageName", importType, packageName)
+            if (importType === 'import') {
+              packages.add(packageName);
+            } else if (importType === 'from') {
+              packages.add(packageName.split('.')[0]);
+            }
+          }
+        }
+        return Array.from(packages);
+      }
 
 
 
@@ -1045,7 +1099,13 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     let currentEvent = e;
                                     let packageIncludedString = currentEvent.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].textContent;
 
+
                                     let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
+
+                                    // get package from the tempCode
+                                    let packagesFromTempCode=getPackagesFromTempCode(tempCode);
+
+                                    console.log("packagesFromTempCode", packagesFromTempCode)
                                     
                                     if(currentEvent) {
                                             
@@ -1137,6 +1197,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     }
 
 
+                                    // 
 
 
                                     console.log("installpackagesbutton-click")
@@ -1155,11 +1216,21 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     let packageNamesStringNospace=packageNamesString.replace(/\s/g, '');
                                     let packageNames = packageNamesStringNospace.split(",");
 
-                                    // // console.log("packageNames", packageNames)
+                                    console.log("packageNames", packageNames)
+
+                                    // combine packageNames with packagesFromTempCode
+
+                                    packageNames = packageNames.concat(packagesFromTempCode);
+
+                                    console.log("packageNamesCombined", packageNames)
+
+                                    // remove duplicate 
+                                    packageNames = [...new Set(packageNames)];
+
+                                    console.log("packageNamesCombinedUnique", packageNames)
 
 
-                                    
-                            
+
                                     // use usestate to change the text of the button
                                     // e.target.textContent = "Installing...";
                                     
@@ -1173,9 +1244,17 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     console.log("INS-extractedCode",extractedCode)
 
                                     await showCodeRunningMessageWhenClickRunBtn(currentEvent);
+
+
+
+                                    // checkCodePackages
+                                    let packagesNotInstalled = await checkCodePackages(packageNames);
+
+                                    console.log("install-packagesNotInstalled", packagesNotInstalled)
                                     
                                     // call install function
-                                    let resp_installPackages = await installPackages(packageNames);  
+                                    let resp_installPackages = await installPackages(packagesNotInstalled); 
+                                    console.log("resp_installPackages", resp_installPackages) 
                                     let resp_runExtractedCode = await runExtractedCode(extractedCode, datasetId,experimentId);
 
 
@@ -1216,6 +1295,13 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                       
                                             
                                             let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
+
+                                            // get package from the tempCode
+                                            let packagesFromTempCode=getPackagesFromTempCode(tempCode);
+
+                                            console.log("teresa-packagesFromTempCode", packagesFromTempCode)
+
+
 
 
                                             let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+tempCode+"\n"+"```";
@@ -1323,9 +1409,14 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
 
                                         await showCodeRunningMessageWhenClickRunBtn( currentEvent)
+
+                                        console.log("run-packagesFromTempCode", packagesFromTempCode)
+
+                                        let packagesNotInstalled = await checkCodePackages(packagesFromTempCode)
+
+                                        console.log("run-packagesNotInstalled", packagesNotInstalled)
                                         
-
-
+                                        let resp_installPackages = await installPackages(packagesNotInstalled); 
 
                                         let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
                                         

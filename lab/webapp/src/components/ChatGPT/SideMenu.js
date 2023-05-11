@@ -64,6 +64,10 @@ export default function SideMenu({
 
         // //set tapTitles
         setTapTitlesFunc();
+
+
+
+        
     },
     [window.location.href, numChatBox]
 
@@ -509,9 +513,10 @@ async function postChatNameToDB(chatboxtapname){
                     async (e) =>
                     {   
                         
-                        setNumChatBox(numChatBox + 1)
                         checkClickedChatboxTab(e)
-                        checkNumChatBox()
+                        setNumChatBox(numChatBox + 1)
+                        
+                        // checkNumChatBox()
 
                         //set tapTitles
                         // setTapTitlesFunc();
@@ -554,9 +559,17 @@ async function postChatNameToDB(chatboxtapname){
                                 onDoubleClick={
                                     (e)=>{
 
+
+
                                         
                                         // console.log("Double clicked!")
-                                        // console.log("e.target.parentNode.childNodes[1]-Double",e.target.parentNode.childNodes[1].textContent)
+                                        // console.log("e.target.parentNode.parentNode",e.target.parentNode.parentNode)
+
+                                        // find the child node with id newchatbutton
+                                        let newchatbutton = document.getElementById("newchatbutton");
+
+                                        // make it unclickable
+                                        newchatbutton.style.pointerEvents = "none";
 
                                         // console.log("e.keyCode",e.keyCode)
 
@@ -745,6 +758,11 @@ async function postChatNameToDB(chatboxtapname){
                                 onClick={
                                     (e)=> {
 
+
+                                        let newchatbutton = document.getElementById("newchatbutton");
+
+                                        // make it clickable
+                                        newchatbutton.style.pointerEvents = "auto";
 
 
                                         // find element by className side-menu-button from the e.target.parentNode
