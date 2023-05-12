@@ -36,7 +36,7 @@ import { AllContext } from './context/AllContext';
 const ChatBox = () => 
 
 {
-    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput} = useContext(AllContext);
+    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown} = useContext(AllContext);
 
     useEffect(() => {
     //     const highlightScript = document.createElement('script');
@@ -122,6 +122,7 @@ const ChatBox = () =>
                     checkCodePackages = {checkCodePackages}
                     disableReadingInput = {disableReadingInput}
                     enableReadingInput = {enableReadingInput}
+                    autoScrollDown = {autoScrollDown}
                     
                 />)
             )
@@ -195,7 +196,7 @@ const ChatBox = () =>
 }
 
 // Individual Chat Message
-const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput}) => {
+const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown}) => {
     
 
     let codeIncluded = checkIncludeCode(message.message)
@@ -204,7 +205,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
     const [isExpanded, setIsExpanded] = useState(false);
 
-    // temp
+
     // const [tabluerData, setTabluerData] = useState([]);
 
     const handleDoubleClick = () => {
@@ -801,6 +802,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                             // extrac code from text 
                                                             // code is between ```python and ```
 
+                                                            await showCodeRunningMessageWhenClickRunBtn(e);
+                                                            
+
                                                             let tempCode = extractCodeFromMess(tempText);
 
                                                             // console.log("code-findTheLastCodeMessageFromHTML", tempCode)
@@ -810,6 +814,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                             await submitErrorWithCode(e, tempCode);
 
                                                             enableReadingInput();
+
+                                                            autoScrollDown();
 
                                                             // // console.log("chatLog-Errno",chatLog)
 
@@ -1256,6 +1262,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     updateAfterRuningCode(currentEvent, resp_runExtractedCode)
 
                                     enableReadingInput();
+
+                                    // showCodeRunningMessageWhenClickRunBtn have autoScrollDown function
+                                    // autoScrollDown();
                                     
                                 }
                             }
@@ -1422,6 +1431,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         await updateAfterRuningCode( currentEvent, resp)
 
                                         enableReadingInput();
+
+                                        // showCodeRunningMessageWhenClickRunBtn have autoScrollDown function
+                                        // autoScrollDown();
                                         
                                         
                                     
