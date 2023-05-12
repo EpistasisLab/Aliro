@@ -638,13 +638,22 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {data.slice(1, 11).map((row) => (
+                                                {data.length > 11 ? 
+                                                data.slice(1, 11).map((row) => (
                                                     <tr>
                                                     {row.map((cell) => (
                                                         <td style={{ textAlign: "center", border: "1px solid rgba(255, 255, 255, 0.5)" }}>{cell}</td>
                                                     ))}
                                                     </tr>
+                                                )):
+                                                data.slice(1, data.length-1).map((row) => (
+                                                    <tr>
+                                                        {row.map((cell) => (
+                                                            <td style={{ textAlign: "center", border: "1px solid rgba(255, 255, 255, 0.5)" }}>{cell}</td>
+                                                        ))}
+                                                    </tr>
                                                 ))}
+
                                                 </tbody>
                                             </table>
                                             </div>
