@@ -1089,6 +1089,8 @@ export default function ChatGPT({experiment}) {
         # load the DataFrame \n
         df = pd.read_csv('your_dataframe.csv') \n \`\`\`
 
+        In the case where machine learning task is required, please make sure to use df as the dataframe name, and save learning curve as a png file. Please do not load the data from the csv file. 
+
         
         `;
 
