@@ -746,6 +746,9 @@ export default function ChatGPT({experiment}) {
         // please remove "Please wait while I am thinking..." by system from chatLogNewFormat
         let chatLogNewFormatFiltered = chatLogNewFormat.filter((item) => item.content !== "Please wait while I am thinking...")
 
+        // please remove item if item content includes "The tabular data is"
+        chatLogNewFormatFiltered = chatLogNewFormatFiltered.filter((item) => !item.content.includes("The tabular data is")) 
+
         console.log("chatLogNewFormatFiltered",chatLogNewFormatFiltered)
 
         // remove the last message from user
@@ -831,12 +834,20 @@ export default function ChatGPT({experiment}) {
         let codeSplit = code.split("\n");
         codeSplit.forEach((item) => {
             if ((item.includes("import") && item.includes("as")) || (item.includes("from") && item.includes("import")) ){
-                let itemSplit = item.split(" ");
-                // import sklearn.datasets as datasets 
-                // for the above case.
-                let pack = itemSplit[1].split(".")[0];
+                // find the index where "import" or from are located
+                let index_import = item.indexOf("import");
+                let index_from = item.indexOf("from");
+
+                console.log("index_import",index_import)
+                console.log("index_from",index_from)
+                if (index_import === 0|| index_from === 0){
+                    let itemSplit = item.split(" ");
+                    // import sklearn.datasets as datasets 
+                    // for the above case.
+                    let pack = itemSplit[1].split(".")[0];
 
                 packages.push(pack);
+                }
             }
         })
 
@@ -844,6 +855,7 @@ export default function ChatGPT({experiment}) {
         return packages;
     }
 
+    // check if the packages are already installed or not
     async function checkCodePackages(packagesArray)
     {
 
@@ -913,6 +925,42 @@ export default function ChatGPT({experiment}) {
 
     }
 
+
+    async function doubleCheckPackagesWithLLM(packagesNotInstalled){
+
+        // my prompt eng
+        let preSet =`assume that you have the list of python packages: ${packagesNotInstalled}, that you want to install. However, you are not sure the list of python packages could be used to install the package. For example, let's assume that the list includes sklearn. However, when you install sklearn, you should use the official name, scikit-learn. For example, pip install sklearn does not work. But pip install scikit-learn works. So, you want to check if the list of python packages include official name of python packages. If not, you want to convert the list of python packages to the list of official name of python packages. Please give me the list of official name of python packages by unofficial name.Please return message in this format. {unofficial name:official name},
+        that is, {sklearn:scikit-learn}.
+        `;
+
+
+        console.log("doubleCheckPackagesWithLLM-packagesNotInstalled",packagesNotInstalled)
+
+        let data = await openaiChatCompletions(currentModel,preSet)
+
+        console.log("doubleCheckPackagesWithLLM-data",data)
+
+        var messageFromOpenai = data.choices[0].message['content'];
+
+        console.log("doubleCheckPackagesWithLLM-messageFromOpenai",messageFromOpenai)
+
+        return messageFromOpenai;
+
+
+
+    }
+
+    function convertToOfficialPackageName(listOfOfficialPackageName,packagesNotInstalled){
+        // listOfOfficialPackageName is string like {sklearn:scikit-learn}
+
+        // convert listOfOfficialPackageName to object
+        let listOfOfficialPackageNameObject = JSON.parse(listOfOfficialPackageName);
+
+        console.log("convertToOfficialPackageName-listOfOfficialPackageNameObject",listOfOfficialPackageNameObject)
+
+        
+
+    }
     // check there is first Three backticks and python
 
     // function checkThreeBackticksFromMessage(message){
@@ -1188,6 +1236,15 @@ export default function ChatGPT({experiment}) {
             let packagesOfCode = extractPackagesOfCode(extractedCodeTemp); 
 
             let packagesNotInstalled = await checkCodePackages(packagesOfCode)
+
+
+            // make official package names of the packagesNotInstalled using LLM
+            // let listOfOfficialPackageName=await doubleCheckPackagesWithLLM(packagesNotInstalled)
+
+            // convert to the official package names
+            // let officialPackagesNotInstalled=convertToOfficialPackageName(listOfOfficialPackageName,packagesNotInstalled)
+
+
             
 
             if (packagesNotInstalled.length > 0){
@@ -1456,7 +1513,7 @@ export default function ChatGPT({experiment}) {
 
 
 
-        data= await openaiChatCompletions(currentModel,preSet)
+        data = await openaiChatCompletions(currentModel,preSet)
 
         var messageFromOpenai = data.choices[0].message['content'];
             
@@ -2143,14 +2200,18 @@ export default function ChatGPT({experiment}) {
   
           // make submit button disabled
           let submitButton = document.getElementsByClassName("submit")[0];
-          console.log("submitButton", submitButton)
+        //   console.log("submitButton", submitButton)
           submitButton.disabled = true;
+
+        //   document.querySelector(".submit").disabled = false;
+        
   
   
           // make chat-input-textarea disabled
           let chatInputTextarea = document.getElementsByClassName("chat-input-textarea")[0];
           // console.log("chat-input-textarea", chat-input-textarea)
           chatInputTextarea.disabled = true;
+
   
     }
   
@@ -2165,7 +2226,7 @@ export default function ChatGPT({experiment}) {
          submitButton.disabled = false;
   
          let chatInputTextarea = document.getElementsByClassName("chat-input-textarea")[0];
-         // make chatInputTextarea abled
+        //  // make chatInputTextarea abled
          chatInputTextarea.disabled = false;
   
     }
