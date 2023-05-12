@@ -843,6 +843,23 @@ text{
   width: 48%;
 } */
 
+
+.ChatGPT {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chatbox {
+  flex-grow: 1;
+}
+
+.chat-input-holder {
+  margin-top: auto;
+}
+
+
+
 .chat-input-textarea {
   background-color: #40414f;
   width: 90%;
@@ -880,7 +897,9 @@ text{
   right: 0;
   bottom: 89px;
   left: 0;
-  /* overflow-y: scroll; */
+
+  /* overflow-y: scroll;
+  scroll-behavior: smooth; */
   text-align: left;
 }
 
@@ -1575,6 +1594,7 @@ visibility:hidden;
 /* display:"hidden"; */
 /* backgroundColor: '#343541'; */
 overflow-y: scroll;
+scroll-behavior: smooth;
 }
 
 
