@@ -163,14 +163,16 @@ const ChatBox = () =>
                     const input = e.target.value;
                     console.log("input-length", input.length)
 
-                    if (input.length <= 200) {
+                    
+
+                    if (input.length <= 800) {
                         // document.querySelector(".submit").disabled = false;
                         // find child who has className .submit from  current e.target 
                         e.target.parentNode.querySelector(".submit").disabled = false;
                         setChatInput(input);
                     }
 
-                    if (input.length > 200) {
+                    if (input.length > 800) {
 
                         // make the submit button disabled
                         e.target.parentNode.querySelector(".submit").disabled = true;
@@ -803,9 +805,11 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                                             // console.log("code-findTheLastCodeMessageFromHTML", tempCode)
 
-                                                        
+                                                            disableReadingInput();
 
-                                                            await submitErrorWithCode(e, tempCode)
+                                                            await submitErrorWithCode(e, tempCode);
+
+                                                            enableReadingInput();
 
                                                             // // console.log("chatLog-Errno",chatLog)
 
@@ -1227,6 +1231,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     let packagesNotInstalled = await checkCodePackages(packageNames);
 
                                     console.log("install-packagesNotInstalled", packagesNotInstalled)
+
+
+                                    // doubleCheckPackagesWithLLM(packagesNotInstalled);
                                     
 
 
@@ -1239,7 +1246,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
 
 
-                                    // console.log("resp_runExtractedCode", resp_runExtractedCode)
+                                    console.log("resp_runExtractedCode", resp_runExtractedCode)
                             
                                     // e.target.textContent = "Installed";
 
