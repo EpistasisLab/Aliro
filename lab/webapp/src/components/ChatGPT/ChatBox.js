@@ -434,60 +434,19 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
     
 
 
-    
-
-    // get packages from the tempCode
-
-    // function getPackagesFromTempCode(tempCode)
-    // {
-    
-    //     pattern = r"import\s+(\w+)\s+as\s+\w+"
-    
-    //     matches = re.findall(pattern, code)
-    
-    //     return set(matches)
-    // }
-
-
-    // function getPackagesFromTempCode(tempCode)
-    // {
-    //     // Regular expression pattern to match package imports
-    //     const pattern = /import\s+(\w+)\s+/g;
-        
-    //     // Find all matches of the pattern in the code
-    //     const matches = tempCode.matchAll(pattern);
-        
-    //     // Initialize an empty set to store the package names
-    //     const packages = new Set();
-        
-    //     // Loop through each match and add the package name to the set
-    //     for (const match of matches) {
-    //       packages.add(match[1]);
-    //     }
-        
-    //     // Return an array of unique package names
-    //     return Array.from(packages);
-    //   }
-
-
-    function getPackagesFromTempCode(tempCode)
-    {
-        const packageRegex = /(import|from) (\w+)/g;
-        const matches = tempCode.match(packageRegex);
-        console.log("matches", matches)
-        const packages = new Set();
-        if (matches) {
-          for (let match of matches) {
-            const [importType, packageName] = match.split(' ');
-            console.log("importType, packageName", importType, packageName)
-            if (importType === 'import') {
-              packages.add(packageName);
-            } else if (importType === 'from') {
-              packages.add(packageName.split('.')[0]);
-            }
-          }
+    function getPackagesFromTempCode(tempCode) {
+        const packages = [];
+      
+        const lines = tempCode.split('\n');
+        for (const line of lines) {
+          const words = line.trim().split(/\s+/);
+          if (words[0] === 'import' || words[0] === 'from') {
+            const parts = words[1].split('.');
+            packages.push(parts[0]);
+          } 
         }
-        return Array.from(packages);
+      
+        return packages;
       }
 
 
