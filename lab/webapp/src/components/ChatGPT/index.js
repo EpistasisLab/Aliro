@@ -1140,6 +1140,8 @@ export default function ChatGPT({experiment}) {
 
         In the case where machine learning task is required, please make sure to use df as the dataframe name, and save learning curve as a png file. Please do not load the data from the csv file. 
 
+        In the case where python generates more than 2 image files (png, jpg, jpeg, etc), please make sure to zip all the files and save it as a zip file.
+
         
         `;
 
@@ -1157,7 +1159,11 @@ export default function ChatGPT({experiment}) {
             className: "blinking"
             }
         ]);
+
+
+        autoScrollDown();
   
+
         // Gradually update the message (waitingMessage) with a delay
         let messageIndex = 0;
         let intervalId = setInterval(() => {
@@ -1404,13 +1410,20 @@ export default function ChatGPT({experiment}) {
 
           
 
-        var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
-        scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+
+
+        autoScrollDown();
 
         setLanModelReset(false);
         enableReadingInput();
 
 
+    
+    
+    
+    
+    
+    
     }
 
 
@@ -1488,11 +1501,15 @@ export default function ChatGPT({experiment}) {
             className: "blinking"
             }
         ]);
+
+
+        // autoScrollDown();
   
         // Gradually update the message (waitingMessage) with a delay
         let messageIndex = 0;
         let intervalId = setInterval(() => {
         if (messageIndex < waitingMessage.length) {
+            
             setChatLog(chatLogNew => [
             ...chatLogNew.slice(0, -1),
             {
@@ -1501,11 +1518,18 @@ export default function ChatGPT({experiment}) {
                 className: "blinking"
             }
             ]);
+            
             messageIndex++;
         } else {
             clearInterval(intervalId);
         }
         }, typingDelay);
+
+
+
+
+
+
 
 
 
@@ -1612,8 +1636,8 @@ export default function ChatGPT({experiment}) {
 
         // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt", "");
 
-        var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
-        scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+        
+        autoScrollDown();
 
         setLanModelReset(false);
     }
@@ -1806,8 +1830,7 @@ export default function ChatGPT({experiment}) {
 
         // await postInChatlogsToDBWithExeId(filteredData[chatCurrentTempId-1]['_id'], messageFromOpenai, "text", "gpt", "");
 
-        // var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
-        // scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+        autoScrollDown();
 
         // setLanModelReset(false);
     }
@@ -2104,8 +2127,7 @@ export default function ChatGPT({experiment}) {
             }
         ])
 
-        var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
-        scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+        autoScrollDown();
 
         // setLanModelReset(false);
     }
@@ -2230,6 +2252,12 @@ export default function ChatGPT({experiment}) {
          chatInputTextarea.disabled = false;
   
     }
+
+    function autoScrollDown(){
+        var scrollToTheBottomChatLog = document.getElementById("chatgpt-space");
+        
+        scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+    }
     
     let datasetId = experiment.data._dataset_id;
     let experimentId = experiment.data._id;
@@ -2293,7 +2321,8 @@ export default function ChatGPT({experiment}) {
                             patchChatToDB,
                             checkCodePackages,
                             disableReadingInput,
-                            enableReadingInput
+                            enableReadingInput,
+                            autoScrollDown
                             }}>
             <ChatBox/>
             </AllContext.Provider>

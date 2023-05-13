@@ -36,7 +36,7 @@ import { AllContext } from './context/AllContext';
 const ChatBox = () => 
 
 {
-    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput} = useContext(AllContext);
+    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown} = useContext(AllContext);
 
     useEffect(() => {
     //     const highlightScript = document.createElement('script');
@@ -90,7 +90,12 @@ const ChatBox = () =>
 
     
         
-      }, []);
+    }, []);
+
+    const [hasZip, setHasZip] = useState(false);
+    const [zipUrl, setZipUrl] = useState(null);
+    const [zipFileName, setZipFileName] = useState(null);
+    const [hasZipIndexMessage, setHasZipIndexMessage] = useState(null);
 
 
     return (
@@ -122,6 +127,19 @@ const ChatBox = () =>
                     checkCodePackages = {checkCodePackages}
                     disableReadingInput = {disableReadingInput}
                     enableReadingInput = {enableReadingInput}
+                    autoScrollDown = {autoScrollDown}
+
+                    hasZip = {hasZip} 
+                    setHasZip = {setHasZip}
+
+                    zipUrl = {zipUrl}
+                    setZipUrl = {setZipUrl}
+
+                    hasZipIndexMessage = {hasZipIndexMessage}
+                    setHasZipIndexMessage = {setHasZipIndexMessage}
+
+                    zipFileName = {zipFileName}
+                    setZipFileName = {setZipFileName}
                     
                 />)
             )
@@ -191,11 +209,11 @@ const ChatBox = () =>
         
     </div>
     </section>
-)
+    )
 }
 
 // Individual Chat Message
-const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput}) => {
+const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown, hasZip, setHasZip, zipUrl, setZipUrl, hasZipIndexMessage, setHasZipIndexMessage, zipFileName, setZipFileName}) => {
     
 
     let codeIncluded = checkIncludeCode(message.message)
@@ -204,7 +222,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
     const [isExpanded, setIsExpanded] = useState(false);
 
-    // temp
+
     // const [tabluerData, setTabluerData] = useState([]);
 
     const handleDoubleClick = () => {
@@ -457,7 +475,16 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
 
 
-   
+//    if message.message includes .zip
+    if (message.message.includes(".zip"))
+    {
+        // let hasZip=false;
+        // let zipUrl="";
+
+        let lengthMessage = message.message.split(/\n/).length-1;
+        console.log("lengthMessage",lengthMessage)
+        console.log("message.message",message.message)
+    }
     
 
     return (
@@ -491,10 +518,18 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                         {/* v7 */}
                         {   
                             message.message.split(/\n/).map((line,index) => {
+
+                                console.log("choi-test", line)
                                 
                                 
                                 // non code message which includes image
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
+
+                                        
+
+
+                                    // create a new instance of JSZip
+                                    // const zip = new zip();
                                     // console.log("1-if", line)
                                   return (
                                     
@@ -506,6 +541,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             </svg>
                                         </div>
                                     </a>
+                                    
+                                    
 
                                   );
                                 } 
@@ -604,6 +641,32 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         </div>
                                     );
                                 } 
+
+
+                                else if (line.includes(".zip") && line.includes("http") ) 
+                                {
+                                    // set hasZip to true
+                                    setHasZip(true);
+                                    // set zipUrl to the url of the zip file
+                                    setZipUrl(line.substring(line.indexOf("http")));
+
+                                    // zipUrl.substring(0, zipUrl.indexOf(","))
+                                    setZipFileName(line.substring(0, line.indexOf(",")));
+
+                                    setHasZipIndexMessage(index);
+
+                                    // return (
+                                    //     // <div>
+                                        
+                                    //         <a href={line.substring(line.indexOf("http"))} download>
+                                    //             <b style={{color: '#87CEEB'}}>Download {line.substring(0, line.indexOf(","))}</b>
+                                    //         </a>
+
+                                    //     // </div>
+                                    // );
+                                } 
+
+                                
 
                                 // if the message includes "The tabular data is:" , set modeForTabluerData to true
                                 // this let us know that the next line is tabluer data
@@ -801,6 +864,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                             // extrac code from text 
                                                             // code is between ```python and ```
 
+                                                            await showCodeRunningMessageWhenClickRunBtn(e);
+                                                            
+
                                                             let tempCode = extractCodeFromMess(tempText);
 
                                                             // console.log("code-findTheLastCodeMessageFromHTML", tempCode)
@@ -810,6 +876,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                             await submitErrorWithCode(e, tempCode);
 
                                                             enableReadingInput();
+
+                                                            autoScrollDown();
 
                                                             // // console.log("chatLog-Errno",chatLog)
 
@@ -875,6 +943,31 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         }
                                     }
                                   }
+
+                                // gif, image, video
+                                // else if(line.includes(".gif") ){
+
+
+                                // }
+
+                                // length of message.message.split(/\n/)
+                                if(index === message.message.split(/\n/).length-1 && hasZip){
+                                    
+
+                                    return (
+                                        // <div>
+                                        
+                                            <a href={zipUrl} download>
+                                                <b style={{color: '#87CEEB'}}>Download {zipFileName}</b>
+                                            </a>
+
+                                        // </div>
+                                    );
+                                }
+                                
+
+
+
 
                               })
                         }
@@ -1256,6 +1349,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     updateAfterRuningCode(currentEvent, resp_runExtractedCode)
 
                                     enableReadingInput();
+
+                                    // showCodeRunningMessageWhenClickRunBtn have autoScrollDown function
+                                    // autoScrollDown();
                                     
                                 }
                             }
@@ -1422,6 +1518,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         await updateAfterRuningCode( currentEvent, resp)
 
                                         enableReadingInput();
+
+                                        // showCodeRunningMessageWhenClickRunBtn have autoScrollDown function
+                                        // autoScrollDown();
                                         
                                         
                                     
