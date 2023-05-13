@@ -1140,6 +1140,8 @@ export default function ChatGPT({experiment}) {
 
         In the case where machine learning task is required, please make sure to use df as the dataframe name, and save learning curve as a png file. Please do not load the data from the csv file. 
 
+        In the case where python generates more than 2 image files (png, jpg, jpeg, etc), please make sure to zip all the files and save it as a zip file.
+
         
         `;
 
@@ -1161,7 +1163,7 @@ export default function ChatGPT({experiment}) {
 
         autoScrollDown();
   
-        
+
         // Gradually update the message (waitingMessage) with a delay
         let messageIndex = 0;
         let intervalId = setInterval(() => {
