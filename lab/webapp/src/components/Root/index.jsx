@@ -45,7 +45,7 @@ import NotFound from '../NotFound';
 import ChatGPT from '../ChatGPT';
 import ResultsV2 from '../ResultsV2';
 
-import testTest from '../testTest';
+// import testTest from '../testTest';
 
 /**
 * Use react router to delineate different parts of website; essentially links
@@ -56,6 +56,8 @@ function Root({ store }) {
 
   // var [eventsEnabled, setEventsEnabled] = React.useState(true)
   // var [open, setOpen] = React.useState(true)
+
+  // console.log("Root.jsx: store: ", store.files)
   return (
     <Provider store={store}>
       <Router history={hashHistory} onUpdate={() => window.scrollTo(0, 0)}>

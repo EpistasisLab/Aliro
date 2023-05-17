@@ -19,6 +19,7 @@ export default function ChatGPT({experiment}) {
     var limitNumChatBox = 5;
 
     useEffect(() => {
+        // console.log("ChatGPT-props", props);
         console.log("useEffect-index.js")
         // getEngines();
 
@@ -743,8 +744,8 @@ export default function ChatGPT({experiment}) {
 
         // console.log("chatLogNewFormat",chatLogNewFormat)
 
-        // please remove "Please wait while I am thinking..." by system from chatLogNewFormat
-        let chatLogNewFormatFiltered = chatLogNewFormat.filter((item) => item.content !== "Please wait while I am thinking...")
+        // please remove "Please wait while I am thinking.." by system from chatLogNewFormat
+        let chatLogNewFormatFiltered = chatLogNewFormat.filter((item) => item.content !== "Please wait while I am thinking..")
 
         // please remove item if item content includes "The tabular data is"
         chatLogNewFormatFiltered = chatLogNewFormatFiltered.filter((item) => !item.content.includes("The tabular data is")) 
@@ -1046,9 +1047,28 @@ export default function ChatGPT({experiment}) {
         return commentedLines.join('\n');
     
     }
+
+
+    function makeBlinking(){
+        // get all classes names blinking 
+        var blinking = document.getElementsByClassName("blinkingCandi");
+
+        console.log("makeBlinking-blinking",blinking)
+        // chagne all classes names blinking noblinking
+        for (var i = 0; i < blinking.length; i++) {
+            blinking[i].className = "blinking";
+        }
+    }
       
 
-
+    function nomoreBlinking(){
+        // get all classes names blinking 
+        var blinking = document.getElementsByClassName("blinking");
+        // chagne all classes names blinking noblinking
+        for (var i = 0; i < blinking.length; i++) {
+            blinking[i].className = "noblinking";
+        }
+    }
 
 
     // simple
@@ -1111,7 +1131,9 @@ export default function ChatGPT({experiment}) {
         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
 
         // my prompt eng
-        let preSet =`assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. I strongly ask you to always write the code between three backticks python and three backticks always. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
+        let preSet =`assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. 
+        
+        If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. I strongly ask you to always write the code between three backticks python and three backticks always. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
         
         In the case where you need to save csv, for each colum name, if it has _ in the name, replace _ with -.
         please make sure that any commenets should be in the form of #. For example, # this is a comment. or # Note: Please make sure to install the necessary libraries before running this code such as imblearn, pandas, matplotlib and sklearn.
@@ -1142,12 +1164,13 @@ export default function ChatGPT({experiment}) {
 
         In the case where python generates more than 2 image files (png, jpg, jpeg, etc), please make sure to zip all the files and save it as a zip file.
 
+        Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.
         
         `;
 
         // console.log("preSet",preSet);
 
-        let waitingMessage = "Please wait while I am thinking...";
+        let waitingMessage = "Please wait while I am thinking..";
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call
@@ -1188,6 +1211,8 @@ export default function ChatGPT({experiment}) {
 
         disableReadingInput();
 
+        
+
 
         await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
 
@@ -1195,8 +1220,12 @@ export default function ChatGPT({experiment}) {
         // data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
 
         // make chatLogNew 
+
+        // makeBlinking();
         
         data = await openaiChatCompletionsWithChatLog(currentModel,chatLogNew,preSet,lastMessageFromUser)
+
+        nomoreBlinking();
 
         console.log("returned-data",data)
 
@@ -1363,7 +1392,7 @@ export default function ChatGPT({experiment}) {
         //     });
         //     } else {
         //     clearInterval(intervalId2);
-        //     if (lastMessage.message === "Please wait while I am thinking...") {
+        //     if (lastMessage.message === "Please wait while I am thinking..") {
         //         // Add a delay before showing the message
         //         setTimeout(() => {
         //         setChatLog(prevChatLog => [
@@ -1489,7 +1518,7 @@ export default function ChatGPT({experiment}) {
 
 
 
-        let waitingMessage = "Please wait while I am thinking...";
+        let waitingMessage = "Please wait while I am thinking..";
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call
@@ -1526,7 +1555,12 @@ export default function ChatGPT({experiment}) {
         }, typingDelay);
 
 
+        
 
+
+
+
+        
 
 
 
@@ -1536,8 +1570,14 @@ export default function ChatGPT({experiment}) {
         await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
 
 
+        // makeBlinking();
 
         data = await openaiChatCompletions(currentModel,preSet)
+
+        // nomore blinking
+        nomoreBlinking();
+
+
 
         var messageFromOpenai = data.choices[0].message['content'];
             
@@ -1694,8 +1734,8 @@ export default function ChatGPT({experiment}) {
 
 
 
-        let waitingMessage = "Please wait while I am running your code on Aliro...";
-        let typingDelay = 10; // milliseconds per character
+        let waitingMessage = "Please wait while I am running your code on Aliro..";
+        let typingDelay = 5; // milliseconds per character
         
         // Before making the API call
         setChatLog(chatLogNew => [
@@ -1898,7 +1938,7 @@ export default function ChatGPT({experiment}) {
         {
             
 
-            resultMessage = "Please check below. If the output is an image file, you can download the image(s) by clicking on them." + "\n" ;
+            resultMessage = "Please review the content below. If the output contains any files, you can download them by clicking on the respective links." + "\n" ;
 
             let filesarray = [];
             resp['files'].forEach((file) => {
@@ -2322,12 +2362,12 @@ export default function ChatGPT({experiment}) {
                             checkCodePackages,
                             disableReadingInput,
                             enableReadingInput,
-                            autoScrollDown
+                            autoScrollDown,
+                            nomoreBlinking,
+                            makeBlinking
                             }}>
             <ChatBox/>
             </AllContext.Provider>
-
-
 
 
             {/* <ThemeContext.Provider value={{isDark, setIsDark, currentModel,setCurrentModel,experimentId}}>

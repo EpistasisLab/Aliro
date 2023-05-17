@@ -1,6 +1,7 @@
 import AISVGLogo from './AISVGLogo'
 
 import React,{useState, useEffect,useContext} from "react";
+// import { xf } from 'react';
 
 import { AllContext } from './context/AllContext';
 
@@ -36,7 +37,7 @@ import { AllContext } from './context/AllContext';
 const ChatBox = () => 
 
 {
-    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown} = useContext(AllContext);
+    const {chatLog, setChatInput, handleSubmit, chatInput,  modeForChatOrCodeRunning, setModeForChatOrCodeRunning,datasetId,experimentId, updateAfterRuningCode, modeForTabluerData, setModeForTabluerData, booleanPackageInstall, setBooleanPackageInstall,submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId,chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown,nomoreBlinking,makeBlinking} = useContext(AllContext);
 
     useEffect(() => {
     //     const highlightScript = document.createElement('script');
@@ -140,6 +141,10 @@ const ChatBox = () =>
 
                     zipFileName = {zipFileName}
                     setZipFileName = {setZipFileName}
+
+                    nomoreBlinking = {nomoreBlinking}
+
+                    makeBlinking = {makeBlinking}
                     
                 />)
             )
@@ -213,9 +218,9 @@ const ChatBox = () =>
 }
 
 // Individual Chat Message
-const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown, hasZip, setHasZip, zipUrl, setZipUrl, hasZipIndexMessage, setHasZipIndexMessage, zipFileName, setZipFileName}) => {
+const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown, hasZip, setHasZip, zipUrl, setZipUrl, hasZipIndexMessage, setHasZipIndexMessage, zipFileName, setZipFileName, nomoreBlinking,makeBlinking}) => {
     
-
+    console.log("ChatMessage-message", message)
     let codeIncluded = checkIncludeCode(message.message)
     let extractedCode = extractCodeFromMess(message.message)
 
@@ -475,17 +480,51 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
 
 
-//    if message.message includes .zip
-    if (message.message.includes(".zip"))
-    {
-        // let hasZip=false;
-        // let zipUrl="";
+// //    if message.message includes .zip
+//     if (message.message.includes(".zip"))
+//     {
+//         // let hasZip=false;
+//         // let zipUrl="";
 
-        let lengthMessage = message.message.split(/\n/).length-1;
-        console.log("lengthMessage",lengthMessage)
-        console.log("message.message",message.message)
-    }
+//         let lengthMessage = message.message.split(/\n/).length-1;
+//         console.log("lengthMessage",lengthMessage)
+//         console.log("message.message",message.message)
+//     }
+
+    // const [hasZip, setHasZip] = useState(false);
+    // const [zipUrl, setZipUrl] = useState(null);
+    // const [zipFileName, setZipFileName] = useState(null);
+    // const [hasZipIndexMessage, setHasZipIndexMessage] = useState(null);
     
+    var hasZipVar = false;
+    var zipUrlVar = "";
+    var zipNameVar = "";
+    var hasZipIndexMessageVar = 0;
+
+
+    function mockData(files) {
+        return {
+          dataTransfer: {
+            files,
+            items: files.map(file => ({
+              kind: 'file',
+              type: file.type,
+              getAsFile: () => file
+            })),
+            types: ['Files']
+          }
+        }
+      }
+
+
+    const goToUploadDatasets = (href,fileName) => {
+
+        // split the href to get the file id
+        let hrefSplit = href.split("/");
+        let fileId = hrefSplit[hrefSplit.length-1];
+        window.location.hash = '/upload_datasets'+`?fileId=${fileId}&fileName=${fileName}`;
+
+      };
 
     return (
         <div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
@@ -517,6 +556,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                         {/* v7 */}
                         {   
+                            
                             message.message.split(/\n/).map((line,index) => {
 
                                 console.log("choi-test", line)
@@ -526,8 +566,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
 
                                         
-
-
                                     // create a new instance of JSZip
                                     // const zip = new zip();
                                     // console.log("1-if", line)
@@ -623,16 +661,27 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             /> */}
 
                                             {/* generating experiment button */}
-                                            {/* <a style={{ marginLeft:'10px'}} onClick={async (e) => {
+                                            {/* make it bold */}
+                                            <a style={{ marginLeft:'10px',
+                                                        fontWeight:'bold'
+                                            }} onClick={async (e) => {
                                                 e.preventDefault();
-                                                // get the url of the file
-                                                const url = e.target.parentElement.children[1].href;
+                                                
+                                                // split the innerText using " "
+                                                let fileName = e.target.parentElement.children[1].children[0].innerText.split(" ")[1];
+
+                                                goToUploadDatasets(e.target.parentElement.children[1].href,fileName);
 
 
                                                 
                                                 }}>
                                                 Generate experiment
-                                            </a> */}
+                                            
+                                            </a>
+
+                                            {/* <div>
+                                                <button onClick={handleClickGoToUploadDatasets}>Go to Upload Datasets</button>
+                                            </div> */}
                                                 
                                                 
                                             
@@ -645,15 +694,23 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                 else if (line.includes(".zip") && line.includes("http") ) 
                                 {
-                                    // set hasZip to true
-                                    setHasZip(true);
-                                    // set zipUrl to the url of the zip file
-                                    setZipUrl(line.substring(line.indexOf("http")));
+                                    // // set hasZip to true
+                                    // setHasZip(true);
 
-                                    // zipUrl.substring(0, zipUrl.indexOf(","))
-                                    setZipFileName(line.substring(0, line.indexOf(",")));
+                                    // // set zipUrl to the url of the zip file
+                                    // setZipUrl(line.substring(line.indexOf("http")));
 
-                                    setHasZipIndexMessage(index);
+                                    // // zipUrl.substring(0, zipUrl.indexOf(","))
+                                    // setZipFileName(line.substring(0, line.indexOf(",")));
+
+                                    // setHasZipIndexMessage(index);
+
+
+
+                                    hasZipVar = true;
+                                    zipUrlVar = line.substring(line.indexOf("http"));
+                                    zipNameVar = line.substring(0, line.indexOf(","));
+                                    hasZipIndexMessageVar = index;
 
                                     // return (
                                     //     // <div>
@@ -864,7 +921,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                             // extrac code from text 
                                                             // code is between ```python and ```
 
-                                                            await showCodeRunningMessageWhenClickRunBtn(e);
+                                                            // await showCodeRunningMessageWhenClickRunBtn(e);
+                                                            // await showCodeRunningMessageWhenClickRunBtn(e);
                                                             
 
                                                             let tempCode = extractCodeFromMess(tempText);
@@ -935,11 +993,41 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         }
 
                                         else{
-                                            return (
-                                                <div id="justmessage" >
-                                                    {line}
-                                                </div>
-                                            );
+                                            // if line === "Please wait while I am thinking..."
+
+                                            // if (line === "Please wait while I am thinking...") {
+
+                                            if (line==="Please wait while I am thinking..")
+                                            {
+                                                return (
+                                                    <div id="justmessage" >
+                                                        {line}<span className='blinking'>.</span>
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (line==="Please wait while I am running your code on Aliro..")
+                                            {
+                                                return (
+                                                    <div id="justmessage" >
+                                                        {line}<span className='blinking'>.</span>
+                                                    </div>
+                                                );
+                                            }
+
+                                            else{
+                                                return (
+                                                    <div id="justmessage" >
+                                                        {line}
+                                                    </div>
+                                                );
+                                            }
+
+                                            // return (
+                                            //     <div id="justmessage" >
+                                            //         {line}<span className='blinking'>.</span>
+                                            //     </div>
+                                            // );
                                         }
                                     }
                                   }
@@ -951,19 +1039,32 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 // }
 
                                 // length of message.message.split(/\n/)
-                                if(index === message.message.split(/\n/).length-1 && hasZip){
-                                    
-
-                                    return (
-                                        // <div>
+                                
+                                
+                                // if(index === message.message.split(/\n/).length-1 && hasZip){
+                                //     return (
                                         
-                                            <a href={zipUrl} download>
-                                                <b style={{color: '#87CEEB'}}>Download {zipFileName}</b>
+                                //             <a href={zipUrl} download>
+                                //                 <b style={{color: '#87CEEB'}}>Download {zipFileName}</b>
+                                //             </a>
+
+                                //     );
+                                // }
+
+
+                                if(index === message.message.split(/\n/).length-1 && hasZipVar){
+
+                                    hasZipVar=false;
+                                    return (
+                                        
+                                            <a href={zipUrlVar} download>
+                                                <b style={{color: '#87CEEB'}}>Download {zipNameVar}</b>
                                             </a>
 
-                                        // </div>
                                     );
                                 }
+
+
                                 
 
 
@@ -1011,14 +1112,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     // find element id runbutton from the e.target.parentElement child
 
                                     
-                                    console.log("e.code",e.code)
-
-
-
-
-                                    
-
-                                    
+                                    // console.log("e.code",e.code)
 
 
                                     // enter key is not allowed
@@ -1181,10 +1275,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     let tempChatCodeExplain = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
 
 
-    
-                                    // console.log("tempChatCodeExplain", tempChatCodeExplain)
-                              
-                                    
                                     let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
 
 
@@ -1313,6 +1403,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     await showCodeRunningMessageWhenClickRunBtn(currentEvent);
 
 
+                                    
+
+
                                     disableReadingInput();
 
 
@@ -1334,10 +1427,15 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     // call install function
                                     let resp_installPackages = await installPackages(packagesNotInstalled); 
                                     console.log("resp_installPackages", resp_installPackages) 
+
+                                    // makeBlinking();
+
                                     let resp_runExtractedCode = await runExtractedCode(extractedCode, datasetId,experimentId);
 
+                                    // nomoreBlinking();
 
 
+                                    makeBlinking();
 
                                     console.log("resp_runExtractedCode", resp_runExtractedCode)
                             
@@ -1347,6 +1445,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     // use setchatlog function to update the chatlog
                                     // update to the db and refer updateAfterRuningCode function
                                     updateAfterRuningCode(currentEvent, resp_runExtractedCode)
+
+
+                                    nomoreBlinking();
 
                                     enableReadingInput();
 
@@ -1499,8 +1600,12 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                         await showCodeRunningMessageWhenClickRunBtn( currentEvent)
 
+                                        
+
 
                                         disableReadingInput();
+
+
 
 
                                         console.log("run-packagesFromTempCode", packagesFromTempCode)
@@ -1511,11 +1616,16 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         
                                         let resp_installPackages = await installPackages(packagesNotInstalled); 
 
+                                        // makeBlinking();
+
                                         let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
+
+                                        // nomoreBlinking();
                                         
                                         
-                                        
+                                        makeBlinking();
                                         await updateAfterRuningCode( currentEvent, resp)
+                                        nomoreBlinking();
 
                                         enableReadingInput();
 
