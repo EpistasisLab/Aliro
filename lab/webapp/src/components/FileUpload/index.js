@@ -580,7 +580,7 @@ class FileUpload extends Component {
     
       console.log("componentDidMount-fileName",fileName)
 
-      const mockData =(files) => {
+      const makeDataFormat =(files) => {
       return {
         dataTransfer: {
           files,
@@ -647,7 +647,7 @@ class FileUpload extends Component {
       //     JSON.stringify({ping: true})
       //   ], 'ping.json', { type: 'application/json' })
 
-        const data = mockData([file])
+        const data = makeDataFormat([file])
 
         console.log("tempdata-data",data)
 
