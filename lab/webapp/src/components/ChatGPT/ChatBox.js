@@ -220,7 +220,6 @@ const ChatBox = () =>
 // Individual Chat Message
 const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,modeForTabluerData, setModeForTabluerData,booleanPackageInstall, setBooleanPackageInstall, submitErrorWithCode,showCodeRunningMessageWhenClickRunBtn,getChatMessageByExperimentId, chatCurrentTempId,getSpecificChatbyChatId,patchChatToDB,checkCodePackages,disableReadingInput,enableReadingInput,autoScrollDown, hasZip, setHasZip, zipUrl, setZipUrl, hasZipIndexMessage, setHasZipIndexMessage, zipFileName, setZipFileName, nomoreBlinking,makeBlinking}) => {
     
-    console.log("ChatMessage-message", message)
     let codeIncluded = checkIncludeCode(message.message)
     let extractedCode = extractCodeFromMess(message.message)
 
@@ -559,9 +558,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                             
                             message.message.split(/\n/).map((line,index) => {
 
-                                console.log("choi-test", line)
-                                
-                                
                                 // non code message which includes image
                                 if (line.includes(".png") && line.includes("http") || line.includes(".jpg") && line.includes("http")) {
 
@@ -580,7 +576,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         </div>
                                     </a>
                                     
-                                    
 
                                   );
                                 } 
@@ -594,7 +589,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                             {/* make below unvisible */}
                                             <a style={{marginRight: '10px',fontWeight
-                                            :'bold'}} onClick={async (e) => {
+                                            :'bold', cursor: 'pointer'}} onClick={async (e) => {
+
+                                    
                                             
 
                                                 
@@ -663,7 +660,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             {/* generating experiment button */}
                                             {/* make it bold */}
                                             <a style={{ marginLeft:'10px',
-                                                        fontWeight:'bold'
+                                                        fontWeight:'bold', cursor:'pointer'
                                             }} onClick={async (e) => {
                                                 e.preventDefault();
                                                 
