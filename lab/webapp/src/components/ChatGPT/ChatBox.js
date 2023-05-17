@@ -589,7 +589,9 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                             {/* make below unvisible */}
                                             <a style={{marginRight: '10px',fontWeight
-                                            :'bold'}} onClick={async (e) => {
+                                            :'bold', cursor: 'pointer'}} onClick={async (e) => {
+
+                                    
                                             
 
                                                 
@@ -658,7 +660,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             {/* generating experiment button */}
                                             {/* make it bold */}
                                             <a style={{ marginLeft:'10px',
-                                                        fontWeight:'bold'
+                                                        fontWeight:'bold', cursor:'pointer'
                                             }} onClick={async (e) => {
                                                 e.preventDefault();
                                                 
