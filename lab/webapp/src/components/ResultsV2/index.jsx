@@ -850,7 +850,8 @@ class Results extends Component {
                         ""<br></br>
                     </div>
                     <div id="chatgpt-space" className="chartschat chatbaseright">
-                        <ChatGPT experiment={experiment}/>
+                        <ChatGPT
+                        experiment={experiment}/>
                     </div>
                 </div>
 

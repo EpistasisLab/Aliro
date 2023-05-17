@@ -1874,18 +1874,15 @@ th, td {
 
 
 /* blink for waiting message */
-@keyframes blink {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.blinking {
+  animation: blink 1s ease infinite;
 }
 
-.blinking {
-  animation: blink 1.5s infinite;
+@keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }

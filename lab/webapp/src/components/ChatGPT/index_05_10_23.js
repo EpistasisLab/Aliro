@@ -708,8 +708,8 @@ export default function ChatGPT({experiment}) {
 
         // console.log("chatLogNewFormat",chatLogNewFormat)
 
-        // please remove "Please wait while I am thinking..." by system from chatLogNewFormat
-        let chatLogNewFormatFiltered = chatLogNewFormat.filter((item) => item.content !== "Please wait while I am thinking...")
+        // please remove "Please wait while I am thinking.." by system from chatLogNewFormat
+        let chatLogNewFormatFiltered = chatLogNewFormat.filter((item) => item.content !== "Please wait while I am thinking..")
 
         console.log("chatLogNewFormatFiltered",chatLogNewFormatFiltered)
 
@@ -955,7 +955,7 @@ export default function ChatGPT({experiment}) {
 
         // console.log("preSet",preSet);
 
-        let waitingMessage = "Please wait while I am thinking...";
+        let waitingMessage = "Please wait while I am thinking..";
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call
@@ -1129,7 +1129,7 @@ export default function ChatGPT({experiment}) {
         //     });
         //     } else {
         //     clearInterval(intervalId2);
-        //     if (lastMessage.message === "Please wait while I am thinking...") {
+        //     if (lastMessage.message === "Please wait while I am thinking..") {
         //         // Add a delay before showing the message
         //         setTimeout(() => {
         //         setChatLog(prevChatLog => [
@@ -1244,7 +1244,7 @@ export default function ChatGPT({experiment}) {
 
 
 
-        let waitingMessage = "Please wait while I am thinking...";
+        let waitingMessage = "Please wait while I am thinking..";
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call
@@ -1438,7 +1438,7 @@ export default function ChatGPT({experiment}) {
 
 
 
-        let waitingMessage = "Please wait while I am running your code on Aliro...";
+        let waitingMessage = "Please wait while I am running your code on Aliro..";
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call
@@ -1643,7 +1643,7 @@ export default function ChatGPT({experiment}) {
         {
             
 
-            resultMessage = "Please check below. If the output is an image file, you can download the image(s) by clicking on them." + "\n" ;
+            resultMessage = "Please review the content below. If the output contains any files, you can download them by clicking on the respective links." + "\n" ;
 
             let filesarray = [];
             resp['files'].forEach((file) => {
