@@ -2192,7 +2192,7 @@ export default function ChatGPT({experiment}) {
          
         let data = await getChatMessageByExperimentId(experimentID);
 
-        console.log("setTapTitlesFunc-data", data)
+        // console.log("setTapTitlesFunc-data", data)
 
         // if numChatBox > dataFiltered.length, call getChatMessageByExperimentId again
         // filter data based on experiment id
@@ -2200,12 +2200,12 @@ export default function ChatGPT({experiment}) {
             return el._experiment_id == experimentID;
         });
 
-        console.log("setTapTitlesFunc-dataFiltered", dataFiltered)
+        // console.log("setTapTitlesFunc-dataFiltered", dataFiltered)
 
-        console.log("setTapTitlesFunc-numChatBox", numChatBox)
-        console.log("setTapTitlesFunc-dataFiltered.length", dataFiltered.length)
+        // console.log("setTapTitlesFunc-numChatBox", numChatBox)
+        // console.log("setTapTitlesFunc-dataFiltered.length", dataFiltered.length)
         
-        console.log("setTapTitlesFunc-experimentID", experimentID)
+        // console.log("setTapTitlesFunc-experimentID", experimentID)
         if (numChatBox > dataFiltered.length) {
             // console.log("setTapTitlesFunc-numChatBox > dataFiltered.length")
             // console.log("setTapTitlesFunc-numChatBox", numChatBox)
@@ -2237,11 +2237,11 @@ export default function ChatGPT({experiment}) {
 
         //
 
-        console.log("setTapTitlesFunc-tempTapTitles", tempTapTitles)
+        // console.log("setTapTitlesFunc-tempTapTitles", tempTapTitles)
 
         setTapTitles({...tapTitles, taptitles: tempTapTitles});   
 
-        console.log("setTapTitlesFunc-tapTitles", tapTitles)
+        // console.log("setTapTitlesFunc-tapTitles", tapTitles)
     }
 
     function checkStatus(response) {
