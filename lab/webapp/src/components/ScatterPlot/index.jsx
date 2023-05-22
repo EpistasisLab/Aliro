@@ -46,21 +46,21 @@ class ScatterPlot extends Component {
 
   renderChart(Points, Labels, chartKey, chartColor) {
 
-
-
-
-
      // if chartKey includes pca, then 
      if (chartKey.includes('pca')) {
       var axis= {
         x: {
             label: 'PC1',
             tick: {
-                fit: false
+                fit: false,
+                format: d3.format(".1s")
             }
         },
         y: {
-            label: 'PC2'
+            label: 'PC2',
+            tick: {
+              format: d3.format(".1s"),
+            }
         }
       }
       // else if chartKey includes tsne, then
@@ -97,8 +97,6 @@ class ScatterPlot extends Component {
                 fit: false,
                 format: d3.format(".1s"),
                 count: 5,
-                
-
             },
  
         },
@@ -466,8 +464,7 @@ else if (chartKey.includes('CVR')) {
 
   render() {
     return (
-      // <div className={`ScatterPlot ${this.props.chartKey}`} />
-
+     
     <div >
         
         {/* <svg className={`ScatterPlot ${this.props.chartKey}`} viewBox="0 0 520 400" preserveAspectRatio="xMinYMin meet" >
