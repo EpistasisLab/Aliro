@@ -16,7 +16,7 @@ import {AllContext} from "./context/AllContext";
 
 export default function ChatGPT({experiment}) {
 
-    var limitNumChatBox = 5;
+    let limitNumChatBox = 5;
 
     useEffect(() => {
         // console.log("ChatGPT-props", props);
@@ -574,10 +574,6 @@ export default function ChatGPT({experiment}) {
 
         console.log("tokenCount", tokenCount);
 
-        // if tokenCount > 1000 make new by taking  first three chatLogNewFormatFiltered[0], chatLogNewFormatFiltered[1], chatLogNewFormatFiltered[2] and last three chatLogNewFormatFiltered[-1], chatLogNewFormatFiltered[-2], chatLogNewFormatFiltered[-3]
-
-
-
         if (tokenCount > 1000){
 
             newChatLogNewFormatFiltered = chatLogNewFormatFiltered.slice(0,3).concat(chatLogNewFormatFiltered.slice(-3));
@@ -941,7 +937,7 @@ export default function ChatGPT({experiment}) {
 
         console.log("doubleCheckPackagesWithLLM-data",data)
 
-        var messageFromOpenai = data.choices[0].message['content'];
+        let messageFromOpenai = data.choices[0].message['content'];
 
         console.log("doubleCheckPackagesWithLLM-messageFromOpenai",messageFromOpenai)
 
@@ -962,10 +958,6 @@ export default function ChatGPT({experiment}) {
         
 
     }
-    // check there is first Three backticks and python
-
-    // function checkThreeBackticksFromMessage(message){
-
 
     function replaceFirstBackticks(message) {
 
@@ -998,7 +990,6 @@ export default function ChatGPT({experiment}) {
         
       
     }
-
 
     function addComments(codeSnippet) {
         const lines = codeSnippet.split('\n');
@@ -1051,11 +1042,11 @@ export default function ChatGPT({experiment}) {
 
     function makeBlinking(){
         // get all classes names blinking 
-        var blinking = document.getElementsByClassName("blinkingCandi");
+        let blinking = document.getElementsByClassName("blinkingCandi");
 
         console.log("makeBlinking-blinking",blinking)
         // chagne all classes names blinking noblinking
-        for (var i = 0; i < blinking.length; i++) {
+        for (let i = 0; i < blinking.length; i++) {
             blinking[i].className = "blinking";
         }
     }
@@ -1063,9 +1054,9 @@ export default function ChatGPT({experiment}) {
 
     function nomoreBlinking(){
         // get all classes names blinking 
-        var blinking = document.getElementsByClassName("blinking");
+        let blinking = document.getElementsByClassName("blinking");
         // chagne all classes names blinking noblinking
-        for (var i = 0; i < blinking.length; i++) {
+        for (let i = 0; i < blinking.length; i++) {
             blinking[i].className = "noblinking";
         }
     }
@@ -1101,7 +1092,7 @@ export default function ChatGPT({experiment}) {
         let data = await getChatMessageByExperimentId(experimentId);
 
         // filter the data using _experiment_id
-        var filteredData = data.filter((item) => item._experiment_id === experimentId)
+        let filteredData = data.filter((item) => item._experiment_id === experimentId)
 
         // chatCurrentTempId is 1,2,3, ...
         // there is no 0 chatCurrentTempId.
@@ -1121,8 +1112,8 @@ export default function ChatGPT({experiment}) {
         // get the last message from the chatLogNew array
         let lastMessageFromUser = chatLogNew[chatLogNew.length - 1].message;
 
-        var feature_importances = {};
-        for (var i = 0; i < experiment.data.feature_importances.length; i++) {
+        let feature_importances = {};
+        for (let i = 0; i < experiment.data.feature_importances.length; i++) {
             feature_importances[experiment.data.feature_names[i]] = experiment.data.feature_importances[i];
         }
 
@@ -1231,7 +1222,7 @@ export default function ChatGPT({experiment}) {
 
 
 
-        var messageFromOpenai = data.choices[0].message['content'];
+        let messageFromOpenai = data.choices[0].message['content'];
 
         console.log("messageFromOpenai",messageFromOpenai)
 
@@ -1481,7 +1472,7 @@ export default function ChatGPT({experiment}) {
         let data = await getChatMessageByExperimentId(experimentId);
 
         // filter the data using _experiment_id
-        var filteredData= data.filter((item) => item._experiment_id === experimentId)
+        let filteredData= data.filter((item) => item._experiment_id === experimentId)
 
         // chatCurrentTempId is 1,2,3, ...
         // there is no 0 chatCurrentTempId.
@@ -1501,8 +1492,8 @@ export default function ChatGPT({experiment}) {
         // in this case, for example, it is "[Errno 2] File theta.csv does not exist: 'theta.csv'"
         let errorMessageFromMachine = chatLogNew[chatLogNew.length - 1].message;
 
-        var feature_importances = {};
-        for (var i = 0; i < experiment.data.feature_importances.length; i++) {
+        let feature_importances = {};
+        for (let i = 0; i < experiment.data.feature_importances.length; i++) {
             feature_importances[experiment.data.feature_names[i]] = experiment.data.feature_importances[i];
         }
 
@@ -1579,7 +1570,7 @@ export default function ChatGPT({experiment}) {
 
 
 
-        var messageFromOpenai = data.choices[0].message['content'];
+        let messageFromOpenai = data.choices[0].message['content'];
             
         // process the messageFromOpenai based on...
         // check if the messageFromOpenai contains python code.
@@ -1709,7 +1700,7 @@ export default function ChatGPT({experiment}) {
         let data = await getChatMessageByExperimentId(experimentId);
 
         // filter the data using _experiment_id
-        var filteredData= data.filter((item) => item._experiment_id === experimentId)
+        let filteredData= data.filter((item) => item._experiment_id === experimentId)
 
         // chatCurrentTempId is 1,2,3, ...
         // there is no 0 chatCurrentTempId.
@@ -1773,7 +1764,7 @@ export default function ChatGPT({experiment}) {
 
         // data= await openaiChatCompletions(currentModel,preSet)
 
-        // var messageFromOpenai = data.choices[0].message['content'];
+        // let messageFromOpenai = data.choices[0].message['content'];
             
         // process the messageFromOpenai based on...
         // check if the messageFromOpenai contains python code.
@@ -2059,7 +2050,7 @@ export default function ChatGPT({experiment}) {
         let data = await getChatMessageByExperimentId(experimentId);
 
         // filter the data using _experiment_id
-        var filteredData= data.filter((item) => item._experiment_id === experimentId)
+        let filteredData= data.filter((item) => item._experiment_id === experimentId)
 
         // chatCurrentTempId is 1,2,3, ...
         // there is no 0 chatCurrentTempId.
@@ -2084,8 +2075,8 @@ export default function ChatGPT({experiment}) {
         //     lastMessageFromUser += " Please give me the python code script. Please put the python code script between ``` and ```. For example, ```print('hello world')```"
         // }
 
-        // var feature_importances = {};
-        // for (var i = 0; i < experiment.data.feature_importances.length; i++) {
+        // let feature_importances = {};
+        // for (let i = 0; i < experiment.data.feature_importances.length; i++) {
         //     feature_importances[experiment.data.feature_names[i]] = experiment.data.feature_importances[i];
         // }
 
@@ -2095,7 +2086,7 @@ export default function ChatGPT({experiment}) {
     
         // data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
 
-        // var messageFromOpenai = data.choices[0].message['content'];
+        // let messageFromOpenai = data.choices[0].message['content'];
             
         // process the messageFromOpenai based on...
         // check if the messageFromOpenai contains python code.
@@ -2248,7 +2239,7 @@ export default function ChatGPT({experiment}) {
         console.log("checkStatus-response", response)
         if (response.status >= 400) {
           //console.log(`error: ${response.error}`)
-          var error = new Error(`${response.status}: ${response.statusText} : ${response.url}`);
+          let error = new Error(`${response.status}: ${response.statusText} : ${response.url}`);
           error.response = response;
           throw error;
         } else {
@@ -2294,7 +2285,7 @@ export default function ChatGPT({experiment}) {
     }
 
     function autoScrollDown(){
-        var scrollToTheBottomChatLog = document.getElementById("chatgpt-space");
+        let scrollToTheBottomChatLog = document.getElementById("chatgpt-space");
         
         scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
     }
