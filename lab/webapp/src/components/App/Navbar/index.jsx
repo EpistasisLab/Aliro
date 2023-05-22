@@ -328,11 +328,8 @@ function Navbar({ preferences }) {
 
 
           { window.location.href.includes('results') ? <Link to="" id= "expertChatGPT" className="link" activeClassName="active" onClick = {checkConnShowGPT}>
-            {/* <Link to="" className="link" activeClassName="active" onClick = {checkAPIkey}> */}
-            
               <Menu.Item name="Expert">
                 <Icon name="chat" />
-                
                 <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
                   {'Expert'}
                 </MediaQuery>
@@ -341,12 +338,7 @@ function Navbar({ preferences }) {
             
 
             <div>
-              
-              {/* {openaiApiState ===0 && window.location.href.includes('results') === true ? <PopUpAPI checkConnShowGPT={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null} */}
-
               {window.location.href.includes('results') === true ? <PopUpAPI checkConnShowGPT={checkConnShowGPT}  openaiApiState={openaiApiState} setopenaiApiState={setopenaiApiState} /> : null}
-
-              
             </div>
           
 
