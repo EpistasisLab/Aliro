@@ -157,26 +157,6 @@ const ChatBox = () =>
     
 
     <div className="chat-input-holder">
-        
-            {/* toggle button for chat mode or coding mode */}
-  
-            {/* <button className="toggle-button-chat-code" onClick={
-                        (e)=>{
-
-                            if (e.target.textContent === "chat mode") {
-                                setModeForChatOrCodeRunning("code")
-                                //  background:
-                                e.target.style.background = "#ae5211";
-                            } else {
-                                setModeForChatOrCodeRunning("chat")
-                                e.target.style.background = "#2185D0";
-                            }
-
-                        }
-                    }>{modeForChatOrCodeRunning} mode
-            </button> */}
-        
-
         <form className="chatSubmitForm" onSubmit={handleSubmit}>
 
             <input
@@ -290,14 +270,11 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
         })
         .then(response => response.json())
         .then(data => {
-            // console.log("response-data-result", data['result'])
-            // console.log("response-data", data)
-            // e.target.textContent = "Completed";
             console.log('star-1. runExtractedCode', data)
             return data;
         })
         .catch(error => {
-            // console.log("runExtractedCode-fetch-error", error)
+            console.log("runExtractedCode-fetch-error", error)
             return error;
         })
 
@@ -315,8 +292,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
     }
 
     function checkIncludeCode(message) {
-
-        // if message is not undefined
 
         if (message !== undefined) {
 
@@ -359,20 +334,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
         return code;
 
-        
-
-
-
-        // const code = match[1];
-
-        // // console.log("extractCode",code);
-
-        // // console.log("match-extractCodeFromMess[0]", match[0]);
-        // // console.log("match-extractCodeFromMess[1]", match[1]);
-
-        // for 
-
-        // return code;
 
     }
 
@@ -410,16 +371,10 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
         }
         )
 
-
-        // console.log("resultFromInstallingPackages", resultFromInstallingPackages)
-        // console.log("resultFromInstallingPackages[exec_results][stdout]",resultFromInstallingPackages["exec_results"]["stdout"])
-        // resultFromInstallingPackages["exec_results"]["stdout"]
     }
 
     function findTheLastCodeMessageFromHTML(element)
     {
-        // console.log("element-findTheLastCodeMessageFromHTML", element)
-        // element is e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2]
 
         // extract all text from element
         let text = element.innerText;
@@ -448,7 +403,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
         console.log("checkStatus-response", response)
         if (response.status >= 400) {
           //console.log(`error: ${response.error}`)
-          var error = new Error(`${response.status}: ${response.statusText} : ${response.url}`);
+          let error = new Error(`${response.status}: ${response.statusText} : ${response.url}`);
           error.response = response;
           throw error;
         } else {
@@ -474,47 +429,11 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
       }
 
 
-
-
-
-
-
-// //    if message.message includes .zip
-//     if (message.message.includes(".zip"))
-//     {
-//         // let hasZip=false;
-//         // let zipUrl="";
-
-//         let lengthMessage = message.message.split(/\n/).length-1;
-//         console.log("lengthMessage",lengthMessage)
-//         console.log("message.message",message.message)
-//     }
-
-    // const [hasZip, setHasZip] = useState(false);
-    // const [zipUrl, setZipUrl] = useState(null);
-    // const [zipFileName, setZipFileName] = useState(null);
-    // const [hasZipIndexMessage, setHasZipIndexMessage] = useState(null);
     
-    var hasZipVar = false;
-    var zipUrlVar = "";
-    var zipNameVar = "";
-    var hasZipIndexMessageVar = 0;
-
-
-    function mockData(files) {
-        return {
-          dataTransfer: {
-            files,
-            items: files.map(file => ({
-              kind: 'file',
-              type: file.type,
-              getAsFile: () => file
-            })),
-            types: ['Files']
-          }
-        }
-      }
-
+    let hasZipVar = false;
+    let zipUrlVar = "";
+    let zipNameVar = "";
+    let hasZipIndexMessageVar = 0;
 
     const goToUploadDatasets = (href,fileName) => {
 
@@ -591,11 +510,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             <a style={{marginRight: '10px',fontWeight
                                             :'bold', cursor: 'pointer'}} onClick={async (e) => {
 
-                                    
-                                            
-
-                                                
-
                                                 if (e.target.parentElement.parentElement.children[3].style.display === "none")
                                                 {
                                                     e.target.parentElement.parentElement.children[3].style.display = "block";
@@ -614,51 +528,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             <b style={{color: '#87CEEB'}}>Download {line.substring(0, line.indexOf(","))}</b>
                                         </a>
 
-                                        
-
-
-                                        
-
-
-
-
-
-                                            {/* uploading file button */}
-                                            {/* Or... like below, it is better provide to generate the new experiment with the processed dataset, which means that skipping the step where users upload the dataset. */}
-                                            {/* <a style={{ marginLeft:'10px'}} onClick={(e) => {
-                                                e.preventDefault();
-                                                // console.log("e.target", e.target);
-                                                document.getElementById('datasetInput').click();
-                                                }}>
-                                                Upload dataset
-                                                </a>
-                                                <input
-                                                type="file"
-                                                id="datasetInput"
-                                                style={{display: 'none'}}
-                                                onChange={(e) => {
-                                                    // console.log("upload file",e.target.files)
-
-                                                    // show me preview of the file
-                                                    let file = e.target.files[0];
-                                                    let reader = new FileReader();
-                                                    reader.readAsText(file);
-                                                    reader.onload = function() {
-                                                        // console.log("reader.result",reader.result);
-                                                    };
-                                                    reader.onerror = function() {
-                                                        // console.log(reader.error);
-                                                    };
-
-
-
-                                                }
-
-                                                }
-                                            /> */}
-
                                             {/* generating experiment button */}
-                                            {/* make it bold */}
                                             <a style={{ marginLeft:'10px',
                                                         fontWeight:'bold', cursor:'pointer'
                                             }} onClick={async (e) => {
@@ -668,22 +538,11 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                 let fileName = e.target.parentElement.children[1].children[0].innerText.split(" ")[1];
 
                                                 goToUploadDatasets(e.target.parentElement.children[1].href,fileName);
-
-
-                                                
+                                  
                                                 }}>
                                                 Generate experiment
                                             
                                             </a>
-
-                                            {/* <div>
-                                                <button onClick={handleClickGoToUploadDatasets}>Go to Upload Datasets</button>
-                                            </div> */}
-                                                
-                                                
-                                            
-
-
                                         </div>
                                     );
                                 } 
@@ -691,36 +550,13 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                 else if (line.includes(".zip") && line.includes("http") ) 
                                 {
-                                    // // set hasZip to true
-                                    // setHasZip(true);
-
-                                    // // set zipUrl to the url of the zip file
-                                    // setZipUrl(line.substring(line.indexOf("http")));
-
-                                    // // zipUrl.substring(0, zipUrl.indexOf(","))
-                                    // setZipFileName(line.substring(0, line.indexOf(",")));
-
-                                    // setHasZipIndexMessage(index);
-
-
 
                                     hasZipVar = true;
                                     zipUrlVar = line.substring(line.indexOf("http"));
                                     zipNameVar = line.substring(0, line.indexOf(","));
                                     hasZipIndexMessageVar = index;
 
-                                    // return (
-                                    //     // <div>
-                                        
-                                    //         <a href={line.substring(line.indexOf("http"))} download>
-                                    //             <b style={{color: '#87CEEB'}}>Download {line.substring(0, line.indexOf(","))}</b>
-                                    //         </a>
-
-                                    //     // </div>
-                                    // );
                                 } 
-
-                                
 
                                 // if the message includes "The tabular data is:" , set modeForTabluerData to true
                                 // this let us know that the next line is tabluer data
@@ -778,116 +614,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             </div>
                                     )
 
-
-                                    
-
-
-                                        
-                                    // // make varible to store below div
-                                    // const row =(
-                                    // <div className="tableRow" style={{backgroundColor: '#343a40', 
-                                    //     borderTopLeftRadius: index === 4 ? '10px' : '0', borderTopRightRadius: index === 4 ? '10px' : '0', borderBottomLeftRadius: index === 9 ? '10px' : '0', borderBottomRightRadius: index === 9 ? '10px' : '0',
-                                    //     marginTop: index === 4 ? '10px' : '0',
-                                    //     }}>
-                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
-                                    //             <tbody>
-                                    //             <tr>
-                                    //                 {/* split line by comma */}
-                                    //                 {line.split(",").map((cell) => (
-                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
-                                    //                 ))}
-                                    //             </tr>
-                                    //             </tbody>
-                                    //         </table>
-                                    // </div>);
-
-                                    // tableRowArray.push(row); 
-
-
-                                    // if (index === 9)
-                                    // {
-                                    //     return (
-                                    //         <div className="entireTable" style={{width: '100%', overflowX: 'auto'}}>
-                                    //           {tableRowArray}
-                                    //         </div>
-                                    //       );
-                                    // }
-
-
-
-                                    
-                                    // return(
-                                    //     <div className="tableRow" style={{backgroundColor: '#343a40',
-                                    //     marginTop: index === 4 ? '10px' : '0',
-                                    //     }}>
-                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
-                                    //             <tbody>
-                                    //             <tr>
-                                    //                 {/* split line by comma */}
-                                    //                 {line.split(",").map((cell) => (
-                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
-                                    //                 ))}
-                                    //             </tr>
-                                    //             </tbody>
-                                    //         </table>
-                                    //     </div>
-                                    // )
-
-
-
-
-
-                                    // return(
-                                    //     // get element by id testTable
-                                        
-                                    //     <div className="tableRow" style={{backgroundColor: '#343a40', 
-                                    //     borderTopLeftRadius: index === 4 ? '10px' : '0', borderTopRightRadius: index === 4 ? '10px' : '0', borderBottomLeftRadius: index === 9 ? '10px' : '0', borderBottomRightRadius: index === 9 ? '10px' : '0',
-                                    //     marginTop: index === 4 ? '10px' : '0',
-                                    //     }}>
-                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
-                                    //             <tbody>
-                                    //             <tr>
-                                    //                 {/* split line by comma */}
-                                    //                 {line.split(",").map((cell) => (
-                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
-                                    //                 ))}
-                                    //             </tr>
-                                    //             </tbody>
-                                    //         </table>
-                                    //     </div>
-                                    // )
-
-
-
-
-
-
-                                    // return (
-                                    //     <div style={{width: '100%', overflowX: 'auto'}}>
-                                    //     <div id="justmessage" style={{backgroundColor: '#343a40', 
-                                    //                                     borderTopLeftRadius: index === 4 ? '10px' : '0', borderTopRightRadius: index === 4 ? '10px' : '0', borderBottomLeftRadius: index === 9 ? '10px' : '0', borderBottomRightRadius: index === 9 ? '10px' : '0',
-                                    //                                     marginTop: index === 4 ? '10px' : '0',
-                                    //                                     }}>
-                                    //         <div style={{width: '100%', overflowX: 'auto'}}>
-                                    //         <table style={{width: '100%', tableLayout: 'fixed'}}>
-                                    //             <tbody>
-                                    //             <tr>
-                                    //                 {/* split line by comma */}
-                                    //                 {line.split(",").map((cell) => (
-                                    //                 <td style={{width: '10%',textAlign: 'center',border: '1px solid rgba(255, 255, 255, 0.5)'}}>{cell}</td>
-                                    //                 ))}
-                                    //             </tr>
-                                    //             </tbody>
-                                    //         </table>
-                                    //         </div>
-                                    //     </div>
-                                    //     </div>
-                                    // )
-
-                                    
-
-
-                                    
                                 }
 
                                 // this is for the normal message
@@ -913,13 +639,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                             
                                                             let tempText=findTheLastCodeMessageFromHTML(e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
 
-                                                            // console.log("text-findTheLastCodeMessageFromHTML", tempText)
-
-                                                            // extrac code from text 
-                                                            // code is between ```python and ```
-
-                                                            // await showCodeRunningMessageWhenClickRunBtn(e);
-                                                            // await showCodeRunningMessageWhenClickRunBtn(e);
+                                                            
                                                             
 
                                                             let tempCode = extractCodeFromMess(tempText);
@@ -934,10 +654,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                                             autoScrollDown();
 
-                                                            // // console.log("chatLog-Errno",chatLog)
-
-
-                                                            
                                                             
                                                             // call openai api to generate code based on current code and error message
                                                             // let resp = await runExtractedCode(extractedCode, datasetId,experimentId);
@@ -953,47 +669,15 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                                         
                                                     }
-                                                    // mouseover
-                                                    // onMouseOver={(e)=>{
-                                                    //     // parent of parent of parent of parent of parent of e.target
-                                                    //     // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement",e.target.parentElement.parentElement.parentElement.parentElement.parentElement)
-
-                                                    //     // children of e.target.parentElement.parentElement.parentElement.parentElement.parentElement
-                                                    //     // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children)
-
-                                                    //     // second child of e.target.parentElement.parentElement.parentElement.parentElement.parentElement from the last child
-                                                    //     // console.log("gen-e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2]",e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2])
-
-
-
-
-                                                    //     let text=e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children[e.target.parentElement.parentElement.parentElement.parentElement.parentElement.children.length-2].innerText;
-
-                                                    //     // console.log("text-findTheLastCodeMessageFromHTML", text)
-
-                                                    //     let code = extractCodeFromMess(text);
-
-                                                    //     // // console.log("code-findTheLastCodeMessageFromHTML", code)
-
-                                                    // }}
+                                                    
                                                     >
                                     Submit error
-
-                                        {/* <p>
-                                            {extractedCode.code}{' '}
-                                        
-                                        </p> */}
-                                        
                                                      </button>
                                                 </div>
                                             );
                                         }
 
                                         else{
-                                            // if line === "Please wait while I am thinking..."
-
-                                            // if (line === "Please wait while I am thinking...") {
-
                                             if (line==="Please wait while I am thinking..")
                                             {
                                                 return (
@@ -1019,12 +703,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                                     </div>
                                                 );
                                             }
-
-                                            // return (
-                                            //     <div id="justmessage" >
-                                            //         {line}<span className='blinking'>.</span>
-                                            //     </div>
-                                            // );
                                         }
                                     }
                                   }
@@ -1060,12 +738,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                     );
                                 }
-
-
-                                
-
-
-
 
                               })
                         }
@@ -1132,7 +804,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                         console.log("inner-text", e.target.innerText)
 
-                                        // update extractedCode var
+                                        // update extractedCode let
                                         extractedCode=extractCodeFromMess(e.target.innerText);
                                         console.log("extractedCode-test-27", extractedCode)
 
@@ -1165,7 +837,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         let data = await getChatMessageByExperimentId(experimentId);
 
                                         // filter the data using _experiment_id
-                                        var filteredData = data.filter((item) => item._experiment_id === experimentId)
+                                        let filteredData = data.filter((item) => item._experiment_id === experimentId)
 
                                         
 
@@ -1194,9 +866,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCodewithChat, "text", "gpt");
 
                                     }
-
-                                    
-                                    
                                 }        
                             }}
                             
@@ -1236,8 +905,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     </code>
                                 </pre>
                             </div>
-
-
                             {
                             message.message.split(/\n/).map(
                                 (line, index) =>
@@ -1267,92 +934,83 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     
                                     if(currentEvent) {
                                             
-                                            
-    
-                                    let tempChatCodeExplain = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
+                                        let tempChatCodeExplain = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
 
 
-                                    let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
+                                        let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
 
 
 
-                                    let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+tempCode+"\n"+"```";
+                                        let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+tempCode+"\n"+"```";
 
-                                    // console.log("tempUpdatedCodewithChat", tempUpdatedCodewithChat)
-                                    
-                                    let tempElement = e.target.parentElement.parentElement.parentElement.parentElement;
+                                        // console.log("tempUpdatedCodewithChat", tempUpdatedCodewithChat)
+                                        
+                                        let tempElement = e.target.parentElement.parentElement.parentElement.parentElement;
 
-                                    e.preventDefault();
-                                    e.target.contentEditable = false;
-                                    e.target.focus();
+                                        e.preventDefault();
+                                        e.target.contentEditable = false;
+                                        e.target.focus();
 
-                                    // update extractedCode var
-                                    extractedCode=extractCodeFromMess(e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText);
-                                    
+                                        // update extractedCode let
+                                        extractedCode=extractCodeFromMess(e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText);
+                                        
 
-
-                                    // modify the code to the chatlog
-                                    // should i update the chatlog?
-
-                                    // post updated code to the DB
-                                    // postChatNameToDB(tempString)
+                                        // post updated code to the DB
+                                        // postChatNameToDB(tempString)
 
 
 
 
 
-                                    // POST http://localhost:5080/chatapi/v1/chatlogs
-                                    // Content-Type: application/json
+                                        // POST http://localhost:5080/chatapi/v1/chatlogs
+                                        // Content-Type: application/json
 
-                                    // {
-                                    //     "_chat_id" : "645028384f4513a0b9459e53",
-                                    //     "message" : "Hello there from my desk!",
-                                    //     "message_type" : "text",
-                                    //     "who" : "user"
-                                    // }
-
-
-                                    // experimentId
-
-                                    
-
-                                    // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
-                                    let data = await getChatMessageByExperimentId(experimentId);
-
-                                    // filter the data using _experiment_id
-                                    var filteredData = data.filter((item) => item._experiment_id === experimentId)
-
-                                    
-
-                                    // get div class name "chat-log"
-                                    let chatLog_divs = document.getElementsByClassName("chat-log");
+                                        // {
+                                        //     "_chat_id" : "645028384f4513a0b9459e53",
+                                        //     "message" : "Hello there from my desk!",
+                                        //     "message_type" : "text",
+                                        //     "who" : "user"
+                                        // }
 
 
-                                    let temp_index_chat=0;
+                                        // experimentId
 
-                                    console.log("tempElement",tempElement)
+                                        
 
-                                    for (let i = 0; i < chatLog_divs[0].children.length; i++) {
+                                        // GET http://localhost:5080/chatapi/v1/chats/experiment/${experimentId}
+                                        let data = await getChatMessageByExperimentId(experimentId);
 
-                                        if (chatLog_divs[0].children[i] === tempElement)
-                                        {
-                                            console.log("choi-i", i)
-                                            temp_index_chat = i;
+                                        // filter the data using _experiment_id
+                                        let filteredData = data.filter((item) => item._experiment_id === experimentId)
+
+                                        
+
+                                        // get div class name "chat-log"
+                                        let chatLog_divs = document.getElementsByClassName("chat-log");
+
+
+                                        let temp_index_chat=0;
+
+                                        console.log("tempElement",tempElement)
+
+                                        for (let i = 0; i < chatLog_divs[0].children.length; i++) {
+
+                                            if (chatLog_divs[0].children[i] === tempElement)
+                                            {
+                                                console.log("choi-i", i)
+                                                temp_index_chat = i;
+                                            }
+
                                         }
 
+
+                                        let chatByChatId= await getSpecificChatbyChatId(filteredData[chatCurrentTempId-1]["_id"])
+
+                                        // update the code
+                                        await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCodewithChat, "text", "gpt");
+
+                                    
                                     }
-
-
-                                    let chatByChatId= await getSpecificChatbyChatId(filteredData[chatCurrentTempId-1]["_id"])
-
-                                    // update the code
-                                    await patchChatToDB(chatByChatId.chatlogs[temp_index_chat]['_id'], tempUpdatedCodewithChat, "text", "gpt");
-
-                                    }
-
-
-                                    // 
-
 
                                     console.log("installpackagesbutton-click")
 
@@ -1384,43 +1042,21 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     console.log("packageNamesCombinedUnique", packageNames)
 
 
-
-                                    // use usestate to change the text of the button
-                                    // e.target.textContent = "Installing...";
-                                    
-                                    // e.target.disabled = true;
-                                    // e.target.style.color = "black";
-
-                                    // let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-
                                     extractedCode = tempCode.replace(/```python/g, "").replace(/```/g, "");
                                     
                                     console.log("INS-extractedCode",extractedCode)
 
                                     await showCodeRunningMessageWhenClickRunBtn(currentEvent);
 
-
-                                    
-
-
                                     disableReadingInput();
-
-
-                                    
-
-
 
                                     // checkCodePackages
                                     let packagesNotInstalled = await checkCodePackages(packageNames);
 
                                     console.log("install-packagesNotInstalled", packagesNotInstalled)
 
-
                                     // doubleCheckPackagesWithLLM(packagesNotInstalled);
                                     
-
-
-
                                     // call install function
                                     let resp_installPackages = await installPackages(packagesNotInstalled); 
                                     console.log("resp_installPackages", resp_installPackages) 
@@ -1431,18 +1067,15 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                     // nomoreBlinking();
 
-
                                     makeBlinking();
 
                                     console.log("resp_runExtractedCode", resp_runExtractedCode)
                             
                                     // e.target.textContent = "Installed";
 
-
                                     // use setchatlog function to update the chatlog
                                     // update to the db and refer updateAfterRuningCode function
                                     updateAfterRuningCode(currentEvent, resp_runExtractedCode)
-
 
                                     nomoreBlinking();
 
@@ -1471,9 +1104,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         let currentEvent = e;
                                         
                                         // if(e) {
-                                            
-                                            
-    
+
                                             let tempChatCodeExplain = e.target.parentElement.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
     
                                             // console.log("tempChatCodeExplain", tempChatCodeExplain)
@@ -1488,9 +1119,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                             console.log("teresa-packagesFromTempCode", packagesFromTempCode)
 
-
-
-
                                             let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+tempCode+"\n"+"```";
     
                                             // console.log("tempUpdatedCodewithChat", tempUpdatedCodewithChat)
@@ -1501,7 +1129,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             e.target.contentEditable = false;
                                             e.target.focus();
     
-                                            // update extractedCode var
+                                            // update extractedCode let
                                             extractedCode=extractCodeFromMess(e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText);
                                             
 
@@ -1535,13 +1163,10 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                             let data = await getChatMessageByExperimentId(experimentId);
     
                                             // filter the data using _experiment_id
-                                            var filteredData = data.filter((item) => item._experiment_id === experimentId)
-    
-                                            
+                                            let filteredData = data.filter((item) => item._experiment_id === experimentId)
     
                                             // get div class name "chat-log"
                                             let chatLog_divs = document.getElementsByClassName("chat-log");
-    
     
                                             let temp_index_chat=0;
 
@@ -1565,47 +1190,13 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
     
                                         // }
 
-
-                                        // e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-                                
-                                        // use usestate to change the text of the button
-                                        // document.getElementById("runbutton").textContent = "Running...";
-                                        // console.log("ttt",e.target.textContent)
-                                        // e.target.textContent = "Running...";
-                                        // make the button non clickable
-                                        // e.target.click = false;
-                                        // e.target.disabled = true;
-                                        // e.target.style.color = "black";
-
-                                        // console.log("RUN-extractedCode",e.target.parentElement.parentElement)
-                                        // get children who has className code-editable from e.target.parentElement.parentElement
-                                        // console.log("RUN-extractedCode",e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].textContent)
-
-                                        // remove ```python and ``` from e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].textContent
-
-
-
-
-                                        
-                                        // let tempCode = e.target.parentElement.parentElement.getElementsByClassName("code-editable")[0].innerText;
-
                                         extractedCode = tempCode.replace(/```python/g, "").replace(/```/g, "");
-
-
-
-
 
                                         await showCodeRunningMessageWhenClickRunBtn( currentEvent)
 
-                                        
-
-
                                         disableReadingInput();
 
-
-
-
-                                        console.log("run-packagesFromTempCode", packagesFromTempCode)
+                                        // console.log("run-packagesFromTempCode", packagesFromTempCode)
 
                                         let packagesNotInstalled = await checkCodePackages(packagesFromTempCode)
 
@@ -1619,7 +1210,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                         // nomoreBlinking();
                                         
-                                        
                                         makeBlinking();
                                         await updateAfterRuningCode( currentEvent, resp)
                                         nomoreBlinking();
@@ -1629,10 +1219,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         // showCodeRunningMessageWhenClickRunBtn have autoScrollDown function
                                         // autoScrollDown();
                                         
-                                        
-                                    
-
-
                                     }
                                 }>
                                     Run
@@ -1640,38 +1226,18 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 </button>
                                             </div>
                                         )
-                                    }
-                                    
-                                
+                                    }  
                                 }
                             )
                         }
 
-                       
                         {/* Run button */}
                         {/* if booleanPackageInstall is false, show run button */}
                         {/* if booleanPackageInstall is true, show install button */}
-
-
                     </div>
-
-
                 }
 
             </div>
-        </div>
-    )
-}
-
-
-const codeMessage = (message) => {
-    return(
-        <div className="message code">
-            <pre>
-                <code>
-                    {message}
-                </code>
-            </pre>
         </div>
     )
 }

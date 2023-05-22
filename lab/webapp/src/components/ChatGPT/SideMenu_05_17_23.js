@@ -118,7 +118,8 @@ async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setC
     // when user click existing chat button
     else{
 
-        
+        // Get existing chatlogs
+        // GET http://localhost:5080/chatapi/v1/chats/${data[clickedChatBoxNum]['_id']}
         data = await getSpecificChatbyChatId(dataFiltered[clickedChatBoxNum]['_id'])
 
         console.log("data['chatlogs']", data['chatlogs']);
@@ -184,11 +185,11 @@ async function checkClickedChatboxTab(e) {
         // this is the number of chat boxes in the result page
         // numChatBox, setNumChatBox
 
-        var countClickedChatBoxID = numChatBox+1;
+        let countClickedChatBoxID = numChatBox+1;
     }
     else{
 
-        var siblings = e.target.parentNode.parentNode.childNodes;
+        let siblings = e.target.parentNode.parentNode.childNodes;
 
         for (let i = 1; i < siblings.length-1; i++) {
             // console.log("siblings[i]",siblings[i])
@@ -203,23 +204,23 @@ async function checkClickedChatboxTab(e) {
             }
         }
 
-        // var currentClickedChatBoxID = parseInt(e.target.childNodes[1].nodeValue);
-        var currentClickedChatBoxID = parseInt(e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue);
+        // let currentClickedChatBoxID = parseInt(e.target.childNodes[1].nodeValue);
+        let currentClickedChatBoxID = parseInt(e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue);
     
         // Add 1 to currentClickedChatBoxID
-        countClickedChatBoxID = currentClickedChatBoxID + 1;  
+        let countClickedChatBoxID = currentClickedChatBoxID + 1;  
     } 
     // first chatbox is 1, second chatbox is 2, third chatbox is 3, etc.
     setChatCurrentTempId(countClickedChatBoxID)
 
     // user clicks chatbox tap
     if (e.target.childNodes.length == 3){
-        var clickedChatBoxNum = e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue;
+        let clickedChatBoxNum = e.target.childNodes[2].childNodes[0].childNodes[1].nodeValue;
     }
 
     // user clicks + New Chat
     else if (e.target.childNodes.length == 1){
-        var clickedChatBoxNum = e.target.childNodes[0].nodeValue;
+        let clickedChatBoxNum = e.target.childNodes[0].nodeValue;
     }
     // getAllChatsAndGetSpecificChat(clickedChatBoxNum, setChatLog);
     getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog);
@@ -286,7 +287,7 @@ async function removeCorChat(e) {
     {
         if (e.target.parentNode.childNodes[0].childNodes.length === 2){
 
-            // var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[1].childNodes[0].textContent;
+            // let textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[1].childNodes[0].textContent;
 
                 alert("Error: You cannot delete the chatbox tap. Please name the chatbox tap first.")
 
@@ -300,15 +301,15 @@ async function removeCorChat(e) {
 
         else if(e.target.parentNode.childNodes[0].childNodes.length === 3){
 
-            var textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent;
+            let textClickedChatBox = e.target.parentNode.childNodes[0].childNodes[2].childNodes[0].textContent;
         }
 
 
         // parse textClickedChatBox with _
-        var textClickedChatBoxIdString = textClickedChatBox.split("_")[1];
+        let textClickedChatBoxIdString = textClickedChatBox.split("_")[1];
 
         // convert textClickedChatBoxIdString to integer
-        var textClickedChatBoxId = parseInt(textClickedChatBoxIdString);
+        let textClickedChatBoxId = parseInt(textClickedChatBoxIdString);
 
         // remove the clicked chatbox tap from DB
         // To do this, first get the experiment id from the url
@@ -337,6 +338,7 @@ async function removeCorChat(e) {
         })
 
         // DELETE /chatapi/v1/chats/6421ebd85dc44d80542362c4
+
 
     // remove the chat from DB
     await deleteSpecificChat(filteredChatsWithoutNull[textClickedChatBoxId]['_id'])
@@ -396,6 +398,7 @@ async function removeCorChat(e) {
         setChatLog(chatLogNew);
         setNumChatBox(1)
         setChatCurrentTempId(1)
+
         setTapTitlesFunc();
 
     }
@@ -510,12 +513,20 @@ async function postChatNameToDB(chatboxtapname){
                                 onClick={
                                     
                                     (e)=>{
+                                        // console.log("One clicked!")
+                                        // console.log("wer-ee.target.parentNode",e.target.parentNode)
+
+                                        // background color of e.target.parentNode transpalent lighter blue
+                                        // e.target.parentNode.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
+
+                                       
 
                                         checkClickedChatboxTab(e)
                                         
                                         clearAllTrashIcons(e.target.parentNode.parentNode)
 
                                         clearAllCheckIcons(e.target.parentNode.parentNode)
+
 
                                         e.target.parentNode.childNodes[1].style.display = 'block'
 
@@ -526,11 +537,23 @@ async function postChatNameToDB(chatboxtapname){
                                 onDoubleClick={
                                     (e)=>{
 
+
+
+                                        
+                                        // console.log("Double clicked!")
+                                        // console.log("e.target.parentNode.parentNode",e.target.parentNode.parentNode)
+
                                         // find the child node with id newchatbutton
                                         let newchatbutton = document.getElementById("newchatbutton");
 
                                         // make it unclickable
                                         newchatbutton.style.pointerEvents = "none";
+
+                                        // console.log("e.keyCode",e.keyCode)
+
+                                        // change e.target.parentNode.childNodes[1]  to 
+                                        // ✔︎
+                                        
 
                                         // e.target.parentNode.childNodes[1].textContent = "✔︎"
 
@@ -575,7 +598,63 @@ async function postChatNameToDB(chatboxtapname){
                                     }
                                 
                                 }
+
+                                // when user click outside the div, the div will not be editable anymore
+                                
+
+                                // onMouseEnter={
+                                //     (e)=> {
+                                //         e.target.contentEditable = true;
+                                //         e.target.focus();
+                                //         // make the current e contentEditable  not any children
+                                //         // e.target.childNodes[0].contentEditable = false;
+                                        
+                                        
+                                        
+                                        
+                                //         // ChatBox_
+                                //         console.log("e.target.childNodes[0]",e.target.childNodes[0])
+
+                                //         e.target.childNodes[0].contentEditable = true;
+                                        
+                                        
+                                //         // 1
+                                //         console.log("e.target.childNodes[1]",e.target.childNodes[1])
+
+                                //         // e.target.childNodes[1].contentEditable = true;
+                                        
+                                //         //  span
+                                //         console.log("e.target.childNodes[2]",e.target.childNodes[2])
+
+                                //         // e.target.childNodes[2].contentEditable = false;
+
+
+                                //     }
+
+                                // }
+
+                                // onMouseLeave={
+                                //     (e)=> {
+                                //         // tempTaptitle
+                                //         console.log("e.target.childNodes[0].textContent",e.target.childNodes[0].textContent)
+
+                                //         let tempTaptitle = e.target.childNodes[0].textContent;
+
+                                //         console.log("tempTaptitle",tempTaptitle)
+
+                                //         e.preventDefault();
+                                //         e.target.contentEditable = false;
+                                //         e.target.focus();
+
+                                //          // post the + New Chat name to the DB
+                                //          postChatNameToDB(tempTaptitle)
+                                //     }
+                                // }   
                                 >
+                                    {/* ChatBox_{i} */}
+
+                                    {/* ChatBox<p style={{display: 'none'}}
+                                    contentEditable={false}>_{i}</p> */}
 
                                     {tapTitles.taptitles[i]}<p style={{display: 'none'}}
                                     contentEditable={false}>_{i}</p>
@@ -648,8 +727,11 @@ async function postChatNameToDB(chatboxtapname){
 
                                         postChatNameToDB(tempSideMenuButtonText)
 
+
+
                                     }
                                 }>🖋</div>
+
 
                             </div>
                         )
