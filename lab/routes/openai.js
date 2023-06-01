@@ -48,21 +48,6 @@ router.post('/configs', async (req, res) => {
     }
 });
 
-// Get all configs
-router.get('/configs', async (req, res) => {
-    try {
-        const config = await OpenAIConfig.find();
-        res.send(config);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// Get one config
-router.get('/configs/:id', getConfigById, (req, res) => {
-    res.send(res.config);
-});
-
 // Update one config
 router.patch('/configs/:id', getConfigById, async (req, res) => {
     if (req.body.org_id != null) {
