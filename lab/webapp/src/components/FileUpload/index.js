@@ -667,10 +667,6 @@ class FileUpload extends Component {
 
       this.handleSelectedFile(testdata.dataTransfer.files);
     }
-    
-    
-
-
 
   }
 

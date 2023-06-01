@@ -60,7 +60,7 @@ export default function PopUpAPI(
         // the window and open it again, it will not work. In this case, by using the
         // error throw and catch, we can make it work again. POST
         // http://localhost:5080/openai/v1/configs Content-Type: application/json {
-        // "api_key" : "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",
+        // "api_key" : "",
         // "org_id" : "Personal" }
 
         let resp=await fetch("/openai/v1/configs", {

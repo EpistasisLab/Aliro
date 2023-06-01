@@ -29,7 +29,7 @@ export default class PopUpAPI extends Component {
     // Content-Type: application/json
 
     // {
-    //     "api_key" : "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",
+    //     "api_key" : "",
     //     "org_id" : "Personal"
     // }
     
@@ -132,7 +132,7 @@ export default class PopUpAPI extends Component {
     // Content-Type: application/json
 
     // {
-    //     "api_key" : "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",
+    //     "api_key" : "",
     //     "org_id" : "Personal"
     // }
     
@@ -186,7 +186,7 @@ export default class PopUpAPI extends Component {
 // Content-Type: application/json
 
 // {
-//     "api_key" : "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",
+//     "api_key" : "",
 //     "org_id" : "Personal"
 // }
 
