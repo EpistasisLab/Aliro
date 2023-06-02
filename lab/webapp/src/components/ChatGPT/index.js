@@ -2323,7 +2323,8 @@ export default function ChatGPT({experiment}) {
                     postInChatlogsToDB,
                     deleteSpecificChat,
                     patchSpecificChat,
-                    experiment
+                    experiment,
+                    setTemperature
                   }}>
                 <SideMenu/>
                 </AllContext.Provider>
