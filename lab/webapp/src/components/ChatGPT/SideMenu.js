@@ -40,6 +40,7 @@ export default function SideMenu(
         deleteSpecificChat,
         patchSpecificChat,
         experiment,
+        setTemperature,
       }= useContext(AllContext);
 
     useEffect(() => {
@@ -654,7 +655,7 @@ async function postChatNameToDB(chatboxtapname){
                             </div>
                         )
                 }
-
+                {/* div for selecting LLMs */}
                 <div
                     className="models"
                     style={{
@@ -702,6 +703,16 @@ async function postChatNameToDB(chatboxtapname){
                         logical, 1 is the most creative.
                     </span>
                 </div>
+
+
+                {/* <button id="openPopupBtn">Open Popup</button>
+
+                <div id="popupContainer" class="popup-container">
+                    <div id="popupContent" class="popup-content">
+                        <!-- Your code snippet here -->
+                    </div>
+                </div> */}
+
             </aside>
         </div>
     );
