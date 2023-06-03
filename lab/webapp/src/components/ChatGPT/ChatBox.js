@@ -678,7 +678,8 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                         }
 
                                         else{
-                                            if (line==="Please wait while I am thinking..")
+                                            // if (line==="Please wait while I am thinking..")
+                                            if (line==="..")
                                             {
                                                 return (
                                                     <div id="justmessage" >

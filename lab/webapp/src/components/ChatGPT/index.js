@@ -1090,8 +1090,11 @@ export default function ChatGPT({experiment}) {
     function nomoreBlinking(){
         // get all classes names blinking 
         let blinking = document.getElementsByClassName("blinking");
+
+        console.log("blinking.length",blinking.length)
         // chagne all classes names blinking noblinking
         for (let i = 0; i < blinking.length; i++) {
+            console.log("nomoreBlinking-blinking[i]",blinking[i])
             blinking[i].className = "noblinking";
         }
     }
@@ -1196,10 +1199,10 @@ export default function ChatGPT({experiment}) {
 
         // console.log("preSet",preSet);
 
-        let waitingMessage = "Please wait while I am thinking..";
-        // let waitingMessage = ".....";
+        // let waitingMessage = "Please wait while I am thinking..";
+        let waitingMessage = "..";
+        console.log("waitingMessage.length",waitingMessage.length)
         let typingDelay = 10; // milliseconds per character
-        // let typingDelay = 20; // milliseconds per character
         
         // Before making the API call
         setChatLog(chatLogNew => [
@@ -1242,7 +1245,7 @@ export default function ChatGPT({experiment}) {
         
 
 
-        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
+        // await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
 
         
         // data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
@@ -1395,13 +1398,23 @@ export default function ChatGPT({experiment}) {
         //     }
         // ]);
 
+        // setChatLog(chatLog => [
+        //     ...chatLog, {
+        //     user: "gpt",
+        //     message: messageFromOpenai,
+        //     className: ""
+        //     }
+        // ]);
+
+
         setChatLog(chatLog => [
-            ...chatLog, {
-            user: "gpt",
-            message: messageFromOpenai,
-            className: ""
+            ...chatLog.slice(0, -1),
+            {
+                user: "gpt",
+                message: messageFromOpenai,
+                className: ""
             }
-        ]);
+            ]);
   
         // let messageIndex2 = 0;
         // let intervalId2 = setInterval(() => {
