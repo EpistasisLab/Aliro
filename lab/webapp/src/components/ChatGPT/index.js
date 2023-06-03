@@ -21,7 +21,9 @@ export default function ChatGPT({experiment}) {
     useEffect(() => {
         // console.log("ChatGPT-props", props);
         console.log("useEffect-index.js")
-        // getEngines();
+        getEngines();
+
+        // console.log("out=models", models)
 
         initailChatBoxSetting();
         getAllChatsFromDBFilterbyExpIdSetChatbox();
@@ -41,6 +43,8 @@ export default function ChatGPT({experiment}) {
     // language model
     // const [currentModel, setCurrentModel] = useState("text-davinci-003");
     const [currentModel, setCurrentModel] = useState("gpt-3.5-turbo");
+
+
 
     // initial chat box setting
     const [chatLog, setChatLog] = useState([
@@ -106,22 +110,12 @@ export default function ChatGPT({experiment}) {
         await fetch("openai/v1/models")
             .then(res => res.json())
             .then(data => {
-                // set models in order alpahbetically
-                console.log("data-models", data)
-                data
-                    .models
-                    .data
-                    .sort((a, b) => {
-                        if (a.id < b.id) {
-                            return -1;
-                        }
-                        if (a.id > b.id) {
-                            return 1;
-                        }
-                        return 0;
-                    })
-                setModels(data.models.data)
-                // console.log("models", data.models.data)
+
+                // filter elements whose id include "gpt"
+
+                let filteredModel = data.data.filter((item) => item.id.includes("gpt"))
+
+                setModels(filteredModel)
             })
     }
 
@@ -141,7 +135,6 @@ export default function ChatGPT({experiment}) {
 
     }
 
-    
     function extractCode(messageFromOpenai) {
 
 
@@ -672,7 +665,7 @@ export default function ChatGPT({experiment}) {
     // ==================== openai api ====================
     async function openaiChatCompletions(currentModel,preSetLastMessageFromUser){
 
-        // jay's
+
         let data=await fetch("openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -824,6 +817,48 @@ export default function ChatGPT({experiment}) {
 
 
     }
+
+    async function openaiComletions(currentModel,preSetLastMessageFromUser){
+
+        let data=await fetch("openai/v1/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            // original
+            // body: JSON.stringify(
+            //     {
+            //         "model": currentModel,
+            //         "prompt": preSetLastMessageFromUser,
+            //         "temperature": 0.7
+            //     }
+            // )
+
+            // new
+            body: JSON.stringify(
+                {
+                    "model": currentModel,
+                    "prompt": preSetLastMessageFromUser,
+                    "temperature": 0.7
+                }
+            )
+        })
+        .then(res => res.json())
+        .then(data => {
+            return data;
+        })
+        .catch(err => {
+            console.log("err--openaiComletions",err);
+            return err;
+        })
+
+        return data;
+
+
+    }
+
+
 
 
     function extractPackagesOfCode(code){
@@ -1055,8 +1090,11 @@ export default function ChatGPT({experiment}) {
     function nomoreBlinking(){
         // get all classes names blinking 
         let blinking = document.getElementsByClassName("blinking");
+
+        console.log("blinking.length",blinking.length)
         // chagne all classes names blinking noblinking
         for (let i = 0; i < blinking.length; i++) {
+            console.log("nomoreBlinking-blinking[i]",blinking[i])
             blinking[i].className = "noblinking";
         }
     }
@@ -1161,7 +1199,9 @@ export default function ChatGPT({experiment}) {
 
         // console.log("preSet",preSet);
 
-        let waitingMessage = "Please wait while I am thinking..";
+        // let waitingMessage = "Please wait while I am thinking..";
+        let waitingMessage = "..";
+        console.log("waitingMessage.length",waitingMessage.length)
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call
@@ -1205,7 +1245,7 @@ export default function ChatGPT({experiment}) {
         
 
 
-        await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
+        // await postInChatlogsToDB(filteredData[chatCurrentTempId-1]['_id'], waitingMessage, "text", "gpt");
 
         
         // data= await openaiChatCompletions(currentModel,preSet+lastMessageFromUser)
@@ -1358,13 +1398,23 @@ export default function ChatGPT({experiment}) {
         //     }
         // ]);
 
+        // setChatLog(chatLog => [
+        //     ...chatLog, {
+        //     user: "gpt",
+        //     message: messageFromOpenai,
+        //     className: ""
+        //     }
+        // ]);
+
+
         setChatLog(chatLog => [
-            ...chatLog, {
-            user: "gpt",
-            message: messageFromOpenai,
-            className: ""
+            ...chatLog.slice(0, -1),
+            {
+                user: "gpt",
+                message: messageFromOpenai,
+                className: ""
             }
-        ]);
+            ]);
   
         // let messageIndex2 = 0;
         // let intervalId2 = setInterval(() => {
@@ -1510,6 +1560,7 @@ export default function ChatGPT({experiment}) {
 
 
         let waitingMessage = "Please wait while I am thinking..";
+        
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call

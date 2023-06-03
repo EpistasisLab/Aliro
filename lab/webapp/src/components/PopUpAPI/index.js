@@ -71,7 +71,7 @@ export default function PopUpAPI(
             body: JSON.stringify({api_key: openaiKey, org_id: "Personal"})
             })
             .then((response) => {
-                console.log("spec-step-2", response)
+                console.log("63-postOpenAIkey-response", response)
                 if (!response.ok) {
 
                     alert("Connection to OpenAI is not established")
@@ -102,7 +102,7 @@ export default function PopUpAPI(
             }
         })
         .then((response) => {
-                console.log("spec-step-3", response.ok)
+                console.log("63-connections-response.ok", response.ok)
                 if (!response.ok) {
 
                     // throw new Error(`HTTP error: ${response.status}`);
