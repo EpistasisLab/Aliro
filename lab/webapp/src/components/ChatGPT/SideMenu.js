@@ -482,6 +482,109 @@ async function postChatNameToDB(chatboxtapname){
             <aside className="sidemenu">
 
                 {/* <div className="side-menu-button" onClick={() => setNumChatBox(numChatBox + 1)}> */}
+                {/* <div className="side-menu-button" 
+                > */}
+                    <button id="openPopupBtn" className="side-menu-button"  onClick={() => {
+                    console.log("77-openPopupBtn is clicked")
+                    const popupContainer = document.getElementById('popupContainer');
+
+                    popupContainer.style.display = 'block';
+
+                    const popupContent = document.getElementById('popupContent');
+
+                    popupContent.style.display = 'block';
+
+                    
+                }}
+                >LLMs settings</button>
+
+
+
+                    <div id="popupContainer" class="popup-container" onClick={()=>{
+                        console.log("77-popupContainer is clicked")
+                        const popupContainer = document.getElementById('popupContainer');
+
+                        const popupContent=document.getElementById("popupContent")
+
+                        if(popupContent.style.display != 'block'){
+
+                            popupContainer.style.display = 'none';
+                        }
+
+                        console.log("77-document.getElementById(popupContent).style.display",document.getElementById("popupContent").style.display)
+
+                    }}>
+                        {/* make close box for popupContent */}
+                        <div id="popupContent" class="popup-content">
+                            {/* <!-- Your code snippet here --> */}
+                                <div
+                            className="models"
+                            // style={{
+                            //     display: 'none'
+                            // }}
+                            >
+
+                            <button className="close-button" onClick={() => {
+                                document.getElementById("popupContent").style.display = "none"
+                                document.getElementById('popupContainer').style.display = 'none';
+                            }}
+                            >
+                                x
+                            </button>
+                            
+                            <label className="side-label">Model</label>
+                            
+                            <select
+                                // active if model is select is currentModel
+                                value={currentModel} className="select-models" onChange={(e) => {
+                                    setCurrentModel(e.target.value)
+                                }}>
+                                {
+                                    models && models.length
+                                        ? models.map(
+                                            (model, index) => (<option key={model.id} value={model.id}>{model.id}</option>)
+                                        )
+                                        : <option key={"text-davinci-003"} value={"text-davinci-003"}>{"text-davinci-003"}</option>
+                                }
+                            </select>
+
+                            {/* <Button
+                                text="Smart - Davinci"
+                                onClick={() => setCurrentModel("text-davinci-003")}/>
+                            <Button
+                                text="Code - Crushman"
+                                onClick={() => setCurrentModel("code-cushman-001")}/> */}
+                            
+                            <span className="info">
+                                {/* The model parameter controls the engine used to generate the response. */}
+                                The model parameter determines the underlying algorithm and configuration employed by the system to generate the response.
+                            </span>
+                            <label className="side-label">Temperature</label>
+                            <input
+                                className="select-models"
+                                type="number"
+                                onChange={(e) => setTemperature(e.target.value)}
+                                min="0"
+                                max="1"
+                                step="0.1"
+                                value={temperature}/>
+                            {/* <Button text="0 - Logical" onClick={() => setTemperature(0)}/>
+                            <Button text="0.5 - Balanced" onClick={() => setTemperature(0.5)}/>
+                            <Button text="1 - Creative" onClick={() => setTemperature(1)}/> */}
+                            <span className="info">
+                                {/* The temperature parameter controls the randomness of the model. 0 is the most
+                                logical, 1 is the most creative. */}
+                                The temperature parameter controls model randomness: 0 for logic, 1 for creativity.
+                            </span>
+
+                            
+                                </div>
+                            
+                        </div>
+                    </div>
+                {/* </div> */}
+
+
                 <div className="side-menu-button" id="newchatbutton" onClick={ 
                     async (e) =>
                     {   
@@ -655,15 +758,16 @@ async function postChatNameToDB(chatboxtapname){
                             </div>
                         )
                 }
-                {/* div for selecting LLMs */}
-                <div
+
+                {/* div for selecting LLMs, this div is invisible. */}
+                {/* <div
                     className="models"
                     style={{
                         display: 'none'
                     }}>
                     <label className="side-label">Model</label>
                     <select
-                        // active if model is select is currentModel
+                        
                         value={currentModel} className="select-models" onChange={(e) => {
                             setCurrentModel(e.target.value)
                         }}>
@@ -683,8 +787,8 @@ async function postChatNameToDB(chatboxtapname){
                         text="Code - Crushman"
                         onClick={() => setCurrentModel("code-cushman-001")}/>
                     <span className="info">
-                        The model parameter controls the engine used to generate the response. Davinci
-                        produces best results.
+                        
+                        The model parameter determines the underlying algorithm and configuration employed by the system to generate the response.
                     </span>
                     <label className="side-label">Temperature</label>
                     <input
@@ -699,19 +803,106 @@ async function postChatNameToDB(chatboxtapname){
                     <Button text="0.5 - Balanced" onClick={() => setTemperature(0.5)}/>
                     <Button text="1 - Creative" onClick={() => setTemperature(1)}/>
                     <span className="info">
-                        The temperature parameter controls the randomness of the model. 0 is the most
-                        logical, 1 is the most creative.
+                       
+                        The temperature parameter controls model randomness: 0 for logic, 1 for creativity.
                     </span>
-                </div>
+                </div> */}
 
 
-                {/* <button id="openPopupBtn">Open Popup</button>
 
-                <div id="popupContainer" class="popup-container">
+                
+                {/* <button id="openPopupBtn" onClick={() => {
+                    console.log("77-openPopupBtn is clicked")
+                    const popupContainer = document.getElementById('popupContainer');
+
+                    popupContainer.style.display = 'block';
+
+                    const popupContent = document.getElementById('popupContent');
+
+                    popupContent.style.display = 'block';
+
+                    
+                }}
+                style={{
+                    display: 'none'
+                }}
+                >LLMs settings</button> */}
+
+                {/* <div id="popupContainer" class="popup-container" onClick={()=>{
+                    console.log("77-popupContainer is clicked")
+                    const popupContainer = document.getElementById('popupContainer');
+
+                    const popupContent=document.getElementById("popupContent")
+
+                    if(popupContent.style.display != 'block'){
+
+                        popupContainer.style.display = 'none';
+                    }
+
+                    console.log("77-document.getElementById(popupContent).style.display",document.getElementById("popupContent").style.display)
+
+                }}>
+                    
                     <div id="popupContent" class="popup-content">
-                        <!-- Your code snippet here -->
+
+                            <div
+                        className="models"
+
+                        >
+
+                        <button className="close-button" onClick={() => {
+                            document.getElementById("popupContent").style.display = "none"
+                            document.getElementById('popupContainer').style.display = 'none';
+                        }}
+                        >
+                            x
+                        </button>
+                        
+                        <label className="side-label">Model</label>
+                        
+                        <select
+                            
+                            value={currentModel} className="select-models" onChange={(e) => {
+                                setCurrentModel(e.target.value)
+                            }}>
+                            {
+                                models && models.length
+                                    ? models.map(
+                                        (model, index) => (<option key={model.id} value={model.id}>{model.id}</option>)
+                                    )
+                                    : <option key={"text-davinci-003"} value={"text-davinci-003"}>{"text-davinci-003"}</option>
+                            }
+                        </select>
+
+                       
+                        
+                        <span className="info">
+                            
+                            The model parameter determines the underlying algorithm and configuration employed by the system to generate the response.
+                        </span>
+                        <label className="side-label">Temperature</label>
+                        <input
+                            className="select-models"
+                            type="number"
+                            onChange={(e) => setTemperature(e.target.value)}
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={temperature}/>
+
+                        <span className="info">
+  
+                            The temperature parameter controls model randomness: 0 for logic, 1 for creativity.
+                        </span>
+
+                        
+                            </div>
+                        
                     </div>
                 </div> */}
+
+
+
 
             </aside>
         </div>

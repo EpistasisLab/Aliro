@@ -21,7 +21,9 @@ export default function ChatGPT({experiment}) {
     useEffect(() => {
         // console.log("ChatGPT-props", props);
         console.log("useEffect-index.js")
-        // getEngines();
+        getEngines();
+
+        // console.log("out=models", models)
 
         initailChatBoxSetting();
         getAllChatsFromDBFilterbyExpIdSetChatbox();
@@ -41,6 +43,8 @@ export default function ChatGPT({experiment}) {
     // language model
     // const [currentModel, setCurrentModel] = useState("text-davinci-003");
     const [currentModel, setCurrentModel] = useState("gpt-3.5-turbo");
+
+
 
     // initial chat box setting
     const [chatLog, setChatLog] = useState([
@@ -106,22 +110,12 @@ export default function ChatGPT({experiment}) {
         await fetch("openai/v1/models")
             .then(res => res.json())
             .then(data => {
-                // set models in order alpahbetically
-                console.log("data-models", data)
-                data
-                    .models
-                    .data
-                    .sort((a, b) => {
-                        if (a.id < b.id) {
-                            return -1;
-                        }
-                        if (a.id > b.id) {
-                            return 1;
-                        }
-                        return 0;
-                    })
-                setModels(data.models.data)
-                // console.log("models", data.models.data)
+
+                // filter elements whose id include "gpt"
+
+                let filteredModel = data.data.filter((item) => item.id.includes("gpt"))
+
+                setModels(filteredModel)
             })
     }
 
@@ -141,7 +135,6 @@ export default function ChatGPT({experiment}) {
 
     }
 
-    
     function extractCode(messageFromOpenai) {
 
 
@@ -672,7 +665,7 @@ export default function ChatGPT({experiment}) {
     // ==================== openai api ====================
     async function openaiChatCompletions(currentModel,preSetLastMessageFromUser){
 
-        // jay's
+
         let data=await fetch("openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -824,6 +817,48 @@ export default function ChatGPT({experiment}) {
 
 
     }
+
+    async function openaiComletions(currentModel,preSetLastMessageFromUser){
+
+        let data=await fetch("openai/v1/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            // original
+            // body: JSON.stringify(
+            //     {
+            //         "model": currentModel,
+            //         "prompt": preSetLastMessageFromUser,
+            //         "temperature": 0.7
+            //     }
+            // )
+
+            // new
+            body: JSON.stringify(
+                {
+                    "model": currentModel,
+                    "prompt": preSetLastMessageFromUser,
+                    "temperature": 0.7
+                }
+            )
+        })
+        .then(res => res.json())
+        .then(data => {
+            return data;
+        })
+        .catch(err => {
+            console.log("err--openaiComletions",err);
+            return err;
+        })
+
+        return data;
+
+
+    }
+
+
 
 
     function extractPackagesOfCode(code){
@@ -1162,7 +1197,9 @@ export default function ChatGPT({experiment}) {
         // console.log("preSet",preSet);
 
         let waitingMessage = "Please wait while I am thinking..";
+        // let waitingMessage = ".....";
         let typingDelay = 10; // milliseconds per character
+        // let typingDelay = 20; // milliseconds per character
         
         // Before making the API call
         setChatLog(chatLogNew => [
@@ -1510,6 +1547,7 @@ export default function ChatGPT({experiment}) {
 
 
         let waitingMessage = "Please wait while I am thinking..";
+        
         let typingDelay = 10; // milliseconds per character
         
         // Before making the API call
