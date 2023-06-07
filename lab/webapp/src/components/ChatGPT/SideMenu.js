@@ -233,22 +233,42 @@ async function checkClickedChatboxTab(e) {
     setLanModelReset(true)
 }
 
-function clearAllTrashIcons (nodes) {
-
-    for (let i = 1; i < nodes.childNodes.length-1; i++) {
-        nodes.childNodes[i].childNodes[1].style.display = "none";
-        nodes.childNodes[i].childNodes[1].innerHTML = "🗑️";
-    }
-}
+// function clearAllTrashIcons (nodes) {
 
 
-function clearAllCheckIcons (nodes) {
 
-    for (let i = 1; i < nodes.childNodes.length-1; i++) {
-        nodes.childNodes[i].childNodes[2].style.display = "none";
-        nodes.childNodes[i].childNodes[2].innerHTML = "🖋";
-    }
-}
+//     // for (let i = 1; i < nodes.childNodes.length-1; i++) {
+//     for (let i = 3; i < nodes.childNodes.length; i++) {
+
+//         nodes.childNodes[i].childNodes[1].style.display = "none";
+//         nodes.childNodes[i].childNodes[1].innerHTML = "🗑️";
+//     }
+// }
+
+function clearAllTrashIcons(nodes) {
+    Array.from(nodes.childNodes).slice(3).forEach(node => {
+      node.childNodes[1].style.display = "none";
+      node.childNodes[1].innerHTML = "🗑️";
+    });
+  }
+
+
+// function clearAllCheckIcons (nodes) {
+//     // for (let i = 1; i < nodes.childNodes.length-1; i++) {
+//     for (let i = 3; i < nodes.childNodes.length; i++) {
+//         nodes.childNodes[i].childNodes[2].style.display = "none";
+//         nodes.childNodes[i].childNodes[2].innerHTML = "🖋";
+//     }
+// }
+
+
+function clearAllCheckIcons(nodes) {
+    Array.from(nodes.childNodes).slice(3).forEach(node => {
+      node.childNodes[2].style.display = "none";
+      node.childNodes[2].innerHTML = "🖋";
+    });
+  }
+  
 
 
 // This function is to check if the number of chat boxes is equal to or greater than the limit, and if so, make the + New Chat button not clickable
@@ -754,11 +774,15 @@ async function disconnetOpenAI(){
                                     
                                     (e)=>{
 
+                                        console.log("77-e.target.parentNode.childNodes",e.target.parentNode.childNodes)
+
                                         checkClickedChatboxTab(e)
                                         
                                         clearAllTrashIcons(e.target.parentNode.parentNode)
 
                                         clearAllCheckIcons(e.target.parentNode.parentNode)
+
+                                       
 
                                         e.target.parentNode.childNodes[1].style.display = 'block'
 
