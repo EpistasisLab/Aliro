@@ -773,17 +773,7 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                 
 
                                 // e.target.parentElement.parentElement.parentElement.onkeydown
-                                e.target.parentElement.parentElement.parentElement.onkeydown = async function(e) {
-                                    console.log("e.keyCode", e.keyCode)
-                                    console.log("e.button", e.button)
-                                    console.log("e.target.parentElement", e.target.parentElement)
-                                    console.log("e.target", e.target)
-
-                                    // find element id runbutton from the e.target.parentElement child
-
-                                    
-                                    // console.log("e.code",e.code)
-
+                                e.target.parentElement.parentElement.parentElement.onkeydown = async function(e) {                                    
 
                                     // enter key is not allowed
                                     if(e.keyCode === 27) {
@@ -792,9 +782,6 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
 
                                         let tempChatCodeExplain = e.target.parentElement.getElementsByClassName("message-nonEditable")[0].innerText;
 
-                                        console.log("tempChatCodeExplain", tempChatCodeExplain)
-                                  
-                                        
                                         let tempUpdatedCodewithChat = tempChatCodeExplain+"\n"+"```python"+"\n"+e.target.innerText+"\n"+"```";
 
                                         // console.log("tempUpdatedCodewithChat", tempUpdatedCodewithChat)

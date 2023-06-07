@@ -5,7 +5,7 @@ import SideMenu from "./SideMenu";
 import ChatBox from "./ChatBox";
 // import { locales } from 'moment';
 
-import TestPage from './TestPage';
+// import TestPage from './TestPage';
 
 import {chatLogContext} from "./context/chatLogContext";
 
@@ -38,6 +38,45 @@ export default function ChatGPT({experiment}) {
     )
 
     const [chatInput, setChatInput] = useState("");
+    // By using let preSet,
+    const [preSetPrompt, setPreSetPrompt] = useState(`If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. I strongly ask you to always write the code between three backticks python and three backticks always. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
+    
+    In the case where you need to save csv, for each colum name, if it has _ in the name, replace _ with -.
+    please make sure that any commenets should be in the form of #. For example, # this is a comment. or # Note: Please make sure to install the necessary libraries before running this code such as imblearn, pandas, matplotlib and sklearn.
+
+    Please also make sure thant when you return python script, please comment out any explanation between \`\`\`python \n and \n \`\`\` . For example, 
+    # Sure, here's an example code to create violin plots using seaborn library, where each column of a pandas dataframe is plotted as a separate violin plot and saved as a png file.
+    
+    import pandas as pd
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    # Load sample data
+    df = sns.load_dataset("tips")
+    # Get column names
+    cols = df.columns
+
+    If you give me a code like this, I will give you a score of 0. Please make sure to comment out any explanation between \`\`\`python \n and \n \`\`\` . For example,
+
+    \`\`\`python \n import pandas as pd \n
+    from sklearn.model_selection import train_test_split \n
+    from sklearn.preprocessing import StandardScaler \n
+    from keras.models import Sequential \n
+    from keras.layers import Dense \n
+    import matplotlib.pyplot as plt \n
+    # load the DataFrame \n
+    df = pd.read_csv('your_dataframe.csv') \n \`\`\`
+
+    In the case where machine learning task is required, please make sure to use df as the dataframe name, and save learning curve as a png file. Please do not load the data from the csv file. 
+
+    In the case where python generates more than 2 image files (png, jpg, jpeg, etc), please make sure to zip all the files and save it as a zip file.
+
+    Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.`
+    
+    
+    
+    
+    );
+    
     const [models, setModels] = useState([]);
     const [temperature, setTemperature] = useState(0.5);
     // language model
@@ -1160,44 +1199,47 @@ export default function ChatGPT({experiment}) {
         // let preSet =`assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n You are asked: ` + prompt + `\n Given this prompt if you are asked to make a plot, save the plot locally. If you are asked to show a dataframe or alter it, output the file as a csv locally`;
 
         // my prompt eng
-        let preSet =`assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. 
+        // let preSet =`assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally. 
         
-        If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. I strongly ask you to always write the code between three backticks python and three backticks always. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
+        // If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. I strongly ask you to always write the code between three backticks python and three backticks always. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
         
-        In the case where you need to save csv, for each colum name, if it has _ in the name, replace _ with -.
-        please make sure that any commenets should be in the form of #. For example, # this is a comment. or # Note: Please make sure to install the necessary libraries before running this code such as imblearn, pandas, matplotlib and sklearn.
+        // In the case where you need to save csv, for each colum name, if it has _ in the name, replace _ with -.
+        // please make sure that any commenets should be in the form of #. For example, # this is a comment. or # Note: Please make sure to install the necessary libraries before running this code such as imblearn, pandas, matplotlib and sklearn.
 
-        Please also make sure thant when you return python script, please comment out any explanation between \`\`\`python \n and \n \`\`\` . For example, 
-        # Sure, here's an example code to create violin plots using seaborn library, where each column of a pandas dataframe is plotted as a separate violin plot and saved as a png file.
+        // Please also make sure thant when you return python script, please comment out any explanation between \`\`\`python \n and \n \`\`\` . For example, 
+        // # Sure, here's an example code to create violin plots using seaborn library, where each column of a pandas dataframe is plotted as a separate violin plot and saved as a png file.
         
-        import pandas as pd
-        import seaborn as sns
-        import matplotlib.pyplot as plt
-        # Load sample data
-        df = sns.load_dataset("tips")
-        # Get column names
-        cols = df.columns
+        // import pandas as pd
+        // import seaborn as sns
+        // import matplotlib.pyplot as plt
+        // # Load sample data
+        // df = sns.load_dataset("tips")
+        // # Get column names
+        // cols = df.columns
 
-        If you give me a code like this, I will give you a score of 0. Please make sure to comment out any explanation between \`\`\`python \n and \n \`\`\` . For example,
+        // If you give me a code like this, I will give you a score of 0. Please make sure to comment out any explanation between \`\`\`python \n and \n \`\`\` . For example,
 
-        \`\`\`python \n import pandas as pd \n
-        from sklearn.model_selection import train_test_split \n
-        from sklearn.preprocessing import StandardScaler \n
-        from keras.models import Sequential \n
-        from keras.layers import Dense \n
-        import matplotlib.pyplot as plt \n
-        # load the DataFrame \n
-        df = pd.read_csv('your_dataframe.csv') \n \`\`\`
+        // \`\`\`python \n import pandas as pd \n
+        // from sklearn.model_selection import train_test_split \n
+        // from sklearn.preprocessing import StandardScaler \n
+        // from keras.models import Sequential \n
+        // from keras.layers import Dense \n
+        // import matplotlib.pyplot as plt \n
+        // # load the DataFrame \n
+        // df = pd.read_csv('your_dataframe.csv') \n \`\`\`
 
-        In the case where machine learning task is required, please make sure to use df as the dataframe name, and save learning curve as a png file. Please do not load the data from the csv file. 
+        // In the case where machine learning task is required, please make sure to use df as the dataframe name, and save learning curve as a png file. Please do not load the data from the csv file. 
 
-        In the case where python generates more than 2 image files (png, jpg, jpeg, etc), please make sure to zip all the files and save it as a zip file.
+        // In the case where python generates more than 2 image files (png, jpg, jpeg, etc), please make sure to zip all the files and save it as a zip file.
 
-        Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.
-        
-        `;
+        // Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.`;
 
-        // console.log("preSet",preSet);
+        let preSet = `assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally.`+preSetPrompt+
+        "Please make sure that you should always save what kinds of charts you create and the information for charts into a csv file. For example, if you plot a donut chart, save the percentage of each class, class names as a csv file, and the chart name: donut. These information will allow user to make responsive and interactive charts.";
+
+
+
+        console.log("preSet",preSet);
 
         // let waitingMessage = "Please wait while I am thinking..";
         let waitingMessage = "..";
@@ -2375,7 +2417,9 @@ export default function ChatGPT({experiment}) {
                     deleteSpecificChat,
                     patchSpecificChat,
                     experiment,
-                    setTemperature
+                    setTemperature,
+                    preSetPrompt,
+                    setPreSetPrompt,
                   }}>
                 <SideMenu/>
                 </AllContext.Provider>

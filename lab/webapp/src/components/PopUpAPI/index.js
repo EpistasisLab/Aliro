@@ -38,6 +38,7 @@ export default function PopUpAPI(
                     // make it unvisible
                     modal.style.display = "none";
                     setopenaiApiState(openaiApiState => openaiApiState + 1);
+                    // setopenaiApiState(openaiApiState => openaiApiState - 1);
 
                 }
         });
@@ -126,6 +127,8 @@ export default function PopUpAPI(
 
                     document.getElementById("expertChatGPT").style.backgroundColor = "#1056c0";
 
+                    return true;
+
 
                     // alert("Connection to OpenAI is established")
 
@@ -142,7 +145,8 @@ export default function PopUpAPI(
             .value;
 
         console.log("spec-step-1")
-        await postOpenAIkey(openaiKey);
+        let connectBoolean=await postOpenAIkey(openaiKey);
+
         await postOpenAIConnectionCheck();
 
     };
