@@ -41,6 +41,8 @@ export default function SideMenu(
         patchSpecificChat,
         experiment,
         setTemperature,
+        preSetPrompt,
+        setPreSetPrompt
       }= useContext(AllContext);
 
     useEffect(() => {
@@ -59,6 +61,9 @@ export default function SideMenu(
     },
     [window.location.href, numChatBox]
     );
+
+
+    const [openaiApiState, setopenaiApiState] = useState(0);
 
 
 async function getAllChatsAndGetSpecificChatBasedOnExpID(clickedChatBoxNum, setChatLog) {
@@ -228,22 +233,42 @@ async function checkClickedChatboxTab(e) {
     setLanModelReset(true)
 }
 
-function clearAllTrashIcons (nodes) {
-
-    for (let i = 1; i < nodes.childNodes.length-1; i++) {
-        nodes.childNodes[i].childNodes[1].style.display = "none";
-        nodes.childNodes[i].childNodes[1].innerHTML = "🗑️";
-    }
-}
+// function clearAllTrashIcons (nodes) {
 
 
-function clearAllCheckIcons (nodes) {
 
-    for (let i = 1; i < nodes.childNodes.length-1; i++) {
-        nodes.childNodes[i].childNodes[2].style.display = "none";
-        nodes.childNodes[i].childNodes[2].innerHTML = "🖋";
-    }
-}
+//     // for (let i = 1; i < nodes.childNodes.length-1; i++) {
+//     for (let i = 3; i < nodes.childNodes.length; i++) {
+
+//         nodes.childNodes[i].childNodes[1].style.display = "none";
+//         nodes.childNodes[i].childNodes[1].innerHTML = "🗑️";
+//     }
+// }
+
+function clearAllTrashIcons(nodes) {
+    Array.from(nodes.childNodes).slice(3).forEach(node => {
+      node.childNodes[1].style.display = "none";
+      node.childNodes[1].innerHTML = "🗑️";
+    });
+  }
+
+
+// function clearAllCheckIcons (nodes) {
+//     // for (let i = 1; i < nodes.childNodes.length-1; i++) {
+//     for (let i = 3; i < nodes.childNodes.length; i++) {
+//         nodes.childNodes[i].childNodes[2].style.display = "none";
+//         nodes.childNodes[i].childNodes[2].innerHTML = "🖋";
+//     }
+// }
+
+
+function clearAllCheckIcons(nodes) {
+    Array.from(nodes.childNodes).slice(3).forEach(node => {
+      node.childNodes[2].style.display = "none";
+      node.childNodes[2].innerHTML = "🖋";
+    });
+  }
+  
 
 
 // This function is to check if the number of chat boxes is equal to or greater than the limit, and if so, make the + New Chat button not clickable
@@ -477,6 +502,91 @@ async function postChatNameToDB(chatboxtapname){
 }
 
 
+function checkConnectionOpenAIandSet(){
+    fetch("/openai/v1/connections", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then((response) => {
+            
+            if (!response.ok) {
+
+                // throw new Error(`HTTP error: ${response.status}`);
+                // alert("Connection to OpenAI is not established")
+
+                // when it render, in the case where the connection is not established, we will require user to input the API key in the box.
+                var modal = document.getElementsByClassName("modal")[0];
+                modal.style.display = "block";
+                
+
+            }
+            
+            else if(openaiApiState>0){
+
+                // let oak = document.getElementById("oak");
+                // oak.style.fontWeight = "bold";
+
+                let apiDisconnButton = document.getElementById("apiDisconnButton");
+                apiDisconnButton.style.pointerEvents = "auto";
+
+
+            }
+            
+            else {
+
+                document.getElementById("expertChatGPT").style.backgroundColor = "#1056c0";
+                var modal = document.getElementsByClassName("modal")[0];
+                // make it unvisible
+                modal.style.display = "none";
+                setopenaiApiState(openaiApiState => openaiApiState + 1);
+                
+
+                let apiDisconnButton = document.getElementById("apiDisconnButton");
+                apiDisconnButton.style.pointerEvents = "auto";
+
+
+
+
+            }
+    });
+}
+
+
+async function disconnetOpenAI(){
+    // DELETE http://localhost:5080/openai/v1/connections
+
+    await fetch("/openai/v1/connections", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then((response) => {
+
+        if (!response.ok) {
+
+            // throw new Error(`HTTP error: ${response.status}`);
+            alert('Failed to disconnect from OpenAI API')
+
+        }
+        else{
+
+            console.log("disconnect-response",response)
+
+            alert('Successfully disconnected from OpenAI API')
+
+            // document.getElementById("expertChatGPT").style.backgroundColor = "#d3d3d3";
+
+        }
+    });
+
+
+}
+
+
+
     return (
         <div className="divsidemenu">
             <aside className="sidemenu">
@@ -494,9 +604,11 @@ async function postChatNameToDB(chatboxtapname){
 
                     popupContent.style.display = 'block';
 
+                    checkConnectionOpenAIandSet()
+
                     
                 }}
-                >LLMs settings</button>
+                >Settings</button>
 
 
 
@@ -559,6 +671,8 @@ async function postChatNameToDB(chatboxtapname){
                                 {/* The model parameter controls the engine used to generate the response. */}
                                 The model parameter determines the underlying algorithm and configuration employed by the system to generate the response.
                             </span>
+
+
                             <label className="side-label">Temperature</label>
                             <input
                                 className="select-models"
@@ -576,6 +690,51 @@ async function postChatNameToDB(chatboxtapname){
                                 logical, 1 is the most creative. */}
                                 The temperature parameter controls model randomness: 0 for logic, 1 for creativity.
                             </span>
+
+
+                            <label className="side-label">Prompt Engineering</label>
+                            <input
+                                className="select-models"
+                                type="text"
+                                onChange={(e) => setPreSetPrompt(e.target.value)}
+                                // min="0"
+                                // max="1"
+                                // step="0.1"
+                                // make the input box bigger based on the length of the prompt
+                                
+                                value={preSetPrompt}/>
+                            {/* <Button text="0 - Logical" onClick={() => setTemperature(0)}/>
+                            <Button text="0.5 - Balanced" onClick={() => setTemperature(0.5)}/>
+                            <Button text="1 - Creative" onClick={() => setTemperature(1)}/> */}
+                            <span className="info">
+                                Please write your prompt here.
+                            </span>
+
+
+                            {/* <label id="oak" className="side-label">OpenAI API Key</label>
+                            
+                            <button id="apiDisconnButton" 
+                            style={{
+                                pointerEvents: 'none'
+                            }}
+
+                            onClick={async () => {
+
+                                console.log("apiDisconnButton is clicked")
+
+                                await disconnetOpenAI();
+                                
+                            }}
+
+
+                            
+                            >Disconnet</button>
+
+                             */}
+                                
+                            {/* <span className="info">
+                                The temperature parameter controls model randomness: 0 for logic, 1 for creativity.
+                            </span> */}
 
                             
                                 </div>
@@ -615,11 +774,15 @@ async function postChatNameToDB(chatboxtapname){
                                     
                                     (e)=>{
 
+                                        console.log("77-e.target.parentNode.childNodes",e.target.parentNode.childNodes)
+
                                         checkClickedChatboxTab(e)
                                         
                                         clearAllTrashIcons(e.target.parentNode.parentNode)
 
                                         clearAllCheckIcons(e.target.parentNode.parentNode)
+
+                                       
 
                                         e.target.parentNode.childNodes[1].style.display = 'block'
 
