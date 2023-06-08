@@ -78,7 +78,8 @@ export default function ChatGPT({experiment}) {
     );
     
     const [models, setModels] = useState([]);
-    const [temperature, setTemperature] = useState(0.5);
+    // const [temperature, setTemperature] = useState(0.5);
+    const [temperature, setTemperature] = useState(0);
     // language model
     // const [currentModel, setCurrentModel] = useState("text-davinci-003");
     const [currentModel, setCurrentModel] = useState("gpt-3.5-turbo");
@@ -1235,8 +1236,13 @@ export default function ChatGPT({experiment}) {
         // Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.`;
 
         let preSet = `assume you are a data scientist that only programs in python. You are given a model named model and dataframe df with the following performance:` + `{"params":`+ JSON.stringify(experiment.data.params) +`,"algorithm":`+ experiment.data.algorithm +`,"scores":`+ JSON.stringify(experiment.data.scores) +`feature_importance_type :`+ experiment.data.feature_importance_type +`,"feature_importances":`+ JSON.stringify(feature_importances) +`}` + `\n The dataframe df has 'target' as the output. You are asked: ` + `${chatInput}` + `\n Given this question if you are asked to make a plot, save the plot locally.`+preSetPrompt+
+
+        "Please make sure that you should always save what kinds of charts you create and the information for charts into a csv file. For example, if you plot a donut chart, save the percentage of each class, class names as a csv file, and the chart name: donut. These information will allow user to make responsive and interactive charts. Please make sure that you should replace '_' with '-' in column names"
+
+        + 
+        "Please do not load the dataframe which is df=pd.read_csv('path/to/your/dataset.csv') becasue df is already assigned."
         
-        "Please make sure that you should always save what kinds of charts you create and the information for charts into a csv file. For example, if you plot a donut chart, save the percentage of each class, class names as a csv file, and the chart name: donut. These information will allow user to make responsive and interactive charts. Please make sure that you should replace '_' with '-' in column names";
+        ;
 
 
 

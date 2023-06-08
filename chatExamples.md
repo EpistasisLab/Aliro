@@ -1,8 +1,27 @@
-The following table shows some examples of chat. Please submit the chats and check the response from the large language model.
+## Examples of Chat for the Iris Dataset
 
-|     | Chat examples                                                                                                                                                                                      |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | "Remove the first column from the dataset and save the resulting dataframe as 'new_df.csv"                                                                                                         |
-| 2   | "Create a scatter plot with sepal width on the x-axis and petal length on the y-axis, using color to differentiate between data points. Save the plot as a JPEG file."                             |
-| 3   | "Attempt to read the file 'nonexist.csv' and handle any resulting errors appropriately."                                                                                                           |
-| 4   | "Create a 3D scatter plot with sepal width, petal length, and petal width on the x, y, and z axes, respectively. Use color to differentiate between data points and save the plot as a JPEG file." |
+The following table shows some examples of chat for the iris dataset. [Click here](https://github.com/EpistasisLab/pmlb/tree/master/datasets/iris) to access the dataset on GitHub.
+
+|     | Chat examples for the iris dataset                                                                                                                                                                                                     |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | "Remove the first column from the dataset and save the resulting dataframe as 'new_df.csv"                                                                                                                                             |
+| 2   | "Create a scatter plot with sepal width on the x-axis and petal length on the y-axis, using color to differentiate data points. Save the plot as a JPEG file."                                                                         |
+| 3   | "Create a 3D scatter plot with sepal width, petal length, and petal width on the x, y, and z axes, respectively. Use color to differentiate data points and save the plot as a JPEG file."                                             |
+| 4   | "Attempt to read the file 'nonexist.csv' and handle any resulting errors appropriately."                                                                                                                                               |
+| 5   | "Please show me box plots for each column in the df dataset, grouped by the target variable, excluding the target column. Additionally, please include only the column name on top of each figure without any other text information." |
+
+| 6 | "Please drop the outliers in each column using the z-score method and save the modified dataset as a new file named 'new_df.tsv'." |
+
+---
+
+## Examples of Chat for the Breast Dataset
+
+The following table shows some examples of chat for the breast dataset. [Click here](https://github.com/EpistasisLab/pmlb/tree/master/datasets/breast) to access the dataset on GitHub.
+
+|     | Chat examples for the breast dataset                                                                                                                                                                                                       |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | "Remove the first column from the dataset and save the resulting dataframe as 'new_df_breast.csv."                                                                                                                                         |
+| 2   | "Please use seaborn's kdeplot to show a distribution for each column in the dataframe, excluding the target column, with respect to the target column. Save each distribution plot as a PNG file."                                         |
+| 3   | "Please show me a 3D PCA plot for the df dataset with respect to the target column, and save it as a PNG file. Please note that StandardScaler should not be used."                                                                        |
+| 4   | "Please show me box plots for each column in the df dataset, grouped by the target variable, excluding the target column. Additionally, please include only the column name on top of each figure without any other text information."     |
+| 5   | "Please show me the correlation matrix between each column (excluding the target column) and save it as a PNG. Please use shortened column names, derived from the full column names, to label the axes on the correlation matrix figure." |
