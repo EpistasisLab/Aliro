@@ -40,8 +40,7 @@ export default function ChatGPT({experiment}) {
     const [chatInput, setChatInput] = useState("");
     // By using let preSet,
     const [preSetPrompt, setPreSetPrompt] = useState(`If you are asked to show a dataframe or alter it, output the file as a csv locally. And generate a script of python code. I strongly ask you to always write the code between three backticks python and three backticks always. For example, \`\`\`python \n print("hello world") \n \`\`\` and when users want to see the dataframe, save it as a csv file locally. However do not use temparary file paths. For example, pd.read_csv('path/to/your/csv/file.csv') is not allowed. There is already df variable in the code. You can use it. For example, df.head() is allowed. And when users want to see plot, please save it locally. For example, plt.savefig('file.png') is allowed. 
-    
-    In the case where you need to save csv, for each colum name, if it has _ in the name, replace _ with -.
+
     please make sure that any commenets should be in the form of #. For example, # this is a comment. or # Note: Please make sure to install the necessary libraries before running this code such as imblearn, pandas, matplotlib and sklearn.
 
     Please also make sure thant when you return python script, please comment out any explanation between \`\`\`python \n and \n \`\`\` . For example, 
@@ -70,7 +69,13 @@ export default function ChatGPT({experiment}) {
 
     In the case where python generates more than 2 image files (png, jpg, jpeg, etc), please make sure to zip all the files and save it as a zip file.
 
-    Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.`
+    Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.
+    
+    In any situation where you need to manipulate a dataframe (df) and save it, for each column name, if it contains an underscore (_), replace the underscore with a hyphen (-).
+    `
+
+
+    
     
     
     
@@ -2078,7 +2083,8 @@ export default function ChatGPT({experiment}) {
                     const top10Rows = rows.slice(0, 11);
 
                     // const top10RowsText = top10Rows.join('\n');
-                    tableDataText = top10Rows.join('\_');
+                    // tableDataText = top10Rows.join('\_');
+                    tableDataText = top10Rows.join('\`');
 
                     // tableDataText = top10RowsText;
                 }
