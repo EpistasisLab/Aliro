@@ -46,7 +46,7 @@ export default function SideMenu(
       }= useContext(AllContext);
 
     useEffect(() => {
-        console.log("useEffect-SideMenu")
+        // console.log("useEffect-SideMenu")
 
         let experimentID = experiment.data._id ;
 
