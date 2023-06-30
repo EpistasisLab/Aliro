@@ -1540,30 +1540,54 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     QQNR_2d = list(map(list, zip(series1[0][0], series1[0][1])))
     QQNR_2d_class = np.zeros(len(series1[0][0]))
 
-    reg_cv_pred_resi_qq = {
+    # reg_cv_pred_resi_qq = {
+    #     'CVP_2d': CVP_2d,
+    #     'CVP_2d_class': CVP_2d_class.tolist(),
+
+    #     'CVR_2d': CVR_2d,
+    #     'CVR_2d_class': CVR_2d_class.tolist(),
+
+    #     'QQNR_2d': QQNR_2d,
+    #     'QQNR_2d_class': QQNR_2d_class.tolist(),
+    # }
+
+    # file_name = "reg_cv_pred_resi_qq_" + _id + ".json"
+
+    # save_json_fmt(outdir=tmpdir, _id=_id,
+    #               fname=file_name, content=reg_cv_pred_resi_qq)
+
+    # cvp
+    reg_cvp = {
         'CVP_2d': CVP_2d,
-        'CVP_2d_class': CVP_2d_class.tolist(),
-
-        'CVR_2d': CVR_2d,
-        'CVR_2d_class': CVR_2d_class.tolist(),
-
-        'QQNR_2d': QQNR_2d,
-        'QQNR_2d_class': QQNR_2d_class.tolist(),
-
-
-        # 'y': y.tolist(),
-        # 'pred_y': pred_y.tolist(),
-        # 'resi_y': resi_y.tolist(),
-
-        # 'z': z.tolist(),
-        # 'series1_zero': series1[0][0].tolist(),
-        # 'series1_one': series1[0][1].tolist(),
+        'CVP_2d_class': CVP_2d_class.tolist()
     }
 
-    file_name = "reg_cv_pred_resi_qq_" + _id + ".json"
+    cvp_file_name = "reg_cvp_" + _id + ".json"
 
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname=file_name, content=reg_cv_pred_resi_qq)
+                  fname=cvp_file_name, content=reg_cvp)
+
+    # cvr
+    reg_cvr = {
+        'CVR_2d': CVR_2d,
+        'CVR_2d_class': CVR_2d_class.tolist()
+    }
+
+    cvr_file_name = "reg_cvr_" + _id + ".json"
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname=cvr_file_name, content=reg_cvr)
+
+    # qqnr
+    reg_qqnr = {
+        'QQNR_2d': QQNR_2d,
+        'QQNR_2d_class': QQNR_2d_class.tolist()
+    }
+
+    qqnr_file_name = "reg_qqnr_" + _id + ".json"
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname=qqnr_file_name, content=reg_qqnr)
 
 
 def export_model(tmpdir,
