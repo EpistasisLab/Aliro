@@ -215,6 +215,38 @@ class Results extends Component {
         this
             .props
             .fetchExperiment(this.props.params.id);
+        
+        const { file } = this.props;
+
+        console.log("file-test",file)
+        
+        // FETCH DATA FROM API
+        // api/v1/files/:id
+        const fileId = '649b56060f80b9002d825f8a'; // Replace 'your_file_id' with the actual ID of the file
+
+       
+        // fetch(`/api/v1/files/${fileId}`, {
+        // method: 'GET',
+        // headers: {
+        //     'Content-Type': 'application/json',
+        //     // Add any other headers required by the API (e.g., authentication headers)
+        // },
+        // })
+        // .then(response => {
+        //     console.log("response-test",response)
+        //     response.json()
+        // })
+        // .then(data => {
+        //     // Handle the response data
+        //     console.log("fetch from",data)
+        //     // Points={experiment.data.X_pca}
+        //     // Labels={experiment.data.y_pca}
+        //     // console.log(data);
+        // })
+        // .catch(error => {
+        //     // Handle any errors that occur during the request
+        //     console.error('Error:', error);
+        // });
     }
 
     componentWillUnmount() {
@@ -282,6 +314,7 @@ class Results extends Component {
         }
 
         const downloadModel = (id) => {
+            // console.log("downloadModel_id",id)
             fetch(`/api/v1/experiments/${id}/model`)
                 .then(response => {
                     if (response.status >= 400) {
@@ -290,6 +323,7 @@ class Results extends Component {
                     return response.json();
                 })
                 .then(json => {
+                    console.log("json",json)
                     window.location = `/api/v1/files/${json._id}`;
                 });
         };
@@ -492,7 +526,8 @@ class Results extends Component {
                                         test_scores={experiment.data.test_scores}
                                         chartKey="learning_curve"
                                         chartColor="#55D6BE"
-                                        type="classification"/> {/* <PCA file={pca}/> */}
+                                        type="classification"/> 
+                                    <PCA file={pca}/>
                                     <PCAJSON
                                         scoreName="PCA 2D"
                                         Points={experiment.data.X_pca}

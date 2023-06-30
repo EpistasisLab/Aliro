@@ -576,8 +576,16 @@ const ChatMessage = ({key,message,datasetId,experimentId,updateAfterRuningCode,m
                                     {
                                         line=line.replace(/\t/g, ',');
                                     }
+                                    console.log("4-if-replace", line)
                                     // line = line.replace(/_/g, "\n");
-                                    line = line.replace(/_/g, "\n");
+                                    // line = line.replace(/_(?=\d)/g, "\n");
+                                    line = line.replace(/`/g, "\n");
+
+                                    // const lastCommaIndex = line.lastIndexOf(",");
+                                    // const lastUnderscoreIndex = line.lastIndexOf("_");
+                                    // if (lastUnderscoreIndex > lastCommaIndex) {
+                                    // line = line.substring(0, lastUnderscoreIndex) + "\n" + line.substring(lastUnderscoreIndex + 1);
+                                    // }
                                     
                                     // console.log("4-if-replace", line)
                                     // make line as array
