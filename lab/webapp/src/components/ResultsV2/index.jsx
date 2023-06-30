@@ -364,7 +364,7 @@ class Results extends Component {
             experiment
                 .data
                 .experiment_files
-                .forEach(file => {
+                .forEach(async file => {
                     const filename = file.filename;
                     console.log('filename', filename);
                     if (filename.includes('confusion_matrix')) {
@@ -383,7 +383,7 @@ class Results extends Component {
                     } else if (filename.includes('pca-json')) {
                         console.log("pca_json")
                         pca_json = file;
-                        console.log("pca_json: ", pca_json)
+
                     } else if (filename.includes('tsne') && filename.includes('png')) {
                         tsne = file;
                         console.log("tsne", tsne)
@@ -527,23 +527,15 @@ class Results extends Component {
                                         chartKey="learning_curve"
                                         chartColor="#55D6BE"
                                         type="classification"/> 
-                                    <PCA file={pca}/>
+                                    {/* <PCA file={pca}/> */}
+                                    
                                     <PCAJSON
                                         scoreName="PCA 2D"
-                                        Points={experiment.data.X_pca}
-                                        Labels={experiment.data.y_pca}
+                                        file={pca_json}
                                         chartKey="pca_2d"
                                         chartColor="#55D6BE"
-                                        type="classification"/> {/* <TSNE file={tsne}/> */}
-                                    {/* <TSNEJSON file={tsne_json}/> */}
-                                    {/* <TSNEJSON scoreName="TSNE 2D"
-                  Points={experiment.data.X_tsne}
-                  Labels={experiment.data.y_tsne}
-                  chartKey="tsne_2d"
-                  chartColor="#55D6BE"
-                  type="classification"
-                /> */
-                                    }
+                                        type="classification"/>
+                                    
                                 </Grid.Column>
                                 <Grid.Column>
                                     {/* <NoScore
@@ -573,10 +565,10 @@ class Results extends Component {
                                         fileDict={shapSummaryCurveDict}
                                         shap_explainer={shap_explainer}
                                         shap_num_samples={shap_num_samples}/>
+                                    {/* <TSNE file={tsne}/> */}
                                     <TSNEJSON
                                         scoreName="TSNE 2D"
-                                        Points={experiment.data.X_tsne}
-                                        Labels={experiment.data.y_tsne}
+                                        file={tsne_json}
                                         chartKey="tsne_2d"
                                         chartColor="#55D6BE"
                                         type="classification"/>
