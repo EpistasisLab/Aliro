@@ -303,7 +303,7 @@ function Navbar({ preferences }) {
   useEffect(() => {
   
     checkConnectionOpenAI();
-    console.log("useEffect in Navbar")
+    // console.log("useEffect in Navbar")
 
   }, []);
 

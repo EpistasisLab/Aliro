@@ -260,9 +260,11 @@ def generate_results(model, input_data,
         occ = np.count_nonzero(target_arr == OneClass)
         class_perc["class_"+str(OneClass)] = occ/len_target
 
+    file_name = "class_percentage_" + _id + ".json"
+
     # show percentage of each class
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="class_percentage.json", content=class_perc)
+                  fname=file_name, content=class_perc)
 
     features, target = check_X_y(
         features, target, dtype=None, order="C", force_all_finite=True)
@@ -534,12 +536,17 @@ def generate_results(model, input_data,
 
     metrics_dict = {'_scores': scores}
 
+    value_file_name = "value_" + _id + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="value.json", content=metrics_dict)
+                  fname=value_file_name, content=metrics_dict)
 
     prediction_dict = {'prediction_values': predicted_classes.tolist()}
+
+    prediction_file_name = "prediction_values_" + _id + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="prediction_values.json", content=prediction_dict)
+                  fname=prediction_file_name, content=prediction_dict)
 
 
 def get_col_idx(feature_names_list, columns):
@@ -690,8 +697,11 @@ def plot_confusion_matrix(
         'cnf_matrix': cnf_matrix.tolist(),
         'class_names': class_names.tolist()
     }
+
+    file_name = "cnf_matrix_" + _id + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="cnf_matrix.json", content=cnf_matrix_dict)
+                  fname=file_name, content=cnf_matrix_dict)
 
     # export plot
     if figure_export:
@@ -871,8 +881,10 @@ def plot_shap_analysis_curve(
         # 'shap_values': shap_values
     }
 
+    file_name = 'shap_summary_curve_' + _id + '.png'
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="shap_summary.json", content=shap_summary_dict)
+                  fname=file_name, content=shap_summary_dict)
 
 
 def combine_summary_decision_curve(
@@ -1035,8 +1047,10 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         'tpr': mean_tpr.tolist(),
         'roc_auc_score': mean_auc
     }
+
+    file_name = 'roc_curve_' + _id + '.json'
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="roc_curve.json", content=roc_curve_dict)
+                  fname=file_name, content=roc_curve_dict)
 
 
 def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
@@ -1151,8 +1165,11 @@ def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=T
         'test_scores': test_scores.tolist()
 
     }
+
+    file_name = 'learning_curve_' + _id + '.json'
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="learning_curve.json", content=learning_curve_dict)
+                  fname=file_name, content=learning_curve_dict)
 
 
 def plot_pca_2d(tmpdir, _id, features, target):
@@ -1208,9 +1225,10 @@ def plot_pca_2d(tmpdir, _id, features, target):
         'y_pca': y.tolist()
     }
 
+    file_name = 'pca-json_' + _id + '.json'
     # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="pca-json.json", content=pca_dict)
+                  fname=file_name, content=pca_dict)
 
 
 def plot_pca_3d(tmpdir, _id, features, target):
@@ -1362,8 +1380,10 @@ def plot_tsne_2d(tmpdir, _id, features, target):
         'y_tsne': target.tolist()
     }
 
+    file_name = 'tsne-json_' + _id + '.json'
+    # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="tsne-json.json", content=tsne_dict)
+                  fname=file_name, content=tsne_dict)
 
 
 def plot_dot_plot(tmpdir, _id, features,
@@ -1506,7 +1526,6 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     # combine y, pred_y
     # Cross-Validated Predictions
 
-
     CVP_2d = list(map(list, zip(y.tolist(), pred_y.tolist())))
     # same length as pred_y but it has 1
     CVP_2d_class = np.zeros(len(pred_y))
@@ -1520,9 +1539,6 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     # Q-Q Plot for Normalized Residuals
     QQNR_2d = list(map(list, zip(series1[0][0], series1[0][1])))
     QQNR_2d_class = np.zeros(len(series1[0][0]))
-
-
-
 
     reg_cv_pred_resi_qq = {
         'CVP_2d': CVP_2d,
@@ -1544,8 +1560,10 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         # 'series1_one': series1[0][1].tolist(),
     }
 
+    file_name = "reg_cv_pred_resi_qq_" + _id + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="reg_cv_pred_resi_qq.json", content=reg_cv_pred_resi_qq)
+                  fname=file_name, content=reg_cv_pred_resi_qq)
 
 
 def export_model(tmpdir,

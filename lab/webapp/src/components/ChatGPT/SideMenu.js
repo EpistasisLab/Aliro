@@ -46,7 +46,7 @@ export default function SideMenu(
       }= useContext(AllContext);
 
     useEffect(() => {
-        console.log("useEffect-SideMenu")
+        // console.log("useEffect-SideMenu")
 
         let experimentID = experiment.data._id ;
 
@@ -519,6 +519,7 @@ function checkConnectionOpenAIandSet(){
                 // when it render, in the case where the connection is not established, we will require user to input the API key in the box.
                 var modal = document.getElementsByClassName("modal")[0];
                 modal.style.display = "block";
+
                 
 
             }
@@ -528,8 +529,11 @@ function checkConnectionOpenAIandSet(){
                 // let oak = document.getElementById("oak");
                 // oak.style.fontWeight = "bold";
 
-                let apiDisconnButton = document.getElementById("apiDisconnButton");
-                apiDisconnButton.style.pointerEvents = "auto";
+                const apiDisconnButton = document.getElementById("apiDisconnButton");
+                if (apiDisconnButton) {
+                    apiDisconnButton.style.pointerEvents = "auto";
+                }
+
 
 
             }
@@ -545,9 +549,6 @@ function checkConnectionOpenAIandSet(){
 
                 let apiDisconnButton = document.getElementById("apiDisconnButton");
                 apiDisconnButton.style.pointerEvents = "auto";
-
-
-
 
             }
     });
@@ -569,16 +570,12 @@ async function disconnetOpenAI(){
 
             // throw new Error(`HTTP error: ${response.status}`);
             alert('Failed to disconnect from OpenAI API')
-
         }
         else{
 
             console.log("disconnect-response",response)
-
             alert('Successfully disconnected from OpenAI API')
-
             // document.getElementById("expertChatGPT").style.backgroundColor = "#d3d3d3";
-
         }
     });
 
