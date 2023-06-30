@@ -1,6 +1,6 @@
 /* ~This file is part of the Aliro library~
 
-Copyright (C) 2023 Epistasis Lab, 
+Copyright (C) 2023 Epistasis Lab,
 Center for Artificial Intelligence Research and Education (CAIRE),
 Department of Computational Biomedicine (CBM),
 Cedars-Sinai Medical Center.
@@ -328,7 +328,10 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     // Results-sending function for other files
     var sendResults = function(file_path, uri) {
         console.log('pushing file' + file_path);
-        if (file_path.match(/\.json$/)) {
+        // Save pca and tnse json values in GridStore. These values can easily be greater than 16MB.
+        if (file_path.match(/\.json$/) && file_path.indexOf('pca-json_') === -1
+                && file_path.indexOf('tsne-json_') === -1) {
+
             results = JSON.parse(fs.readFileSync(file_path, "utf-8"));
             var ret = {
                         uri: uri,
@@ -376,7 +379,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
                 experimentErrorMessage = "Experiment already killed"
             }
         }
-        else { 
+        else {
             console.log("experiment process does not exist") }
             res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
             res.send(JSON.stringify({status: "killed"}));
