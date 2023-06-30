@@ -345,9 +345,9 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
             }
           />
            {/* cross x emoji */}
-          {/* <span className="float-right" onClick={removeDatasetCard} style={{cursor: "pointer"}}>
+          <span className="float-right" onClick={removeDatasetCard} style={{cursor: "pointer"}}>
             🗑
-          </span> */}
+          </span>
           <span className="float-right" >
             <DatasetActions
               dataset={dataset}
