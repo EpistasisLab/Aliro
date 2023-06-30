@@ -329,8 +329,8 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     var sendResults = function(file_path, uri) {
         console.log('pushing file' + file_path);
         // Save pca and tnse json values in GridStore. These values can easily be greater than 16MB.
-        if (file_path.match(/\.json$/) && file_path.indexOf('pca-json.json') === -1
-                && file_path.indexOf('tsne-json.json') === -1) {
+        if (file_path.match(/\.json$/) && file_path.indexOf('pca-json_') === -1
+                && file_path.indexOf('tsne-json_') === -1) {
 
             results = JSON.parse(fs.readFileSync(file_path, "utf-8"));
             var ret = {
