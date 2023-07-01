@@ -46,10 +46,11 @@ import LearningCurve from './components/LearningCurve';
 import LearningCurveJSON from './components/LearningCurveJSON';
 import TestChart from './components/TestChart';
 import PCA from './components/PCA';
-import PCAJSON from './components/PCAJSON';
-import PCAJSONV from './components/PCAJSONV';
-import TSNE from './components/TSNE';
-import TSNEJSON from './components/TSNEJSON';
+// import PCAJSON from './components/PCAJSON';
+import GenPLOT from './components/GenPLOT';
+// import PCAJSONV from './components/PCAJSONV';
+// import TSNE from './components/TSNE';
+// import TSNEJSON from './components/TSNEJSON';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
 // import NoScore from './components/NoScore';
@@ -215,38 +216,6 @@ class Results extends Component {
         this
             .props
             .fetchExperiment(this.props.params.id);
-        
-        const { file } = this.props;
-
-        console.log("file-test",file)
-        
-        // FETCH DATA FROM API
-        // api/v1/files/:id
-        const fileId = '649b56060f80b9002d825f8a'; // Replace 'your_file_id' with the actual ID of the file
-
-       
-        // fetch(`/api/v1/files/${fileId}`, {
-        // method: 'GET',
-        // headers: {
-        //     'Content-Type': 'application/json',
-        //     // Add any other headers required by the API (e.g., authentication headers)
-        // },
-        // })
-        // .then(response => {
-        //     console.log("response-test",response)
-        //     response.json()
-        // })
-        // .then(data => {
-        //     // Handle the response data
-        //     console.log("fetch from",data)
-        //     // Points={experiment.data.X_pca}
-        //     // Labels={experiment.data.y_pca}
-        //     // console.log(data);
-        // })
-        // .catch(error => {
-        //     // Handle any errors that occur during the request
-        //     console.error('Error:', error);
-        // });
     }
 
     componentWillUnmount() {
@@ -261,9 +230,6 @@ class Results extends Component {
   *   value - actual score
   * passed to Score component which uses javascript library C3 to create graphic
   */
-
-    // async getData(filename){   const res = await fetch(filename);   const data =
-    // await res.json();   return this.setState({data}); }
 
     getGaugeArray(keyList) {
         const {experiment} = this.props;
@@ -364,9 +330,9 @@ class Results extends Component {
             experiment
                 .data
                 .experiment_files
-                .forEach(file => {
+                .forEach(async file => {
                     const filename = file.filename;
-                    console.log('filename', filename);
+                    console.log('filename-test', filename);
                     if (filename.includes('confusion_matrix')) {
                         confusionMatrix = file;
                     } else if (filename.includes('roc_curve')) {
@@ -376,23 +342,23 @@ class Results extends Component {
                         importanceScore = file;
                     } else if (filename.includes('learning_curve')) {
                         learningCurve = file;
-
                     } else if (filename.includes('pca') && filename.includes('png')) {
                         pca = file;
                         console.log("pca", pca)
                     } else if (filename.includes('pca-json')) {
                         console.log("pca_json")
                         pca_json = file;
-                        console.log("pca_json: ", pca_json)
                     } else if (filename.includes('tsne') && filename.includes('png')) {
                         tsne = file;
                         console.log("tsne", tsne)
-
                     } else if (filename.includes('tsne-json')) {
                         console.log("tsne_json")
                         tsne_json = file;
                         console.log("tsne_json: ", tsne_json)
-                    } else if (filename.includes('shap_summary_curve')) {
+                    }
+
+
+                    else if (filename.includes('shap_summary_curve')) {
                         console.log("shap_summary_curve")
                         let class_name = filename
                             .split('_')
@@ -527,23 +493,15 @@ class Results extends Component {
                                         chartKey="learning_curve"
                                         chartColor="#55D6BE"
                                         type="classification"/> 
-                                    <PCA file={pca}/>
-                                    <PCAJSON
+                                    {/* <PCA file={pca}/> */}
+                                    
+                                    <GenPLOT
                                         scoreName="PCA 2D"
-                                        Points={experiment.data.X_pca}
-                                        Labels={experiment.data.y_pca}
+                                        file={pca_json}
                                         chartKey="pca_2d"
                                         chartColor="#55D6BE"
-                                        type="classification"/> {/* <TSNE file={tsne}/> */}
-                                    {/* <TSNEJSON file={tsne_json}/> */}
-                                    {/* <TSNEJSON scoreName="TSNE 2D"
-                  Points={experiment.data.X_tsne}
-                  Labels={experiment.data.y_tsne}
-                  chartKey="tsne_2d"
-                  chartColor="#55D6BE"
-                  type="classification"
-                /> */
-                                    }
+                                        type="classification"/>
+                                    
                                 </Grid.Column>
                                 <Grid.Column>
                                     {/* <NoScore
@@ -573,10 +531,10 @@ class Results extends Component {
                                         fileDict={shapSummaryCurveDict}
                                         shap_explainer={shap_explainer}
                                         shap_num_samples={shap_num_samples}/>
-                                    <TSNEJSON
+                                    {/* <TSNE file={tsne}/> */}
+                                    <GenPLOT
                                         scoreName="TSNE 2D"
-                                        Points={experiment.data.X_tsne}
-                                        Labels={experiment.data.y_tsne}
+                                        file={tsne_json}
                                         chartKey="tsne_2d"
                                         chartColor="#55D6BE"
                                         type="classification"/>
@@ -713,12 +671,20 @@ class Results extends Component {
             let importanceScore,
                 reg_cv_pred,
                 reg_cv_resi,
-                reg_cv_qq;
+                reg_cv_qq,
+                reg_cvp_png,
+                reg_cvp_json,
+                reg_cvr_png,
+                reg_cvr_json,
+                reg_qqnr_png,
+                reg_qqnr_json;
+
             experiment
                 .data
                 .experiment_files
                 .forEach(file => {
                     const filename = file.filename;
+                    console.log("filename-regression", filename)
                     if (filename.includes('imp_score')) {
                         importanceScore = file;
                     } else if (filename.includes('reg_cv_pred')) {
@@ -727,6 +693,23 @@ class Results extends Component {
                         reg_cv_resi = file;
                     } else if (filename.includes('reg_cv_qq')) {
                         reg_cv_qq = file;
+                    } else if (filename.includes('reg_cv_pred') && filename.includes('png') ) {
+                        reg_cvp_png = file;
+                        console.log("reg_cvp_png", reg_cvp_png)
+                    } else if (filename.includes('reg_cv_resi') && filename.includes('png')) {
+                        reg_cvr_png = file;
+                        console.log("reg_cvr_png", reg_cvr_png)
+                    } else if (filename.includes('reg_cv_qq') && filename.includes('png')) {
+                        reg_qqnr_png = file;
+                    }else if (filename.includes('reg_cvp') && filename.includes('json') ) {
+                        reg_cvp_json = file;
+                        console.log("reg_cvp_json", reg_cvp_json)
+                    } else if (filename.includes('reg_cvr') && filename.includes('json')) {
+                        reg_cvr_json = file;
+                        console.log("reg_cvr_json", reg_cvr_json)
+                    } else if (filename.includes('reg_qqnr') && filename.includes('json')) {
+                        reg_qqnr_json = file;
+                        console.log("reg_qqnr_json", reg_qqnr_json)
                     }
 
                 });
@@ -802,7 +785,7 @@ class Results extends Component {
                                     {/* <RegFigure file={reg_cv_resi} /> */}
                                     {/* <RegFigure file={reg_cv_qq} /> */}
 
-                                    {
+                                    {/* {
                                         experiment.data.CVP_2d === undefined
                                             ?  <Header inverted size="tiny" content="experiment.data.CVP_2d is empty." />
                                             : <PCAJSON
@@ -812,7 +795,13 @@ class Results extends Component {
                                                     chartKey="CVP"
                                                     chartColor="#55D6BE"
                                                     type="classification"/>
-                                    }
+                                    } */}
+                                    <GenPLOT
+                                        scoreName="Cross-Validated Predictions"
+                                        file={reg_cvp_json}
+                                        chartKey="CVP"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
 
                                     {/* <PCAJSONV
                                         scoreName="Cross-Validated Predictions"
@@ -823,7 +812,8 @@ class Results extends Component {
                                         type="classification"
                                         data={experiment.data}/> */
                                     }
-                                    {
+                                    
+                                    {/* {
                                         experiment.data.CVR_2d === undefined
                                             ? <Header inverted size="tiny" content="experiment.data.CVR_2d is empty." />
                                             : <PCAJSON
@@ -833,8 +823,15 @@ class Results extends Component {
                                                     chartKey="CVR"
                                                     chartColor="#55D6BE"
                                                     type="classification"/>
-                                    }
-                                    {
+                                    } */}
+                                    <GenPLOT
+                                        scoreName="Cross-Validated Residuals"
+                                        file={reg_cvr_json}
+                                        chartKey="CVR"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+
+                                    {/* {
                                         experiment.data.QQNR_2d === undefined
                                             ? <Header inverted size="tiny" content="experiment.data.QQNR_2d is empty." />
                                             : <PCAJSON
@@ -844,7 +841,14 @@ class Results extends Component {
                                                     chartKey="QQNR"
                                                     chartColor="#55D6BE"
                                                     type="classification"/>
-                                    }
+                                    } */}
+
+                                    <GenPLOT
+                                        scoreName="Q-Q Plot for Normalized Residuals"
+                                        file={reg_qqnr_json}
+                                        chartKey="QQNR"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
 
                                 </Grid.Column>
                                 <Grid.Column>

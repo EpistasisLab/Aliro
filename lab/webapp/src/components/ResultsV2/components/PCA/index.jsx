@@ -55,6 +55,19 @@ class PCA extends Component {
           image_url: URL.createObjectURL(blob) 
         }));
     }
+
+    // if(file){
+    //   fetch(`/api/v1/files/${file._id}`)
+    //     .then(response => {
+    //       if(response.status >= 400) {
+    //         throw new Error(`${response.status}: ${response.statusText}`);
+    //       }  
+    //       return response.json();
+    //     })
+    //     .then(data => {
+    //       console.log("pca-json",data)
+    //     });
+    // }
   }
 
   render() {
