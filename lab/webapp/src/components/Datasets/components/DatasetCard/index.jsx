@@ -132,8 +132,6 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
       // <Grid.Column className="dataset-card" >
       <Grid.Column className="dataset-card" >
 
-
-        
         <Popup 
           id ="aiTooglePopup"
           trigger={
