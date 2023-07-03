@@ -49,12 +49,12 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 			icon_type = "line graph";
 	}
 
-  const [showGrid, setShowGrid] = useState(false);
+  // const [showGrid, setShowGrid] = useState(false);
 
-  const handleGridClick = () => {
-    console.log("handleGridClick");
-    setShowGrid(false);
-  };
+  // const handleGridClick = () => {
+  //   console.log("handleGridClick");
+  //   setShowGrid(false);
+  // };
 
 
   function removeDatasetCard(e){
@@ -128,7 +128,8 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 
     
     return (
-      showGrid && (
+      // showGrid && (
+      // <Grid.Column className="dataset-card" >
       <Grid.Column className="dataset-card" >
 
 
@@ -154,6 +155,11 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
               
             }
           />
+
+          {/* cross x emoji */}
+           <span className="float-right" onClick={removeDatasetCard} style={{cursor: "pointer"}}>
+            🗑
+          </span>
         
           <span className="float-right">
             <DatasetActions
@@ -302,15 +308,11 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
           }
         }
 
-        // if current popup is clicked, close it
-        
-
-
 
         />
       </Grid.Column>
       
-      )
+      
     
     );
   
