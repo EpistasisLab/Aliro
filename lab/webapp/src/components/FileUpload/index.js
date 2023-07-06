@@ -597,44 +597,31 @@ class FileUpload extends Component {
 
 
       const handleClickGoToUploadDatasets = async (fileId,fileName) => {
-      // console.log("files",files)
-
-      // set files name
-
-      // console.log("files[0]",files[0])
-      // set files to upload
-      // setFilesToUpload(files);
-
-      // df.csv, http://localhost:5080/api/v1/files/6463e6cb95056832a1970d25
-
-      // fetch the file using the url http://localhost:5080/api/v1/files/6463e6cb95056832a1970d25
-
-      let href = `http://localhost:5080/api/v1/files/${fileId}`
+      
+      let href = `/api/v1/files/${fileId}`
+      // let href = `http://localhost:5080/api/v1/files/${fileId}`
 
       let tempdata=await fetch(`${href}`, {
         method: "GET",
         headers: {
             // "Content-Type": "application/json"
             // content type is csv or tst
-
             "Content-Type": "text/csv"
         },
     })
     .then(response => response.text())
     .then(data => {
-        console.log("handleClickGoToUploadDatasets-data", data)
+        // console.log("handleClickGoToUploadDatasets-data", data)
         return data;
     }
     )
     .catch(error => {
-        console.log("handleClickGoToUploadDatasets-fetch-error", error)
+        // console.log("handleClickGoToUploadDatasets-fetch-error", error)
         return error;
     }
     )
 
       console.log("tempdata", tempdata)
-
-
 
       // make a file object with tempdata
 
@@ -649,22 +636,13 @@ class FileUpload extends Component {
 
         const data = makeDataFormat([file])
 
-        console.log("tempdata-data",data)
-
+        // console.log("tempdata-data",data)
       //   const onDragEnter = jest.fn()
 
-      
-
-
-     
       // const file = new File(["file content"], "filename.csv", { type: "text/csv" });
-      
       return data;
       };
-
       let testdata = await handleClickGoToUploadDatasets(fileId,fileName);
-
-
       this.handleSelectedFile(testdata.dataTransfer.files);
     }
 

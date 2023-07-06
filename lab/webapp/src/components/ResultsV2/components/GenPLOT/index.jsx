@@ -71,12 +71,13 @@ function foldcheck(fold) {
 // function NoScore({ scoreName, train_sizes, Points, test_scores, chartKey, chartColor, type }) {
   function NoScore({ scoreName, file, chartKey, chartColor, type  }) {
     // 
-    console.log("pca-file-NoScore",file)
+    console.log("GenPlot-file",file)
     // const [data, setData] = useState(null);
     const [Points, setPoints] = useState([]);
     const [Labels, setLabels] = useState(null);
 
   useEffect(() => {
+    // define the fetch function on scatter plot data
     const fetchData = async () => {
       try {
         const response = await fetch(`/api/v1/files/${file._id}`);
@@ -112,6 +113,7 @@ function foldcheck(fold) {
       }
     };
 
+    // call the fetch function
     fetchData();
   }, []);
 
