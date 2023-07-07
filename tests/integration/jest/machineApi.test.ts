@@ -90,73 +90,72 @@ describe('machine', () => {
 
 		    expect(dbMachine.length).toEqual(1)
 		    expect(dbMachine[0].address).toEqual("http://machine:5081")
+		})
+	);
 
-		});
+	it('bad machine does not exist in db by address', async () => {
+		var dbMachine = await db.machines.find({"address":"http://machineFoobar:5081"}, {
+			address: 1
+		}).toArrayAsync();
 
-		it('bad machine does not exist in db by address', async () => {
-		  	var dbMachine = await db.machines.find({"address":"http://machineFoobar:5081"}, {
-		        address: 1
-		    }).toArrayAsync();
+		expect(dbMachine.length).toEqual(0)
+	});
 
-		    expect(dbMachine.length).toEqual(0)
-		});
+	it('local machine projectIds match db machine.projectIds', async () => {
+		//console.log('machine projectIds match db machine.project ids')
+		
+		//---get machine server projects state
+		let servMachineProjects : Object
+		try {
+			servMachineProjects = await machineApi.fetchProjects()
+		} catch (e) {
+			var json = await e.response.json() // get the specific error description
+			expect(json).toBeFalsy()
+			expect(e).toBeFalsy() // break even if no message body returned
+		}
+		
+		//---get database projects state
+		var res
 
-		it('local machine projectIds match db machine.projectIds', async () => {
-			//console.log('machine projectIds match db machine.project ids')
-			
-			//---get machine server projects state
-			let servMachineProjects : Object
-			try {
-				servMachineProjects = await machineApi.fetchProjects()
-			} catch (e) {
-				var json = await e.response.json() // get the specific error description
-				expect(json).toBeFalsy()
-				expect(e).toBeFalsy() // break even if no message body returned
-			}
-		  
-		  	//---get database projects state
-		  	var res
+		// db.machine.projects
+		res = await db.machines.find({"address":"http://machine:5081"}, {projects: 1}).toArrayAsync();
+		//console.log("db.machines.res: ", res)
+		expect(res.length).toEqual(1)
+		let dbMachineProjects : Object = res[0].projects
 
-		  	// db.machine.projects
-		  	res = await db.machines.find({"address":"http://machine:5081"}, {projects: 1}).toArrayAsync();
-		  	//console.log("db.machines.res: ", res)
-		  	expect(res.length).toEqual(1)
-		  	let dbMachineProjects : Object = res[0].projects
+		// db.projects
+		let dbProjectsList : Object[] = await db.projects.find({}, {name: 1}).toArrayAsync();
+		//console.log("db.projects res: ", res)
 
-		  	// db.projects
-		  	let dbProjectsList : Object[] = await db.projects.find({}, {name: 1}).toArrayAsync();
-		  	//console.log("db.projects res: ", res)
+		//console.log("servMachineProjects:", servMachineProjects)
+		//console.log("dbMachineProjects:", dbMachineProjects)
+		//console.log("dbProjectsList:", dbProjectsList)
 
-		  	//console.log("servMachineProjects:", servMachineProjects)
-		  	//console.log("dbMachineProjects:", dbMachineProjects)
-		  	//console.log("dbProjectsList:", dbProjectsList)
+		//---check server state against database state
+		expect(Object.keys(servMachineProjects).length).toEqual(util.EXPECTED_MACHINE_ALGO_COUNT)
+		expect(Object.keys(dbMachineProjects).length).toEqual(util.EXPECTED_MACHINE_ALGO_COUNT)
+		expect(Object.keys(dbProjectsList).length).toBeGreaterThan(util.MIN_EXPECTED_DATASET_COUNT)
 
-		  	//---check server state against database state
-		  	expect(Object.keys(servMachineProjects).length).toEqual(util.EXPECTED_MACHINE_ALGO_COUNT)
-		  	expect(Object.keys(dbMachineProjects).length).toEqual(util.EXPECTED_MACHINE_ALGO_COUNT)
-		  	expect(Object.keys(dbProjectsList).length).toBeGreaterThan(util.MIN_EXPECTED_DATASET_COUNT)
+		// check that dbMachineProjects is a subset of servMachineProjects by id
+		for (let dbMacProjId of Object.keys(dbMachineProjects)) {
+			let dbMacProjSpec = dbMachineProjects[dbMacProjId]
 
-		  	// check that dbMachineProjects is a subset of servMachineProjects by id
-		  	for (let dbMacProjId of Object.keys(dbMachineProjects)) {
-		  		let dbMacProjSpec = dbMachineProjects[dbMacProjId]
+			// db.machine.projects is a subset of the projects defined on the server
+			expect(servMachineProjects).toHaveProperty(dbMacProjId)
 
-		  		// db.machine.projects is a subset of the projects defined on the server
-				expect(servMachineProjects).toHaveProperty(dbMacProjId)
+			let serverProjSpec = servMachineProjects[dbMacProjId] 
+			expect(dbMacProjSpec.name).toEqual(serverProjSpec.name)
 
-		  		let serverProjSpec = servMachineProjects[dbMacProjId] 
-				expect(dbMacProjSpec.name).toEqual(serverProjSpec.name)
+			// db.machine.projects is a subset of the projects defined in db.projects
+			// TODO: this should work??
+			//expect(dbProjectsList).toContainEqual({_id: dbMacProjId, name: dbMacProjSpec.name})
 
-				// db.machine.projects is a subset of the projects defined in db.projects
-				// TODO: this should work??
-				//expect(dbProjectsList).toContainEqual({_id: dbMacProjId, name: dbMacProjSpec.name})
-
-				/*
-				console.log("dbMacProjId: ", dbMacProjId)
-		  		console.log("serverProjSpec: ", serverProjSpec)
-		  		console.log("dbMacProjSpec: ", dbMacProjSpec)
-		  		console.log("dbProjExpected: ", dbProjExpected)
-				*/
-		  	}
-		});
-	})
-})
+			/*
+			console.log("dbMacProjId: ", dbMacProjId)
+			console.log("serverProjSpec: ", serverProjSpec)
+			console.log("dbMacProjSpec: ", dbMacProjSpec)
+			console.log("dbProjExpected: ", dbProjExpected)
+			*/
+		}
+	});
+});

@@ -29,6 +29,7 @@ describe('run experiment', () => {
 			"penalty": "l1",
 			"C": 1.0,
 			"dual": false,
+			"dataset": ""
 		};
 
 		let datasetName = 'banana'
@@ -112,6 +113,7 @@ describe('run experiment', () => {
 			"penalty": "l1",
 			"C": 1.0,
 			"dual": true,
+			"dataset": ""
 		};
 
 		let datasetName = 'banana'
@@ -191,7 +193,8 @@ describe('run experiment', () => {
 
 		let algoName = 'SVC'
 		let algoParms = {
-			"tol":1e-05
+			"tol":1e-05,
+			"dataset": ""
 		};
 
 		let datasetName = 'magic'
