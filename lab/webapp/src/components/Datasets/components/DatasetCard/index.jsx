@@ -57,22 +57,70 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
   // };
 
 
+  function clickDatasetCardDelButton(e){
+  
+    let parent = e.target.closest(".dataset-card");
+    // console.log(parent);
+    // parent.style.cssText += ';display:none!important;';
+
+    
+    // find child which has <a> tag from the parent
+    let child = parent.querySelector("a");
+
+    // get the href attribute from the child
+    let href = child.getAttribute("href");
+
+    // parse the href to get the dataset id 
+    // and the last element is the dataset id
+    let dataset_id = href.split("/").pop();
+
+    // please show the popup to confirm the deletion of the dataset
+
+    // Show the confirmation popup
+    let confirmDelete = confirm("Are you sure you want to delete the dataset with ID " + dataset_id + "?");
+    
+    console.log("confirmDelete",confirmDelete);
+    if (confirmDelete) {
+      // User confirmed deletion, perform the deletion logic here
+      console.log("confirmed deletion");
+      removeDatasetCard(e);
+    } else {
+      // User canceled deletion, do nothing or perform any additional actions as needed
+      // ...
+      console.log("canceled deletion");
+    }
+
+
+
+    
+
+    console.log("removed datasetcard",dataset_id);
+
+
+    // api call to remove dataset
+
+    
+  
+  }
+
+
+
   function removeDatasetCard(e){
   
-    var parent = e.target.closest(".dataset-card");
+    let parent = e.target.closest(".dataset-card");
     console.log(parent);
     parent.style.cssText += ';display:none!important;';
 
     
     // find child which has <a> tag from the parent
-    var child = parent.querySelector("a");
+    let child = parent.querySelector("a");
 
     // get the href attribute from the child
-    var href = child.getAttribute("href");
+    let href = child.getAttribute("href");
 
     // parse the href to get the dataset id 
     // and the last element is the dataset id
-    var dataset_id = href.split("/").pop();
+    let dataset_id = href.split("/").pop();
 
     console.log(dataset_id);
 
@@ -82,6 +130,28 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
     
   
   }
+
+
+
+  function mouseEnterCardDelectButton(e){
+    console.log("mouseoverCardDelectButton");
+    console.log(e.target);
+
+    // make the red boundary in the trash can emoji
+    e.target.style.cssText += ';border: 0.5px solid red;';
+
+    
+  }
+
+  function mouseLeaveCardDelectButton(e){
+    console.log("mouseoverCardDelectButton");
+    console.log(e.target);
+
+    //REMOVE the red boundary in the trash can emoji
+    e.target.style.cssText += ';border: 0px;';
+  }
+
+
 
   if (document.getElementById("aiTooglePopup") == null && document.getElementById("aiTooglePopupready") != null) {
   
@@ -155,7 +225,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
           />
 
           {/* cross x emoji */}
-           <span className="float-right" onClick={removeDatasetCard} style={{cursor: "pointer"}}>
+           <span className="float-right" onClick={clickDatasetCardDelButton} onMouseEnter={mouseEnterCardDelectButton} onMouseLeave={mouseLeaveCardDelectButton} style={{cursor: "pointer"}}>
             🗑
           </span>
         
@@ -165,8 +235,6 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
               recommender={recommender}
               toggleAI={toggleAI}
             />
-  
-          
           </span>
         </Segment>
           }
@@ -345,7 +413,8 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
             }
           />
            {/* cross x emoji */}
-          <span className="float-right" onClick={removeDatasetCard} style={{cursor: "pointer"}}>
+          <span className="float-right" onClick={clickDatasetCardDelButton} onMouseEnter={mouseEnterCardDelectButton}
+          onMouseLeave={mouseLeaveCardDelectButton} style={{cursor: "pointer"}}>
             🗑
           </span>
           <span className="float-right" >
