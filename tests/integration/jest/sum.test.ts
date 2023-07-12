@@ -8,5 +8,5 @@ const sum = require('./sum');
 describe('int demo', () => {
 	test.skip('adds 1 + 2 to equal 3', () => {
 	  expect(sum(1, 2)).toBe(3);
-	
-}
+	});
+});

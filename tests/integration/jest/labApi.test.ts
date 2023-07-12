@@ -395,7 +395,7 @@ describe('lab', () => {
 					//expect(json.error).toEqual("_files[0] has size 0")
 				}
 			});
-		};
+		});
 
 		// fetch datasets and check for metafeatures
 		it('fetchDatasets', () => {
