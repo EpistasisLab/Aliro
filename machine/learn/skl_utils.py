@@ -260,7 +260,7 @@ def generate_results(model, input_data,
         occ = np.count_nonzero(target_arr == OneClass)
         class_perc["class_"+str(OneClass)] = occ/len_target
 
-    file_name = "class_percentage_" + _id + ".json"
+    file_name = "class_percentage" + ".json"
 
     # show percentage of each class
     save_json_fmt(outdir=tmpdir, _id=_id,
@@ -536,14 +536,14 @@ def generate_results(model, input_data,
 
     metrics_dict = {'_scores': scores}
 
-    value_file_name = "value_" + _id + ".json"
+    value_file_name = "value" + ".json"
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=value_file_name, content=metrics_dict)
 
     prediction_dict = {'prediction_values': predicted_classes.tolist()}
 
-    prediction_file_name = "prediction_values_" + _id + ".json"
+    prediction_file_name = "prediction_values" + ".json"
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=prediction_file_name, content=prediction_dict)
@@ -698,7 +698,7 @@ def plot_confusion_matrix(
         'class_names': class_names.tolist()
     }
 
-    file_name = "cnf_matrix_" + _id + ".json"
+    file_name = "cnf_matrix" + ".json"
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=file_name, content=cnf_matrix_dict)
@@ -881,7 +881,7 @@ def plot_shap_analysis_curve(
         # 'shap_values': shap_values
     }
 
-    file_name = 'shap_summary_curve_' + _id + '.png'
+    file_name = 'shap_summary_curve' + '.png'
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=file_name, content=shap_summary_dict)
@@ -1048,7 +1048,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         'roc_auc_score': mean_auc
     }
 
-    file_name = 'roc_curve_' + _id + '.json'
+    file_name = 'roc_curve' + '.json'
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=file_name, content=roc_curve_dict)
 
@@ -1166,7 +1166,7 @@ def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=T
 
     }
 
-    file_name = 'learning_curve_' + _id + '.json'
+    file_name = 'learning_curve' + '.json'
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=file_name, content=learning_curve_dict)
@@ -1225,7 +1225,7 @@ def plot_pca_2d(tmpdir, _id, features, target):
         'y_pca': y.tolist()
     }
 
-    file_name = 'pca-json_' + _id + '.json'
+    file_name = 'pca-json' + '.json'
     # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=file_name, content=pca_dict)
@@ -1380,7 +1380,7 @@ def plot_tsne_2d(tmpdir, _id, features, target):
         'y_tsne': target.tolist()
     }
 
-    file_name = 'tsne-json_' + _id + '.json'
+    file_name = 'tsne-json' + '.json'
     # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=file_name, content=tsne_dict)
@@ -1562,7 +1562,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         'CVP_2d_class': CVP_2d_class.tolist()
     }
 
-    cvp_file_name = "reg_cvp_" + _id + ".json"
+    cvp_file_name = "reg_cvp" + ".json"
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=cvp_file_name, content=reg_cvp)
@@ -1573,7 +1573,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         'CVR_2d_class': CVR_2d_class.tolist()
     }
 
-    cvr_file_name = "reg_cvr_" + _id + ".json"
+    cvr_file_name = "reg_cvr" + ".json"
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=cvr_file_name, content=reg_cvr)
@@ -1584,7 +1584,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         'QQNR_2d_class': QQNR_2d_class.tolist()
     }
 
-    qqnr_file_name = "reg_qqnr_" + _id + ".json"
+    qqnr_file_name = "reg_qqnr" + ".json"
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname=qqnr_file_name, content=reg_qqnr)
