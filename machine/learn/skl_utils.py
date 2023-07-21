@@ -55,7 +55,6 @@ from matplotlib.patches import Patch
 from sklearn.manifold import TSNE
 from sklearn.model_selection import learning_curve
 
-
 mpl.use('Agg')
 
 # if system environment allows to export figures
@@ -725,7 +724,7 @@ def plot_confusion_matrix(
         plt.subplots_adjust(bottom=0.15)
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
-        plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
+        plt.savefig(tmpdir + _id + '/confusion_matrix' + '.png')
         plt.close()
 
 
@@ -953,9 +952,10 @@ def combine_summary_decision_curve(
     plt.savefig(save_path)
     plt.close()
 
-
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
+
+
 def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     """
     Plot ROC Curve.
@@ -1040,7 +1040,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         plt.ylabel('True Positive Rate')
         plt.title('ROC curve')
         plt.legend(loc="lower right")
-        plt.savefig(tmpdir + _id + '/roc_curve_' + _id + '.png')
+        plt.savefig(tmpdir + _id + '/roc_curve' + '.png')
         plt.close()
     roc_curve_dict = {
         'fpr': mean_fpr.tolist(),
@@ -1086,7 +1086,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
     h.tight_layout()
-    plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/imp_score' + '.png')
     plt.close()
     return top_features, indices
 
@@ -1145,7 +1145,7 @@ def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=T
     plt.title('Learning curve')
 
     plt.legend(loc='best')
-    plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/learning_curve' + '.png')
 
     plt.close()
 
@@ -1215,7 +1215,7 @@ def plot_pca_2d(tmpdir, _id, features, target):
     plt.xlabel('PC1')
     plt.ylabel('PC2')
 
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/pca' + '.png')
     plt.close()
 
     # save X and y to json file
@@ -1325,7 +1325,7 @@ def plot_pca_3d(tmpdir, _id, features, target):
     ax.w_zaxis.set_ticklabels([])
 
     # plt.show()
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/pca' + '.png')
     plt.close()
 
 
@@ -1343,7 +1343,6 @@ def plot_tsne_2d(tmpdir, _id, features, target):
         Features in training dataset
     target: np.darray/pd.DataFrame
         Target in training dataset
-
 
     Returns
     -------
@@ -1369,7 +1368,7 @@ def plot_tsne_2d(tmpdir, _id, features, target):
     plt.ylabel('comp-2')
 
     # plt.show()
-    plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/tsne' + '.png')
     plt.close()
 
     # save X and y to json file
@@ -1491,7 +1490,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
             color="red",
             linestyle='dashed')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_pred' + '.png')
     plt.close()
 
     fig, ax = plt.subplots(1, 1, figsize=(8, 6), dpi=300)
@@ -1503,7 +1502,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
                color="red",
                linestyle='dashed')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_resi' + '.png')
     plt.close()
     fig, ax = plt.subplots(1, 1, figsize=(8, 6), dpi=300)
     # add q-q plot for normalized CV residuals
@@ -1519,7 +1518,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     ax.set_xlabel('Theoretical Quantiles')
     ax.set_ylabel('Ordered Normalized Residuals')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_qq_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_qq' + '.png')
     plt.close()
 
     # observed (y) vs predicted (pred_y)
@@ -1551,7 +1550,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     #     'QQNR_2d_class': QQNR_2d_class.tolist(),
     # }
 
-    # file_name = "reg_cv_pred_resi_qq_" + _id + ".json"
+    # file_name = "reg_cv_pred_resi_qq"  + ".json"
 
     # save_json_fmt(outdir=tmpdir, _id=_id,
     #               fname=file_name, content=reg_cv_pred_resi_qq)
@@ -1817,7 +1816,6 @@ testing_target = input_data[target_column].values
 # Get holdout score for fitted model
 print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
-
 
 # Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
