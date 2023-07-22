@@ -1,16 +1,36 @@
-FROM alpine:3.9.6
+# Stage 1: Build stage with all necessary files
+FROM mongo:4.4.18 AS builder
 
-ARG docker_filepath=/docker/dbmongo/files
+WORKDIR /opt/
 
-RUN apk add --no-cache mongodb mongodb-tools bash
+ARG docker_filepath=docker/dbmongo/files
 
-#check if we need to rebuild
+# Copy necessary files
 COPY ${docker_filepath}/mongod.conf /etc/
 COPY ${docker_filepath}/users.json /root/
 COPY ${docker_filepath}/projects.json /root/
 COPY ${docker_filepath}/entrypoint.sh /root/
 COPY ${docker_filepath}/sync.sh /root/
 
+# Convert line endings for DOS/Windows compatibility
+RUN apt-get update && apt-get install -y dos2unix && \
+    dos2unix /root/entrypoint.sh /root/sync.sh /root/users.json /root/projects.json && \
+    dos2unix /etc/mongod.conf && \
+    apt-get remove -y dos2unix && \
+    apt-get autoremove -y && \
+    apt-get clean
+
+# Stage 2: Final runtime image
+FROM mongo:4.4.18
+
+# Copy required configurations and scripts from the builder stage
+COPY --from=builder /etc/mongod.conf /etc/
+COPY --from=builder /root/entrypoint.sh /root/
+COPY --from=builder /root/sync.sh /root/
+COPY --from=builder /root/users.json /root/
+COPY --from=builder /root/projects.json /root/
+
 EXPOSE 27017
 
-CMD ["bin/bash", "/root/entrypoint.sh"]
+CMD ["/bin/bash", "/root/entrypoint.sh"]
+
