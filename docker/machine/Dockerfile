@@ -1,4 +1,5 @@
-FROM python:3.7.16-slim-buster
+# Stage 1: Build and install Python and Node.js dependencies
+FROM python:3.7.16-slim-buster AS builder
 
 ARG USE_WHEELS
 ARG wheel_directory=docker/wheels
@@ -30,7 +31,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
     apt-get remove -y wget && \
     apt-get clean
 
-# setup python environment
+# Setup python environment
 RUN mkdir /root/wheel
 COPY ${wheel_directory}/*.whl /root/wheel/
 COPY ${docker_filepath}/requirements.txt /root/
@@ -40,28 +41,37 @@ RUN if [ ${USE_WHEELS} -eq 1 ] ; \
   fi
 RUN rm -rf /root/wheel
 
-# these requirements need to be built, using wheels throws errors
+# These requirements need to be built, using wheels throws errors
 COPY ${docker_filepath}/requirements-build.txt /root/
 RUN pip install --no-cache-dir -r /root/requirements-build.txt
 
-# setup node environment
+# Setup node environment
 RUN npm install -g pm2 --silent --progress=false
 
-# install node_modules to an anon volume
-WORKDIR /appsrc/machine
+# Stage 2: Final runtime image
+FROM python:3.7.16-slim-buster
 
+ARG docker_filepath=docker/machine/files
+
+# Copy installed Python dependencies
+COPY --from=builder /usr/local /usr/local
+
+# Copy node_modules to an anonymous volume
+WORKDIR /appsrc/machine
 COPY machine/package.json /appsrc/machine/
 COPY machine/package-lock.json /appsrc/machine/
-RUN dos2unix /appsrc/machine/*.json
-RUN npm install --silent --progress=false
-
+# Copy entrypoint script and other files
 COPY ${docker_filepath}/entrypoint.sh /root/
 COPY ${docker_filepath}/wait-for-it.sh /root/
-RUN dos2unix /root/wait-for-it.sh && dos2unix /root/entrypoint.sh
 
-# clean up
-RUN apt-get remove -y wget xz-utils
-
-RUN ["chmod", "+x", "/root/wait-for-it.sh"]
+RUN apt-get update && apt-get install -y graphviz dos2unix && \
+    dos2unix /appsrc/machine/*.json && \
+    npm install --silent --progress=false && \
+    dos2unix /root/wait-for-it.sh && dos2unix /root/entrypoint.sh && \
+    chmod +x /root/wait-for-it.sh && chmod +x /root/entrypoint.sh && \
+    apt-get remove -y dos2unix && \
+    apt-get clean
+    # apt-get autoremove -y && \
 
 CMD ["/bin/bash", "/root/entrypoint.sh"]
+
