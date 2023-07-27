@@ -5,7 +5,8 @@ services:
   lab:
     build:
       context: .
-      dockerfile: docker/lab/Dockerfile_production
+      dockerfile: docker/lab/Dockerfile
+      target: prod
     image: "aliro_lab:${TAG}"
     tty: true
     stdin_open: true
@@ -25,7 +26,8 @@ services:
   machine:
     build:
       context: .
-      dockerfile: docker/machine/Dockerfile_production
+      dockerfile: docker/machine/Dockerfile
+      target: prod
     image: "aliro_machine:${TAG}"
     tty: true
     stdin_open: true

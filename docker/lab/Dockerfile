@@ -1,5 +1,5 @@
 # Stage 1: Build and compile dependencies
-FROM python:3.7.16-slim-buster AS builder
+FROM python:3.7.16-slim-buster as base
 
 ARG USE_WHEELS
 ARG wheel_directory=docker/wheels
@@ -42,10 +42,6 @@ RUN if [ ${USE_WHEELS} -eq 1 ] ; \
   fi
 RUN rm /root/wheel/*.whl
 
-# # These requirements need to be built, using wheels throws errors
-# COPY ${docker_filepath}/requirements-build.txt /root/
-# RUN pip install --no-cache-dir -r /root/requirements-build.txt
-
 ## Webserver
 RUN rm /etc/apache2/sites-enabled/*
 COPY ${docker_filepath}/ports.conf /etc/apache2/
@@ -75,19 +71,19 @@ COPY lab/package-lock.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/*.json
 RUN npm install --silent --progress=false
 
-# Stage 2: Final runtime image
-FROM python:3.7.16-slim-buster
+# Stage 2a: build dev version of lab
+FROM python:3.7.16-slim-buster as dev
 
 ARG docker_filepath=docker/lab/files
 
 # Copy installed packages from the builder stage
-COPY --from=builder /usr/local /usr/local
+COPY --from=base /usr/local /usr/local
 
 # Copy Apache configuration
-COPY --from=builder /etc/apache2 /etc/apache2
+COPY --from=base /etc/apache2 /etc/apache2
 
 # Copy webapp and lab source code
-COPY --from=builder /appsrc/lab /appsrc/lab
+COPY --from=base /appsrc/lab /appsrc/lab
 
 # Copy scripts and other files
 COPY ${docker_filepath}/start.sh /root/
@@ -113,13 +109,6 @@ RUN apt-get update && apt-get install -y dos2unix git build-essential && \
     apt-get autoremove -y && \
     apt-get clean && \
     chmod +x /root/*.sh
-    # rm -rf /src/scikit-surprise
-# RUN cp '/etc/profile.d/.env' '/etc/profile.d/tag.sh'
-# RUN dos2unix /etc/profile.d/tag.sh
-# RUN sed -i "s/TAG=/export TAG=/g" /etc/profile.d/tag.sh
-
-# Clean up
-# RUN apt-get remove -y wget xz-utils
 
 # Expose ports and set working directory
 EXPOSE 5080
@@ -131,3 +120,60 @@ CMD ["/bin/bash", "/root/start.sh"]
 # Entrypoint
 ENTRYPOINT ["/root/entrypoint.sh"]
 
+# Stage 2b: build prod version of lab
+FROM python:3.7.16-slim-buster as prod
+ARG docker_filepath=docker/lab/files
+
+# Copy src for lab
+COPY lab /appsrc/lab
+COPY ai /appsrc/ai
+
+# Copy installed packages from the builder stage
+COPY --from=base /usr/local /usr/local
+
+# Copy Apache configuration
+COPY --from=base /etc/apache2 /etc/apache2
+
+# Copy webapp and lab source code
+COPY --from=base /appsrc/lab /appsrc/lab
+
+# Copy scripts and other files
+COPY ${docker_filepath}/start.sh /root/
+COPY ${docker_filepath}/wait-for-it.sh /root/
+COPY ${docker_filepath}/entrypoint.sh /root/
+COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/
+COPY ${docker_filepath}/htpasswd /etc/apache2/htpasswd
+COPY ${docker_filepath}/certs/* /usr/lib/ssl/private/
+COPY .env /etc/profile.d/
+
+# These requirements need to be built, using wheels throws errors
+COPY ${docker_filepath}/requirements-build.txt /root/
+
+# Copy knowledgebases
+COPY 'data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_classification_metafeatures.csv.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_regression_results.pkl.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_regression_metafeatures.csv.gz' /appsrc/data/knowledgebases/
+
+# Set version and build environment
+ENV BUILD_ENV='prod'
+RUN apt-get update && apt-get install -y dos2unix git build-essential && \
+    pip install --no-cache-dir -r /root/requirements-build.txt && \
+    cp '/etc/profile.d/.env' '/etc/profile.d/tag.sh' && \
+    dos2unix /etc/profile.d/tag.sh && \
+    sed -i "s/TAG=/export TAG=/g" /etc/profile.d/tag.sh && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get remove -y dos2unix git build-essential && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    chmod +x /root/*.sh
+
+# Expose ports and set working directory
+EXPOSE 5080
+WORKDIR /appsrc/lab/
+
+# Start the webserver
+CMD ["/bin/bash", "/root/start.sh"]
+
+# Entrypoint
+ENTRYPOINT ["/root/entrypoint.sh"]

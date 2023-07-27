@@ -497,10 +497,10 @@ class APITESTCLASS(unittest.TestCase):
             assert os.path.isfile('{}/prediction_values.json'.format(outdir))
             assert os.path.isfile('{}/feature_importances.json'.format(outdir))
             assert os.path.isfile(
-                '{}/confusion_matrix_{}.png'.format(outdir, _id))
+                '{}/confusion_matrix.png'.format(outdir, _id))
             # only has roc for binary outcome
-            assert os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-            assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+            assert os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+            assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
             assert os.path.isfile(
                 '{}/scripts_reproduce_{}.py'.format(outdir, _id))
             # test pickle file
@@ -570,8 +570,8 @@ class APITESTCLASS(unittest.TestCase):
         assert train_score
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test SHAP summary files
         # GradientBoostingClassifier for multiclass case using Kernel Explainer
@@ -633,8 +633,8 @@ class APITESTCLASS(unittest.TestCase):
         assert train_score
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test SHAP summary files
         for class_id in range(3):
@@ -693,8 +693,8 @@ class APITESTCLASS(unittest.TestCase):
         assert train_score
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test SHAP summary files - Linear Explainer, Generates only one matrix
         assert os.path.isfile('{}/shap_summary_curve{}_0_.png'.format(outdir, _id))
@@ -734,8 +734,8 @@ class APITESTCLASS(unittest.TestCase):
         assert train_score
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test SHAP summary files - Linear Explainer, Generates only one matrix
         assert os.path.isfile('{}/shap_summary_curve{}_0_.png'.format(outdir, _id))
@@ -774,10 +774,10 @@ class APITESTCLASS(unittest.TestCase):
         assert train_score
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
         # only has roc for binary outcome
-        assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+        assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test SHAP summary files
         for class_id in range(3):
@@ -849,8 +849,8 @@ class APITESTCLASS(unittest.TestCase):
         assert train_score
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         assert os.path.isfile(
             '{}/grid_search_results_{}.csv'.format(outdir, _id))
@@ -922,8 +922,8 @@ class APITESTCLASS(unittest.TestCase):
         assert train_score
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         assert os.path.isfile(
             '{}/grid_search_results_{}.csv'.format(outdir, _id))
@@ -1058,10 +1058,10 @@ def test_generate_results_1():
     assert value['_scores']['train_score'] > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1102,10 +1102,10 @@ def test_generate_results_2():
     assert train_score > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1148,12 +1148,12 @@ def test_generate_results_3():
     assert value['_scores']['r2_score'] > 0
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/reg_cv_pred_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/reg_cv_resi_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert os.path.isfile('{}/reg_cv_pred.png'.format(outdir, _id))
+    assert os.path.isfile('{}/reg_cv_resi.png'.format(outdir, _id))
+    assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1179,10 +1179,10 @@ def test_generate_results_4():
     assert value['_scores']['r2_score'] > 0
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1253,10 +1253,10 @@ def test_generate_results_6():
     assert train_score > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1312,10 +1312,10 @@ def test_generate_results_7():
     assert train_score > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1359,10 +1359,10 @@ def test_generate_results_9():
     assert value['_scores']['train_score'] > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1404,10 +1404,10 @@ def test_generate_results_10():
     assert value['_scores']['train_score'] > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-    assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/confusion_matrix.png'.format(outdir, _id))
     # only has roc for binary outcome
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve.png'.format(outdir, _id))
+    assert os.path.isfile('{}/imp_score.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
