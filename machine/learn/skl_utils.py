@@ -1817,6 +1817,7 @@ testing_target = input_data[target_column].values
 print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
 
+
 # Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
 # Please comment this line below if there is no target column in input dataset

@@ -1,5 +1,5 @@
-# Stage 1: Build and install Python and Node.js dependencies
-FROM python:3.7.16-slim-buster AS builder
+# Stage 1: Build and install Python and NodeJS dependencies
+FROM python:3.7.16-slim-buster as base
 
 ARG USE_WHEELS
 ARG wheel_directory=docker/wheels
@@ -48,13 +48,11 @@ RUN pip install --no-cache-dir -r /root/requirements-build.txt
 # Setup node environment
 RUN npm install -g pm2 --silent --progress=false
 
-# Stage 2: Final runtime image
-FROM python:3.7.16-slim-buster
-
+# Stage 2a: Build dev version of machine
+FROM python:3.7.16-slim-buster as dev
 ARG docker_filepath=docker/machine/files
 
-# Copy installed Python dependencies
-COPY --from=builder /usr/local /usr/local
+COPY --from=base /usr/local /usr/local
 
 # Copy node_modules to an anonymous volume
 WORKDIR /appsrc/machine
@@ -75,3 +73,31 @@ RUN apt-get update && apt-get install -y graphviz dos2unix && \
 
 CMD ["/bin/bash", "/root/entrypoint.sh"]
 
+# Stage 2b: Build prod version of machine
+FROM python:3.7.16-slim-buster as prod
+ARG docker_filepath=docker/machine/files
+
+# copy src for machine
+COPY machine /appsrc/machine/
+COPY config/machine_config.json /appsrc/config/machine_config.json
+
+COPY --from=base /usr/local /usr/local
+
+# Copy node_modules to an anonymous volume
+WORKDIR /appsrc/machine
+COPY machine/package.json /appsrc/machine/
+COPY machine/package-lock.json /appsrc/machine/
+# Copy entrypoint script and other files
+COPY ${docker_filepath}/entrypoint.sh /root/
+COPY ${docker_filepath}/wait-for-it.sh /root/
+
+RUN apt-get update && apt-get install -y graphviz dos2unix && \
+    dos2unix /appsrc/machine/*.json && \
+    npm install --silent --progress=false && \
+    dos2unix /root/wait-for-it.sh && dos2unix /root/entrypoint.sh && \
+    chmod +x /root/wait-for-it.sh && chmod +x /root/entrypoint.sh && \
+    apt-get remove -y dos2unix && \
+    apt-get clean
+    # apt-get autoremove -y && \
+
+CMD ["/bin/bash", "/root/entrypoint.sh"]
