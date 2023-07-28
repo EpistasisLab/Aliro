@@ -22,10 +22,10 @@ services:
     build:
       context: .
       dockerfile: docker/lab/Dockerfile
-      target: ${DOCKER_BUILD_ENV}
+      target: dev
       args:
         # - USE_WHEELS=${USE_WHEELS}
-        - USE_WHEELS=0
+        - USE_WHEELS=1
     tty: true
     stdin_open: true
     volumes:
@@ -48,10 +48,10 @@ services:
     build:
       context: .
       dockerfile: docker/machine/Dockerfile
-      target: ${DOCKER_BUILD_ENV}
+      target: dev
       args:
         # - USE_WHEELS=${USE_WHEELS}
-        - USE_WHEELS=0
+        - USE_WHEELS=1
     tty: true
     stdin_open: true
     volumes:
