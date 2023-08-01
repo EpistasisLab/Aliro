@@ -1,5 +1,6 @@
 # FROM node:12.22.9-slim
-FROM node:18.16.1-slim
+# FROM node:18.16.1-slim
+FROM node:14.21.3-slim
 WORKDIR /src
 
 RUN apt-get update && apt-get install -y vim dos2unix
