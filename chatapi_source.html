@@ -170,12 +170,16 @@ pre code {
 .required {
   color: #f00;
 }
-    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>Chat API <small>version v1</small></h1><p>http://localhost:5080/chatapi/{version}</p><ul><li><strong>version</strong>: <em><span class="required">required</span>(v1)</em></li></ul></div><div class="panel panel-default"><div class="panel-heading"><h3 id="chats" class="panel-title">/chats</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_chats"><span class="parent"></span>/chats</a> <span class="methods"><a href="#chats_get"><span class="badge badge_get">get</span></a> <a href="#chats_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_chats" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#chats_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve all chats</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#chats_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Create a chat</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/chats</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve all chats</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: array of object</p><p><strong>Items</strong>: Chat</p><div class="items"><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul></div><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>Chat API <small>version v1</small></h1><p>http://localhost:5080/chatapi/{version}</p><ul><li><strong>version</strong>: <em><span class="required">required</span>(v1)</em></li></ul></div><div class="panel panel-default"><div class="panel-heading"><h3 id="chats" class="panel-title">/chats</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_chats"><span class="parent"></span>/chats</a> <span class="methods"><a href="#chats_get"><span class="badge badge_get">get</span></a> <a href="#chats_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_chats" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#chats_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve all chats</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#chats_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Create a chat</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/chats</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve all chats</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: array of object</p><p><strong>Items</strong>: Chat</p><div class="items"><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul></div><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
   {
     "_id": "63f7bc2da70e99abe4e83b9c",
     "title": "Fist Chat",
     "_dataset_id": "5f92cbf10cf217478ba93561",
     "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+    "chatlogs": [
+      "617fe4eaa4f1b4d86a88c8e1",
+      "617fe4eaa4f1b4d86a88c8e2"
+    ],
     "date": "2023-02-28T17:30:00.000Z",
     "__v": 0
   },
@@ -184,33 +188,37 @@ pre code {
     "title": "Second Chat",
     "_dataset_id": "5f92cbf10cf217478ba93561",
     "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+    "chatlogs": [
+      "617fe4eaa4f1b4d86a88c8e3",
+      "617fe4eaa4f1b4d86a88c8e4"
+    ],
     "date": "2023-02-28T17:30:10.000Z",
     "__v": 0
   }
 ]</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "message": "Failed to connect to database"
-}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/chats</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a chat</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats_post_request" data-toggle="tab">Request</a></li><li><a href="#chats_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/chats</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a chat</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats_post_request" data-toggle="tab">Request</a></li><li><a href="#chats_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "title": "Fist Chat",
   "_dataset_id": "5f92cbf10cf217478ba93561",
   "_experiment_id": "6143e3e906a0c0a9d9f9d91a"
-}</code></pre></div></div><div class="tab-pane" id="chats_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+}</code></pre></div></div><div class="tab-pane" id="chats_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "_id": "63f7bc2da70e99abe4e83b9c",
   "title": "Fist Chat",
   "_dataset_id": "5f92cbf10cf217478ba93561",
   "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+  "chatlogs": [
+    "617fe4eaa4f1b4d86a88c8e1",
+    "617fe4eaa4f1b4d86a88c8e2"
+  ],
   "date": "2023-02-28T17:30:00.000Z",
   "__v": 0
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "message": "Must provide a _dataset_id"
 }</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_chats__id_"><span class="parent">/chats</span>/{id}</a> <span class="methods"><a href="#chats__id__get"><span class="badge badge_get">get</span></a> <a href="#chats__id__patch"><span class="badge badge_patch">patch</span></a> <a href="#chats__id__delete"><span class="badge badge_delete">delete</span></a></span></h4></div><div id="panel_chats__id_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#chats__id__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a specific chat and all it&#39;s associated chatlogs</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#chats__id__patch'" class="list-group-item"><span class="badge badge_patch">patch</span><div class="method_description"><p>Update a specific chat</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#chats__id__delete'" class="list-group-item"><span class="badge badge_delete">delete</span><div class="method_description"><p>Delete a specific chat and all it&#39;s associated chatlogs</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats__id__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/chats</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a specific chat and all it&#39;s associated chatlogs</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats__id__get_request" data-toggle="tab">Request</a></li><li><a href="#chats__id__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats__id__get_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="chats__id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
-  "chat": {
-    "_id": "63f7bc2da70e99abe4e83b9c",
-    "title": "Fist Chat",
-    "_dataset_id": "5f92cbf10cf217478ba93561",
-    "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
-    "date": "2023-02-28T17:30:00.000Z",
-    "__v": 0
-  },
+  "_id": "63f7bc2da70e99abe4e83b9c",
+  "title": "Fist Chat",
+  "_dataset_id": "5f92cbf10cf217478ba93561",
+  "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
   "chatlogs": [
     {
       "_id": "6144c03406a0c0a9d9f9d91c",
@@ -228,20 +236,26 @@ pre code {
       "who": "openai",
       "date": "2023-02-28T17:30:10.000Z"
     }
-  ]
+  ],
+  "date": "2023-02-28T17:30:00.000Z",
+  "__v": 0
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "message": "Cannot find chat: 63f7bc2da70e99abe4e83b9c"
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "message": "Failed to connect to database"
-}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats__id__patch"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch</span> <span class="parent">/chats</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update a specific chat</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats__id__patch_request" data-toggle="tab">Request</a></li><li><a href="#chats__id__patch_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats__id__patch_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em><span class="required">required</span>(string)</em></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats__id__patch"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch</span> <span class="parent">/chats</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update a specific chat</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats__id__patch_request" data-toggle="tab">Request</a></li><li><a href="#chats__id__patch_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats__id__patch_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em><span class="required">required</span>(string)</em></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "title": "Fist Chat",
   "_dataset_id": "5f92cbf10cf217478ba93561",
   "_experiment_id": "6143e3e906a0c0a9d9f9d91a"
-}</code></pre></div></div><div class="tab-pane" id="chats__id__patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+}</code></pre></div></div><div class="tab-pane" id="chats__id__patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>title</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>_dataset_id</strong>: <em>(string)</em></li><li><strong>_experiment_id</strong>: <em>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "_id": "63f7bc2da70e99abe4e83b9c",
   "title": "Fist Chat",
   "_dataset_id": "5f92cbf10cf217478ba93561",
   "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+  "chatlogs": [
+    "617fe4eaa4f1b4d86a88c8e1",
+    "617fe4eaa4f1b4d86a88c8e2"
+  ],
   "date": "2023-02-28T17:30:00.000Z",
   "__v": 0
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
@@ -254,6 +268,64 @@ pre code {
   "message": "Cannot find chat: 63f7bc2da70e99abe4e83b9c"
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "message": "Failed to connect to database"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_chats_experiment__experiment_id_"><span class="parent">/chats/experiment</span>/{experiment_id}</a> <span class="methods"><a href="#chats_experiment__experiment_id__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_chats_experiment__experiment_id_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#chats_experiment__experiment_id__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a chat and associated chatlogs by experiment id.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats_experiment__experiment_id__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/chats/experiment</span>/{experiment_id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a chat and associated chatlogs by experiment id.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats_experiment__experiment_id__get_request" data-toggle="tab">Request</a></li><li><a href="#chats_experiment__experiment_id__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats_experiment__experiment_id__get_request"><h3>URI Parameters</h3><ul><li><strong>experiment_id</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="chats_experiment__experiment_id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: appliation/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "_id": "63f7bc2da70e99abe4e83b9c",
+    "title": "Fist Chat",
+    "_dataset_id": "5f92cbf10cf217478ba93561",
+    "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+    "chatlogs": [
+      "617fe4eaa4f1b4d86a88c8e1",
+      "617fe4eaa4f1b4d86a88c8e2"
+    ],
+    "date": "2023-02-28T17:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "6143e6f506a0c0a9d9f9d91b",
+    "title": "Second Chat",
+    "_dataset_id": "5f92cbf10cf217478ba93561",
+    "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+    "chatlogs": [
+      "617fe4eaa4f1b4d86a88c8e3",
+      "617fe4eaa4f1b4d86a88c8e4"
+    ],
+    "date": "2023-02-28T17:30:10.000Z",
+    "__v": 0
+  }
+]</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Cannot find chats by experiment id: 63f7bc2da70e99abe4e83b9c"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Internal Server Error"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_chats_dataset__dataset_id_"><span class="parent">/chats/dataset</span>/{dataset_id}</a> <span class="methods"><a href="#chats_dataset__dataset_id__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_chats_dataset__dataset_id_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#chats_dataset__dataset_id__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a chat and associated chatlogs by dataset id.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="chats_dataset__dataset_id__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/chats/dataset</span>/{dataset_id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a chat and associated chatlogs by dataset id.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chats_dataset__dataset_id__get_request" data-toggle="tab">Request</a></li><li><a href="#chats_dataset__dataset_id__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chats_dataset__dataset_id__get_request"><h3>URI Parameters</h3><ul><li><strong>dataset_id</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="chats_dataset__dataset_id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: appliation/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "_id": "63f7bc2da70e99abe4e83b9c",
+    "title": "Fist Chat",
+    "_dataset_id": "5f92cbf10cf217478ba93561",
+    "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+    "chatlogs": [
+      "617fe4eaa4f1b4d86a88c8e1",
+      "617fe4eaa4f1b4d86a88c8e2"
+    ],
+    "date": "2023-02-28T17:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "6143e6f506a0c0a9d9f9d91b",
+    "title": "Second Chat",
+    "_dataset_id": "5f92cbf10cf217478ba93561",
+    "_experiment_id": "6143e3e906a0c0a9d9f9d91a",
+    "chatlogs": [
+      "617fe4eaa4f1b4d86a88c8e3",
+      "617fe4eaa4f1b4d86a88c8e4"
+    ],
+    "date": "2023-02-28T17:30:10.000Z",
+    "__v": 0
+  }
+]</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Cannot find chats by dataset id: 63f7bc2da70e99abe4e83b9c"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Internal Server Error"
 }</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="chatlogs" class="panel-title">/chatlogs</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_chatlogs"><span class="parent"></span>/chatlogs</a> <span class="methods"><a href="#chatlogs_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_chatlogs" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#chatlogs_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Create a chat log entry</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="chatlogs_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/chatlogs</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a chat log entry</p></div><ul class="nav nav-tabs"><li class="active"><a href="#chatlogs_post_request" data-toggle="tab">Request</a></li><li><a href="#chatlogs_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="chatlogs_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>_chat_id</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>message</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>message_type</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>source_code</strong>: <em>(string)</em></li><li><strong>who</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>date</strong>: <em><span class="required">required</span>(datetime)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "_chat_id": "63f7bc2da70e99abe4e83b9c",
   "message": "Hello",

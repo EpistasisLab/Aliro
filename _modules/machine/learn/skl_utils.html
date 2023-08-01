@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>machine.learn.skl_utils &#8212; Aliro 1.0a0 documentation</title>
+    <title>machine.learn.skl_utils &#8212; Aliro 1.0.a0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/basic_mod.css?v=0.7.0-1" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -123,9 +123,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../developerguide.html">Developer Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lab_api.html">Lab API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../openai_api.html">OpenAI API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../chatapi.html">Chat API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../execapi.html">Code Execution API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ai.html">AI Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../recommenders.html">Recommenders</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">AI API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
 </ul>
 
@@ -195,7 +198,6 @@
 <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Patch</span>
 <span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">TSNE</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">learning_curve</span>
-
 
 <span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
 
@@ -401,9 +403,11 @@
         <span class="n">occ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">target_arr</span> <span class="o">==</span> <span class="n">OneClass</span><span class="p">)</span>
         <span class="n">class_perc</span><span class="p">[</span><span class="s2">&quot;class_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">OneClass</span><span class="p">)]</span> <span class="o">=</span> <span class="n">occ</span><span class="o">/</span><span class="n">len_target</span>
 
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;class_percentage&quot;</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
     <span class="c1"># show percentage of each class</span>
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;class_percentage.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">class_perc</span><span class="p">)</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">class_perc</span><span class="p">)</span>
 
     <span class="n">features</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span>
         <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">force_all_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -675,12 +679,17 @@
 
     <span class="n">metrics_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_scores&#39;</span><span class="p">:</span> <span class="n">scores</span><span class="p">}</span>
 
+    <span class="n">value_file_name</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;value.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">metrics_dict</span><span class="p">)</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">value_file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">metrics_dict</span><span class="p">)</span>
 
     <span class="n">prediction_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prediction_values&#39;</span><span class="p">:</span> <span class="n">predicted_classes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()}</span>
+
+    <span class="n">prediction_file_name</span> <span class="o">=</span> <span class="s2">&quot;prediction_values&quot;</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;prediction_values.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">prediction_dict</span><span class="p">)</span></div>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">prediction_file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">prediction_dict</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_col_idx"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.get_col_idx">[docs]</a><span class="k">def</span> <span class="nf">get_col_idx</span><span class="p">(</span><span class="n">feature_names_list</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
@@ -831,8 +840,11 @@
         <span class="s1">&#39;cnf_matrix&#39;</span><span class="p">:</span> <span class="n">cnf_matrix</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
         <span class="s1">&#39;class_names&#39;</span><span class="p">:</span> <span class="n">class_names</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">}</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;cnf_matrix&quot;</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;cnf_matrix.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">cnf_matrix_dict</span><span class="p">)</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">cnf_matrix_dict</span><span class="p">)</span>
 
     <span class="c1"># export plot</span>
     <span class="k">if</span> <span class="n">figure_export</span><span class="p">:</span>
@@ -856,7 +868,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True label&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted label&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/confusion_matrix_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/confusion_matrix&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -1012,8 +1024,10 @@
         <span class="c1"># &#39;shap_values&#39;: shap_values</span>
     <span class="p">}</span>
 
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;shap_summary_curve&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span>
+
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;shap_summary.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">shap_summary_dict</span><span class="p">)</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">shap_summary_dict</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">combine_summary_decision_curve</span><span class="p">(</span>
@@ -1082,9 +1096,10 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-
 <span class="c1"># After switching to dynamic charts, possibly disable outputting graphs</span>
 <span class="c1"># from this function</span>
+
+
 <div class="viewcode-block" id="plot_roc_curve"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_roc_curve">[docs]</a><span class="k">def</span> <span class="nf">plot_roc_curve</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv_scores</span><span class="p">,</span> <span class="n">figure_export</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot ROC Curve.</span>
@@ -1169,15 +1184,17 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True Positive Rate&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;ROC curve&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/roc_curve_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/roc_curve&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">roc_curve_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;fpr&#39;</span><span class="p">:</span> <span class="n">mean_fpr</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
         <span class="s1">&#39;tpr&#39;</span><span class="p">:</span> <span class="n">mean_tpr</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
         <span class="s1">&#39;roc_auc_score&#39;</span><span class="p">:</span> <span class="n">mean_auc</span>
     <span class="p">}</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;roc_curve&#39;</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;roc_curve.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">roc_curve_dict</span><span class="p">)</span></div>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">roc_curve_dict</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="plot_imp_score"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_imp_score">[docs]</a><span class="k">def</span> <span class="nf">plot_imp_score</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">imp_score_type</span><span class="p">):</span>
@@ -1213,7 +1230,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_bar</span><span class="p">),</span> <span class="n">feature_names</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_bar</span><span class="p">])</span>
     <span class="n">h</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/imp_score_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/imp_score&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">top_features</span><span class="p">,</span> <span class="n">indices</span></div>
 
@@ -1272,7 +1289,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Learning curve&#39;</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/learning_curve_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/learning_curve&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -1292,8 +1309,11 @@
         <span class="s1">&#39;test_scores&#39;</span><span class="p">:</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
     <span class="p">}</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;learning_curve&#39;</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
+
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;learning_curve.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">learning_curve_dict</span><span class="p">)</span></div>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">learning_curve_dict</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="plot_pca_2d"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_pca_2d">[docs]</a><span class="k">def</span> <span class="nf">plot_pca_2d</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
@@ -1339,7 +1359,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;PC1&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;PC2&#39;</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/pca_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/pca&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="c1"># save X and y to json file</span>
@@ -1349,9 +1369,10 @@
         <span class="s1">&#39;y_pca&#39;</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">}</span>
 
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;pca-json&#39;</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
     <span class="c1"># save json file</span>
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;pca-json.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">pca_dict</span><span class="p">)</span></div>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">pca_dict</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">plot_pca_3d</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
@@ -1448,7 +1469,7 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">w_zaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
 
     <span class="c1"># plt.show()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/pca_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/pca&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
@@ -1466,7 +1487,6 @@
 <span class="sd">        Features in training dataset</span>
 <span class="sd">    target: np.darray/pd.DataFrame</span>
 <span class="sd">        Target in training dataset</span>
-
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1492,7 +1512,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;comp-2&#39;</span><span class="p">)</span>
 
     <span class="c1"># plt.show()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/tsne_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/tsne&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="c1"># save X and y to json file</span>
@@ -1503,8 +1523,10 @@
         <span class="s1">&#39;y_tsne&#39;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">}</span>
 
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;tsne-json&#39;</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
+    <span class="c1"># save json file</span>
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;tsne-json.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">tsne_dict</span><span class="p">)</span></div>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">tsne_dict</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="plot_dot_plot"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_dot_plot">[docs]</a><span class="k">def</span> <span class="nf">plot_dot_plot</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span>
@@ -1612,7 +1634,7 @@
             <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
             <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_pred_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_pred&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
@@ -1624,7 +1646,7 @@
                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
                <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_resi_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_resi&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="c1"># add q-q plot for normalized CV residuals</span>
@@ -1640,7 +1662,7 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Theoretical Quantiles&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Ordered Normalized Residuals&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_qq_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_qq&#39;</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="c1"># observed (y) vs predicted (pred_y)</span>
@@ -1661,28 +1683,54 @@
     <span class="n">QQNR_2d</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
     <span class="n">QQNR_2d_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
 
-    <span class="n">reg_cv_pred_resi_qq</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># reg_cv_pred_resi_qq = {</span>
+    <span class="c1">#     &#39;CVP_2d&#39;: CVP_2d,</span>
+    <span class="c1">#     &#39;CVP_2d_class&#39;: CVP_2d_class.tolist(),</span>
+
+    <span class="c1">#     &#39;CVR_2d&#39;: CVR_2d,</span>
+    <span class="c1">#     &#39;CVR_2d_class&#39;: CVR_2d_class.tolist(),</span>
+
+    <span class="c1">#     &#39;QQNR_2d&#39;: QQNR_2d,</span>
+    <span class="c1">#     &#39;QQNR_2d_class&#39;: QQNR_2d_class.tolist(),</span>
+    <span class="c1"># }</span>
+
+    <span class="c1"># file_name = &quot;reg_cv_pred_resi_qq&quot;  + &quot;.json&quot;</span>
+
+    <span class="c1"># save_json_fmt(outdir=tmpdir, _id=_id,</span>
+    <span class="c1">#               fname=file_name, content=reg_cv_pred_resi_qq)</span>
+
+    <span class="c1"># cvp</span>
+    <span class="n">reg_cvp</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;CVP_2d&#39;</span><span class="p">:</span> <span class="n">CVP_2d</span><span class="p">,</span>
-        <span class="s1">&#39;CVP_2d_class&#39;</span><span class="p">:</span> <span class="n">CVP_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-
-        <span class="s1">&#39;CVR_2d&#39;</span><span class="p">:</span> <span class="n">CVR_2d</span><span class="p">,</span>
-        <span class="s1">&#39;CVR_2d_class&#39;</span><span class="p">:</span> <span class="n">CVR_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-
-        <span class="s1">&#39;QQNR_2d&#39;</span><span class="p">:</span> <span class="n">QQNR_2d</span><span class="p">,</span>
-        <span class="s1">&#39;QQNR_2d_class&#39;</span><span class="p">:</span> <span class="n">QQNR_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-
-
-        <span class="c1"># &#39;y&#39;: y.tolist(),</span>
-        <span class="c1"># &#39;pred_y&#39;: pred_y.tolist(),</span>
-        <span class="c1"># &#39;resi_y&#39;: resi_y.tolist(),</span>
-
-        <span class="c1"># &#39;z&#39;: z.tolist(),</span>
-        <span class="c1"># &#39;series1_zero&#39;: series1[0][0].tolist(),</span>
-        <span class="c1"># &#39;series1_one&#39;: series1[0][1].tolist(),</span>
+        <span class="s1">&#39;CVP_2d_class&#39;</span><span class="p">:</span> <span class="n">CVP_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">}</span>
 
+    <span class="n">cvp_file_name</span> <span class="o">=</span> <span class="s2">&quot;reg_cvp&quot;</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
-                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;reg_cv_pred_resi_qq.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">reg_cv_pred_resi_qq</span><span class="p">)</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">cvp_file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">reg_cvp</span><span class="p">)</span>
+
+    <span class="c1"># cvr</span>
+    <span class="n">reg_cvr</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;CVR_2d&#39;</span><span class="p">:</span> <span class="n">CVR_2d</span><span class="p">,</span>
+        <span class="s1">&#39;CVR_2d_class&#39;</span><span class="p">:</span> <span class="n">CVR_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="n">cvr_file_name</span> <span class="o">=</span> <span class="s2">&quot;reg_cvr&quot;</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
+    <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">cvr_file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">reg_cvr</span><span class="p">)</span>
+
+    <span class="c1"># qqnr</span>
+    <span class="n">reg_qqnr</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;QQNR_2d&#39;</span><span class="p">:</span> <span class="n">QQNR_2d</span><span class="p">,</span>
+        <span class="s1">&#39;QQNR_2d_class&#39;</span><span class="p">:</span> <span class="n">QQNR_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="n">qqnr_file_name</span> <span class="o">=</span> <span class="s2">&quot;reg_qqnr&quot;</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
+    <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="n">qqnr_file_name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">reg_qqnr</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="export_model"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.export_model">[docs]</a><span class="k">def</span> <span class="nf">export_model</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span>

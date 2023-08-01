@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Developer Guide &#8212; Aliro 1.0a0 documentation</title>
+    <title>Developer Guide &#8212; Aliro 1.0.a0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/basic_mod.css?v=0.7.0-1" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -126,9 +126,12 @@
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lab_api.html">Lab API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openai_api.html">OpenAI API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chatapi.html">Chat API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="execapi.html">Code Execution API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai.html">AI Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recommenders.html">Recommenders</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">AI API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
 </ul>
 
@@ -250,10 +253,10 @@ python<span class="w"> </span>-m<span class="w"> </span>ai.ai<span class="w"> </
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Note: If <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;aliro_lab_1&quot;</span> <span class="pre">/bin/bash</span></code> returns
+<li><p>Note: If <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;aliro-lab-1&quot;</span> <span class="pre">/bin/bash</span></code> returns
 <strong>‘Error: no such container’</strong>, use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ps</span></code> to get the name of
 the lab container</p></li>
-<li><p>Note: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">attach</span> <span class="pre">aliro_lab_1</span></code> will attach to the lab container, but if
+<li><p>Note: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">attach</span> <span class="pre">aliro-lab-1</span></code> will attach to the lab container, but if
 the last command run by the startup script was not bash it will appear to
 hang.</p></li>
 </ul>
@@ -524,6 +527,8 @@ mocha<span class="w"> </span>./test/test.js<span class="w"> </span><span class="
 <section id="generating-and-publishing-production-builds">
 <h3>Generating and publishing production builds<a class="headerlink" href="#generating-and-publishing-production-builds" title="Permalink to this headline">¶</a></h3>
 <p>To create a production release:</p>
+<p>The following steps will be performed by following the <strong>Release procedure</strong>
+steps below:</p>
 <ul class="simple">
 <li><p>the source should be added to the <code class="docutils literal notranslate"><span class="pre">production</span></code> branch with a tagged commit</p></li>
 <li><p>the production docker images should be added to DockerHub with appropriate
@@ -620,11 +625,11 @@ Aliro server.</p></li>
       </div>
     
         <div id="show_right_sidebar">
-            <p><a class="toggle_right_sidebar" href="#"><span class="icon"><</span><span>Page contents<span></a></p>
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&lt;</span><span>Page contents<span></a></p>
         </div>
 
         <div id="right_sidebar">
-            <p><a class="toggle_right_sidebar" href="#"><span class="icon">></span><span>Page contents:<span></a></p>
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&gt;</span><span>Page contents:<span></a></p>
             <div class="page_toc">
                 <ul>
 <li><a class="reference internal" href="#">Developer Guide</a><ul>
@@ -690,13 +695,13 @@ Aliro server.</p></li>
             <div class="left">
                 
                 <a href="userguide.html">
-                    <span class="icon"><</span><span>User Guide</span></a>
+                    <span class="icon">&lt;</span><span>User Guide</span></a>
                 
             </div>
 
             <div class="right">
                 
-                    <a href="lab_api.html"><span>Lab API</span><span class="icon">></span></a>
+                    <a href="lab_api.html"><span>Lab API</span><span class="icon">&gt;</span></a>
                 
             </div>
         </div>

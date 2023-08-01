@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Aliro: Accessible Data Science &#8212; Aliro 1.0.a0 documentation</title>
+    <title>Code Execution API &#8212; Aliro 1.0.a0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/basic_mod.css?v=0.7.0-1" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -18,7 +18,8 @@
     <link rel="shortcut icon" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_brain_logo.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Analysis Quickstart" href="quickstart.html" /> 
+    <link rel="next" title="AI Overview" href="ai.html" />
+    <link rel="prev" title="Chat API" href="chatapi.html" /> 
   </head><body data-dark_mode_code_blocks="true">
 
 <div id="top_nav">
@@ -32,7 +33,7 @@
         <p id="toggle_sidebar">
             <a href="#" title="Toggle sidebar">|||</a>
         </p>
-        <h1><a href="#" title="Go to homepage"><img src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_brain_logo.png"/></a></h1>
+        <h1><a href="index.html" title="Go to homepage"><img src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_brain_logo.png"/></a></h1>
 
         <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
     <template v-if="mode == 'light'">
@@ -120,14 +121,14 @@
 
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><ul>
+        <div class="sphinxsidebarwrapper"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Analysis Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developerguide.html">Developer Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lab_api.html">Lab API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="openai_api.html">OpenAI API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="chatapi.html">Chat API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="execapi.html">Code Execution API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Execution API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai.html">AI Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recommenders.html">Recommenders</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">AI API</a></li>
@@ -143,109 +144,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="aliro-accessible-data-science">
-<h1>Aliro: Accessible Data Science<a class="headerlink" href="#aliro-accessible-data-science" title="Permalink to this headline">¶</a></h1>
-<p><strong>Aliro</strong> is an easy-to-use data science assistant.
-It allows researchers without machine learning or coding expertise to run supervised machine learning analysis through a clean web interface.
-It provides results visualization and reproducible scripts so that the analysis can be taken anywhere.
-And, it has an <em>AI</em> assistant that can choose the analysis to run for you.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Analysis Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#uploading-a-dataset">Uploading a dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#building-your-own-experiment">Building your own experiment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#ai-analysis">AI analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#experiments">Experiments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#results">Results</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="userguide.html#about">About</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide.html#aliro">Aliro</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide.html#aliroed">AliroEd</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide.html#using-aliro">Using Aliro</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="developerguide.html">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developerguide.html#developer-installation">Developer Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developerguide.html#development-notes">Development Notes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developerguide.html#architecture-overview">Architecture Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developerguide.html#code-documentation">Code Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developerguide.html#tests">Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developerguide.html#production-builds">Production Builds</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="lab_api.html">Lab API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="openai_api.html">OpenAI API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="chatapi.html">Chat API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="execapi.html">Code Execution API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ai.html">AI Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="recommenders.html">Recommenders</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="recommenders.html#recommendation-basics">Recommendation Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="recommenders.html#current-recommenders">Current Recommenders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="recommenders.html#building-your-own-recommender">Building your own recommender</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">AI API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#ai">AI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#recommenders">Recommenders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#scikit-learn-api-for-aliro-engine">Scikit-learn API for Aliro engine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#learn">Learn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#io">IO</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#scikit-learn-utils">Scikit-learn Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="userguide_sklearn_api.html">User Guide of PennAIpy</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="userguide_sklearn_api.html#installation-of-ai-engine-as-a-standalone-python-package">Installation of AI engine as a standalone python package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide_sklearn_api.html#example-of-using-aliro-ai-engine">Example of using Aliro AI engine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide_sklearn_api.html#default-knowledgebase-metafeatures-of-aliro-ai-engine">Default knowledgebase/metafeatures of Aliro AI engine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide_sklearn_api.html#example-of-using-aliro-ai-engine-with-non-default-knowledgebase-metafeature">Example of using Aliro AI engine with non-default knowledgebase/metafeature.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide_sklearn_api.html#example-of-using-aliro-ai-engine-with-pre-trained-svg-recommender">Example of using Aliro AI engine with pre-trained SVG recommender</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="about-the-project">
-<h1>About the Project<a class="headerlink" href="#about-the-project" title="Permalink to this headline">¶</a></h1>
-<p>Aliro is actively developed by the Center for Artificial Intelligence Research (CAIR)
-in the <a class="reference external" href="https://www.cedars-sinai.edu/research/departments-institutes/computational-biomedicine.html">Department of Computational Biomedicine</a>
-at <a class="reference external" href="https://www.cedars-sinai.org/">Cedars-Sinai Medical Center</a> in Los Angeles.
-Contributors include Hyunjun Choi, Miguel Hernandez, Nick Matsumoto, Jay Moran, Paul Wang, and Jason Moore (PI).
-You can find our original position paper on <a class="reference external" href="https://arxiv.org/abs/1705.00594">arxiv</a>.
-A more recent preprint describing the AI methodology will be available on arxiv soon.
-Stay tuned!</p>
-</section>
-<section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
-</section>
+  <section id="code-execution-api">
+<h1>Code Execution API<a class="headerlink" href="#code-execution-api" title="Permalink to this headline">¶</a></h1>
+<embed src="execapi_source.html" width="100%" height="600px" style="border:none;" /></section>
 
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-    
-        <div id="show_right_sidebar">
-            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&lt;</span><span>Page contents<span></a></p>
-        </div>
-
-        <div id="right_sidebar">
-            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&gt;</span><span>Page contents:<span></a></p>
-            <div class="page_toc">
-                <ul>
-<li><a class="reference internal" href="#">Aliro: Accessible Data Science</a></li>
-<li><a class="reference internal" href="#about-the-project">About the Project</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
-
-            </div>
-        </div>
     
 
       <div class="clearer"></div>
@@ -254,11 +161,14 @@ Stay tuned!</p>
         <div class="button_nav">
             <div class="left">
                 
+                <a href="chatapi.html">
+                    <span class="icon">&lt;</span><span>Chat API</span></a>
+                
             </div>
 
             <div class="right">
                 
-                    <a href="quickstart.html"><span>Analysis Quickstart</span><span class="icon">&gt;</span></a>
+                    <a href="ai.html"><span>AI Overview</span><span class="icon">&gt;</span></a>
                 
             </div>
         </div>
