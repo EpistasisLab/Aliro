@@ -1,0 +1,73 @@
+GET http://localhost:5080/openai/v1/configs
+
+###
+
+GET http://localhost:5080/openai/v1/configs/640baaf35ef25f73f2d92ee5
+
+###
+
+POST http://localhost:5080/openai/v1/configs
+Content-Type: application/json
+
+{
+    "api_key" : "1a2b3c4d5e6f7g8h9i0j",
+    "org_id" : "Personal"
+}
+
+###
+
+GET http://localhost:5080/openai/v1/connections
+
+###
+
+DELETE http://localhost:5080/openai/v1/connections
+
+###
+
+POST http://localhost:5080/openai/v1/connections
+
+###
+
+PATCH http://localhost:5080/openai/v1/configs/6410d54b7dadb5992301e6f0
+Content-Type: application/json
+
+{
+    "api_key" : "your_api_key",
+    "org_id" : "Personal"
+}
+
+###
+
+DELETE http://localhost:5080/openai/v1/configs/63ffa8f9fe67714b24cf5106
+
+###
+
+GET http://localhost:5080/openai/v1/models
+
+###
+
+POST http://localhost:5080/openai/v1/completions
+Content-Type: application/json
+
+{
+    "model" : "text-davinci-003",
+    "prompt" : "Test",
+    "max_tokens" : 7,
+    "temperature" : 0,
+    "top_p" : 1,
+    "n" : 1,
+    "stream" : false,
+    "logprobs" : null,
+    "stop" : "\n"
+}
+
+###
+
+POST http://localhost:5080/openai/v1/chat/completions
+Content-Type: application/json
+
+{
+    "model" : "gpt-3.5-turbo",
+    "messages" : [{"role": "user", "content": "You are a helpful assistant."},
+                  {"role": "user", "content": "When were you born?"}]
+}

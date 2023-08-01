@@ -36,12 +36,17 @@ function AlgorithmOptions({
   algorithms,
   currentAlgorithm,
   setCurrentAlgorithm
+  
 }) {
   const getIsActive = (algorithm) => {
     return currentAlgorithm && (algorithm._id === currentAlgorithm._id);
   };
 
   const contextRef = React.useRef();
+
+  console.log("algorithms", algorithms)
+  console.log("currentAlgorithm", currentAlgorithm)
+  console.log("setCurrentAlgorithm", setCurrentAlgorithm)
 
 
   function openTrueOrFalse_algorithm_popup(){

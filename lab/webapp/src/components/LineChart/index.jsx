@@ -156,26 +156,32 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       format: {
         title: function (d) { return 'Training examples: ' + d; }
       }
+    },
+    legend:{
+      item: { onclick: function (id) {
+        console.log('id: ', id)
+        // make it thicker 
+        console.log('legend item clicked')
+      } }
+    },
+
+    padding: {
+      top: 20,
     }
-
-
-    
-
 
   });
 
     // if document element has testuser text, then make it unvisiable 
-
-
-    
-
-
-
   }
 
   render() {
     return (
-      <div className={`LineChart ${this.props.chartKey}`} />
+      // <div className={`LineChart ${this.props.chartKey}`} />
+    <div >
+        <svg className={`LineChart ${this.props.chartKey}`} 
+        viewBox={`0 0 ${window.innerWidth*0.31} ${window.innerHeight*0.31}`} preserveAspectRatio="xMinYMin meet" >
+        </svg>
+    </div>
     );
   }
 }

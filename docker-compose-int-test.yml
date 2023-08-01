@@ -22,6 +22,7 @@ services:
     build:
       context: .
       dockerfile: docker/lab/Dockerfile
+      target: dev
       args:
         # - USE_WHEELS=${USE_WHEELS}
         - USE_WHEELS=0
@@ -47,6 +48,7 @@ services:
     build:
       context: .
       dockerfile: docker/machine/Dockerfile
+      target: dev
       args:
         # - USE_WHEELS=${USE_WHEELS}
         - USE_WHEELS=0

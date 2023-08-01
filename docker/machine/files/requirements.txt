@@ -1,11 +1,12 @@
 scikit-learn==0.23.2
 tqdm==4.64.1
 pymongo==4.3.3
-pandas==1.0.5
+pandas==1.1.0
 numpy==1.19.5
 matplotlib==3.5.3
 mlxtend==0.16.0
 pydot==1.4.2
+simplejson==3.17.2
 requests==2.25.1
 xgboost==1.6.2
 joblib==1.2.0

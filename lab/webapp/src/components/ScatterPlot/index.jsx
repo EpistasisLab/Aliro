@@ -46,21 +46,21 @@ class ScatterPlot extends Component {
 
   renderChart(Points, Labels, chartKey, chartColor) {
 
-
-
-
-
      // if chartKey includes pca, then 
      if (chartKey.includes('pca')) {
       var axis= {
         x: {
             label: 'PC1',
             tick: {
-                fit: false
+                fit: false,
+                format: d3.format(".1s")
             }
         },
         y: {
-            label: 'PC2'
+            label: 'PC2',
+            tick: {
+              format: d3.format(".1s"),
+            }
         }
       }
       // else if chartKey includes tsne, then
@@ -79,16 +79,34 @@ class ScatterPlot extends Component {
       }
     }
 
+    // // make axis tick values like this 30000-> 3 units 10000
+    // axis: {
+    //   x: {
+    //     tick: {
+    //       format: d3.format("s")
+    //     }
+    //   }
+    // },
+
     else if (chartKey.includes('CVP')) {
+      var i=0;
       var axis= {
         x: {
             label: 'Observed Values',
             tick: {
-                fit: false
-            }
+                fit: false,
+                format: d3.format(".1s"),
+                count: 5,
+            },
+ 
         },
         y: {
-            label: 'Predicted Values'
+            label: 'Predicted Values',
+            tick: {
+              fit: false,
+              format: d3.format(".1s"),
+              count: 5
+          },
         }
       }
     }
@@ -98,11 +116,18 @@ class ScatterPlot extends Component {
         x: {
             label: 'Predicted Values',
             tick: {
-                fit: false
+              fit: false,
+              format: d3.format(".1s"),
+              count: 5
             }
         },
         y: {
-            label: 'Residuals'
+            label: 'Residuals',
+            tick: {
+              fit: false,
+              format: d3.format(".1s"),
+              count: 5
+          }
         }
       }
     }
@@ -112,11 +137,20 @@ class ScatterPlot extends Component {
         x: {
             label: 'Theoretical Quantiles',
             tick: {
-                fit: false
+              fit: false,
+              format: d3.format(".1s"),
+              count: 5
+              
             }
         },
         y: {
-            label: 'Ordered Normal Quantiles'
+            label: 'Ordered Normal Quantiles',
+            tick: {
+              fit: false,
+              format: d3.format(".1s"),
+              count: 5
+          }
+            
         }
       }
     }
@@ -293,50 +327,23 @@ if (chartKey.includes('pca') || chartKey.includes('tsne')) {
       // }
       // do not show tooltip
       show: false
+    },
+    legend: {
+      // show: false
+      item: { onclick: function (id) {
+
+        console.log('id: ', id)
+
+        
+        
+        console.log('legend item clicked')
+      } }
+    },
+    padding: {
+      top: 20,
     }
   });
 }
-
-
-
-// scatter plot and dashed line for 1:1
-// var chart = c3.generate({
-//   data: {
-
-      
-      
-//       xs: {'class_0':"0_x", 'class_1':"1_x", 'class_2':"2_x",'line_y':"line_x"},
-      
-//       columns: [
-//           ["2_x", 1,1,3,4,2],
-//           ['class_2', 300, 200, 160, 400, 250, 250],
-//           ['1_x', 200, 130, 90, 240, 130, 220],
-//           ['class_1', 200, 120, 150, 140, 160, 150],
-//           ['0_x', 90, 70, 20, 50, 60, 120],
-//           ['class_0', 200, 120, 150, 140, 160, 150],
-//           ['line_x', 1,100],
-//           ['line_y', 1,100]
-          
-//       ],
-//       type: 'scatter',
-      
-//       types: {
-          
-          
-//           line_y: 'line'
-          
-          
-//       },
-//       regions: {
-//         'line_y': [{'style':'dashed'}], // currently 'dashed' style only
-        
-//       },
-//       colors: {
-//     line_y: '#FF0000'
-// }
-      
-//   }
-// });
 
 else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
 
@@ -364,6 +371,7 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
       }
     },
     axis: axis,
+
     // set tooltip based on your setting 
     tooltip: {
       // format: {
@@ -372,7 +380,23 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
       // }
       // do not show tooltip
       show: false
+    },
+
+    legend: {
+      item: { onclick: function () {
+        console.log('legend item clicked')
+      } }
+      // mouseover and thick
+
+
+    },
+    padding:{
+      top: 10,
+      right: 5,
+      left: 55,
     }
+
+
   });
 }
 
@@ -380,6 +404,7 @@ else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
 else if (chartKey.includes('CVR')) {
 
   var chart = c3.generate({
+      
     bindto: `.${chartKey}`,
     data: {
         
@@ -411,6 +436,22 @@ else if (chartKey.includes('CVR')) {
       // }
       // do not show tooltip
       show: false
+    },
+    legend: {
+      
+      item: { onclick: function (id) {
+
+        console.log('id: ', id)
+
+        
+        
+        console.log('legend item clicked')
+      } }
+    },
+    padding:{
+      top: 10,
+      right: 5,
+      left: 55,
     }
   });
 }
@@ -423,7 +464,25 @@ else if (chartKey.includes('CVR')) {
 
   render() {
     return (
-      <div className={`ScatterPlot ${this.props.chartKey}`} />
+     
+    <div >
+        
+        {/* <svg className={`ScatterPlot ${this.props.chartKey}`} viewBox="0 0 520 400" preserveAspectRatio="xMinYMin meet" >
+            
+        </svg> */}
+
+        
+
+        {/* set viewBox based on window.innerWidth and window.innerHeight  */}
+        {/* <svg className={`ScatterPlot ${this.props.chartKey}`} viewBox={`0 0 ${window.innerWidth*0.3} ${window.innerHeight*0.3}`} preserveAspectRatio="xMinYMin meet" > */}
+        
+        <svg 
+        className={`ScatterPlot ${this.props.chartKey}`} 
+        // make viewPort responsive
+        
+        viewBox={`0 0 ${window.innerWidth*0.31} ${window.innerHeight*0.31}`} preserveAspectRatio="xMinYMin meet" >
+          </svg>
+    </div>
     );
   }
 }

@@ -62,10 +62,12 @@ class ResponsiveGrid extends Component {
   }
 
   updateWindowDimensions() {
+    console.log("updateWindowDimensions", window.innerWidth, window.innerHeight)
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
   calcCols() {
+
     const { width } = this.state;
     const { mobile, tablet, desktop, lgscreen } = this.props;
     const breakpoints = this.constructor.getBreakpoints();
@@ -91,3 +93,6 @@ class ResponsiveGrid extends Component {
 }
 
 export default ResponsiveGrid;
+
+
+

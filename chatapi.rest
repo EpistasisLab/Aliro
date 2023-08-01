@@ -1,0 +1,60 @@
+POST http://localhost:5080/chatapi/v1/chats
+Content-Type: application/json
+
+{
+    "title" : "Chat with experiment id 2",
+    "_experiment_id": "63f6e4987c5f93004a3e3ca8",
+    "_dataset_id": "63f6e4947c5f93004a3e3ca7"
+}
+
+###
+
+GET http://localhost:5080/chatapi/v1/chats
+
+###
+
+GET http://localhost:5080/chatapi/v1/chats/6411113943d572a8f55e5208
+
+###
+
+PATCH http://localhost:5080/chatapi/v1/chats/640bd7290674aa751483658b
+Content-Type: application/json
+
+{
+    "title" : "Chat with experiment id",
+    "_experiment_id": "63f6e4987c5f93004a3e3ca8",
+    "_dataset_id": "63f6e4947c5f93004a3e3ca7"
+}
+
+###
+
+DELETE http://localhost:5080/chatapi/v1/chats/640bb89cf6a279429cf4ad7c
+
+###
+POST http://localhost:5080/chatapi/v1/chatlogs
+Content-Type: application/json
+
+{
+    "_chat_id" : "6411113943d572a8f55e5208",
+    "message" : "Hello there from my desk!",
+    "message_type" : "text",
+    "who" : "user"
+}
+
+###
+
+PATCH http://localhost:5080/chatapi/v1/chatlogs/63f6e4947c5f93004a3e3ca7
+Content-Type: application/json
+
+{
+    "message" : "Hello from cyberspace!",
+    "message_type" : "text",
+    "who" : "openai"
+}
+
+###
+GET http://localhost:5080/chatapi/v1/chats/experiment/63f6e4987c5f93004a3e3ca8
+
+###
+
+GET http://localhost:5080/chatapi/v1/chats/dataset/63f6e4947c5f93004a3e3ca7

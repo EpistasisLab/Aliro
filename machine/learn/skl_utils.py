@@ -55,7 +55,6 @@ from matplotlib.patches import Patch
 from sklearn.manifold import TSNE
 from sklearn.model_selection import learning_curve
 
-
 mpl.use('Agg')
 
 # if system environment allows to export figures
@@ -260,9 +259,11 @@ def generate_results(model, input_data,
         occ = np.count_nonzero(target_arr == OneClass)
         class_perc["class_"+str(OneClass)] = occ/len_target
 
+    file_name = "class_percentage" + ".json"
+
     # show percentage of each class
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="class_percentage.json", content=class_perc)
+                  fname=file_name, content=class_perc)
 
     features, target = check_X_y(
         features, target, dtype=None, order="C", force_all_finite=True)
@@ -534,12 +535,17 @@ def generate_results(model, input_data,
 
     metrics_dict = {'_scores': scores}
 
+    value_file_name = "value" + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="value.json", content=metrics_dict)
+                  fname=value_file_name, content=metrics_dict)
 
     prediction_dict = {'prediction_values': predicted_classes.tolist()}
+
+    prediction_file_name = "prediction_values" + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="prediction_values.json", content=prediction_dict)
+                  fname=prediction_file_name, content=prediction_dict)
 
 
 def get_col_idx(feature_names_list, columns):
@@ -690,8 +696,11 @@ def plot_confusion_matrix(
         'cnf_matrix': cnf_matrix.tolist(),
         'class_names': class_names.tolist()
     }
+
+    file_name = "cnf_matrix" + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="cnf_matrix.json", content=cnf_matrix_dict)
+                  fname=file_name, content=cnf_matrix_dict)
 
     # export plot
     if figure_export:
@@ -715,7 +724,7 @@ def plot_confusion_matrix(
         plt.subplots_adjust(bottom=0.15)
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
-        plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
+        plt.savefig(tmpdir + _id + '/confusion_matrix' + '.png')
         plt.close()
 
 
@@ -871,8 +880,10 @@ def plot_shap_analysis_curve(
         # 'shap_values': shap_values
     }
 
+    file_name = 'shap_summary_curve' + '.png'
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="shap_summary.json", content=shap_summary_dict)
+                  fname=file_name, content=shap_summary_dict)
 
 
 def combine_summary_decision_curve(
@@ -941,9 +952,10 @@ def combine_summary_decision_curve(
     plt.savefig(save_path)
     plt.close()
 
-
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
+
+
 def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     """
     Plot ROC Curve.
@@ -1028,15 +1040,17 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         plt.ylabel('True Positive Rate')
         plt.title('ROC curve')
         plt.legend(loc="lower right")
-        plt.savefig(tmpdir + _id + '/roc_curve_' + _id + '.png')
+        plt.savefig(tmpdir + _id + '/roc_curve' + '.png')
         plt.close()
     roc_curve_dict = {
         'fpr': mean_fpr.tolist(),
         'tpr': mean_tpr.tolist(),
         'roc_auc_score': mean_auc
     }
+
+    file_name = 'roc_curve' + '.json'
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="roc_curve.json", content=roc_curve_dict)
+                  fname=file_name, content=roc_curve_dict)
 
 
 def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
@@ -1072,7 +1086,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
     h.tight_layout()
-    plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/imp_score' + '.png')
     plt.close()
     return top_features, indices
 
@@ -1131,7 +1145,7 @@ def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=T
     plt.title('Learning curve')
 
     plt.legend(loc='best')
-    plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/learning_curve' + '.png')
 
     plt.close()
 
@@ -1151,8 +1165,11 @@ def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=T
         'test_scores': test_scores.tolist()
 
     }
+
+    file_name = 'learning_curve' + '.json'
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="learning_curve.json", content=learning_curve_dict)
+                  fname=file_name, content=learning_curve_dict)
 
 
 def plot_pca_2d(tmpdir, _id, features, target):
@@ -1198,7 +1215,7 @@ def plot_pca_2d(tmpdir, _id, features, target):
     plt.xlabel('PC1')
     plt.ylabel('PC2')
 
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/pca' + '.png')
     plt.close()
 
     # save X and y to json file
@@ -1208,9 +1225,10 @@ def plot_pca_2d(tmpdir, _id, features, target):
         'y_pca': y.tolist()
     }
 
+    file_name = 'pca-json' + '.json'
     # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="pca-json.json", content=pca_dict)
+                  fname=file_name, content=pca_dict)
 
 
 def plot_pca_3d(tmpdir, _id, features, target):
@@ -1307,7 +1325,7 @@ def plot_pca_3d(tmpdir, _id, features, target):
     ax.w_zaxis.set_ticklabels([])
 
     # plt.show()
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/pca' + '.png')
     plt.close()
 
 
@@ -1325,7 +1343,6 @@ def plot_tsne_2d(tmpdir, _id, features, target):
         Features in training dataset
     target: np.darray/pd.DataFrame
         Target in training dataset
-
 
     Returns
     -------
@@ -1351,7 +1368,7 @@ def plot_tsne_2d(tmpdir, _id, features, target):
     plt.ylabel('comp-2')
 
     # plt.show()
-    plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/tsne' + '.png')
     plt.close()
 
     # save X and y to json file
@@ -1362,8 +1379,10 @@ def plot_tsne_2d(tmpdir, _id, features, target):
         'y_tsne': target.tolist()
     }
 
+    file_name = 'tsne-json' + '.json'
+    # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="tsne-json.json", content=tsne_dict)
+                  fname=file_name, content=tsne_dict)
 
 
 def plot_dot_plot(tmpdir, _id, features,
@@ -1471,7 +1490,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
             color="red",
             linestyle='dashed')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_pred' + '.png')
     plt.close()
 
     fig, ax = plt.subplots(1, 1, figsize=(8, 6), dpi=300)
@@ -1483,7 +1502,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
                color="red",
                linestyle='dashed')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_resi' + '.png')
     plt.close()
     fig, ax = plt.subplots(1, 1, figsize=(8, 6), dpi=300)
     # add q-q plot for normalized CV residuals
@@ -1499,7 +1518,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     ax.set_xlabel('Theoretical Quantiles')
     ax.set_ylabel('Ordered Normalized Residuals')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_qq_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_qq' + '.png')
     plt.close()
 
     # observed (y) vs predicted (pred_y)
@@ -1520,28 +1539,54 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     QQNR_2d = list(map(list, zip(series1[0][0], series1[0][1])))
     QQNR_2d_class = np.zeros(len(series1[0][0]))
 
-    reg_cv_pred_resi_qq = {
+    # reg_cv_pred_resi_qq = {
+    #     'CVP_2d': CVP_2d,
+    #     'CVP_2d_class': CVP_2d_class.tolist(),
+
+    #     'CVR_2d': CVR_2d,
+    #     'CVR_2d_class': CVR_2d_class.tolist(),
+
+    #     'QQNR_2d': QQNR_2d,
+    #     'QQNR_2d_class': QQNR_2d_class.tolist(),
+    # }
+
+    # file_name = "reg_cv_pred_resi_qq"  + ".json"
+
+    # save_json_fmt(outdir=tmpdir, _id=_id,
+    #               fname=file_name, content=reg_cv_pred_resi_qq)
+
+    # cvp
+    reg_cvp = {
         'CVP_2d': CVP_2d,
-        'CVP_2d_class': CVP_2d_class.tolist(),
-
-        'CVR_2d': CVR_2d,
-        'CVR_2d_class': CVR_2d_class.tolist(),
-
-        'QQNR_2d': QQNR_2d,
-        'QQNR_2d_class': QQNR_2d_class.tolist(),
-
-
-        # 'y': y.tolist(),
-        # 'pred_y': pred_y.tolist(),
-        # 'resi_y': resi_y.tolist(),
-
-        # 'z': z.tolist(),
-        # 'series1_zero': series1[0][0].tolist(),
-        # 'series1_one': series1[0][1].tolist(),
+        'CVP_2d_class': CVP_2d_class.tolist()
     }
 
+    cvp_file_name = "reg_cvp" + ".json"
+
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="reg_cv_pred_resi_qq.json", content=reg_cv_pred_resi_qq)
+                  fname=cvp_file_name, content=reg_cvp)
+
+    # cvr
+    reg_cvr = {
+        'CVR_2d': CVR_2d,
+        'CVR_2d_class': CVR_2d_class.tolist()
+    }
+
+    cvr_file_name = "reg_cvr" + ".json"
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname=cvr_file_name, content=reg_cvr)
+
+    # qqnr
+    reg_qqnr = {
+        'QQNR_2d': QQNR_2d,
+        'QQNR_2d_class': QQNR_2d_class.tolist()
+    }
+
+    qqnr_file_name = "reg_qqnr" + ".json"
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname=qqnr_file_name, content=reg_qqnr)
 
 
 def export_model(tmpdir,
