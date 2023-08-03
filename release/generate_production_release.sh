@@ -37,6 +37,20 @@ cp release/docker-compose-hub-image.yml "${PROD_BUILD_DIR}/docker-compose.yml"
 
 zip -r $PROD_ZIP_FILENAME $PROD_BUILD_DIR
 
+# build multi-architecture images with buildx
+echo "Installing multi-platform installation support"
+docker run --privileged -rm tonistiigi/binfmt --install all
+
+# create an aliro release builder with buildx
+docker buildx create --name aliroreleasebuilder --driver docker-container --boostrap --use
+
+##### NOTES #######
+# Alternatively, I should be able to use the --builder flag, for example docker buildx bake --builder aliroreleasebuilder
+# This may be a better option if it works, since this won't change the builder in the current shell.
+# The default builder will remain selected, and the aliroreleasebuilder will be used only by this command.
+# For completeness, the documentation mentions the BUILDX_BUILDER env variable also:
+# https://docs.docker.com/build/builders/
+
 # build production images
 echo "Building docker production images"
 #docker volume prune
