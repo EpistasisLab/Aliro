@@ -25,7 +25,7 @@ services:
       target: dev
       args:
         # - USE_WHEELS=${USE_WHEELS}
-        - USE_WHEELS=0
+        - USE_WHEELS=1
     tty: true
     stdin_open: true
     volumes:
@@ -51,7 +51,7 @@ services:
       target: dev
       args:
         # - USE_WHEELS=${USE_WHEELS}
-        - USE_WHEELS=0
+        - USE_WHEELS=1
     tty: true
     stdin_open: true
     volumes:

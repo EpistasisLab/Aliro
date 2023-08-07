@@ -71,6 +71,63 @@ export default function ChatGPT({ experiment }) {
     Python version where the code is executed is 3.7.16. Please make sure to import packages that are reliable and stable on this version.
     
     In any situation where you need to manipulate a dataframe (df) and save it, for each column name, if it contains an underscore (_), replace the underscore with a hyphen (-).
+
+    // Class 2: Data Preparation with Aliro
+    // Data Loading: How to load and inspect datasets using Aliro.
+    // Data Cleaning: Techniques for handling missing data, outliers, and data preprocessing.
+
+    When users inquire about techniques for handling missing data, outliers, and data preprocessing, please provide the following information:
+
+    Handling Missing Data: Missing data can affect the performance of a model, and needs to be handled carefully. Here are some basic techniques:
+
+Imputation: Replace missing values with a statistic like mean, median or mode. For example, you could fill in missing age values with the average age.
+Deletion: Remove rows with missing values. This is only recommended if the amount of missing data is small, as it can lead to loss of valuable information.
+Predictive filling: Use a machine learning algorithm to predict the missing values based on other data.
+Outliers Handling: Outliers can significantly affect the performance of a model. Common techniques to handle outliers include:
+
+Capping: Replace outlier values with a maximum and/or minimum value.
+Z-score: Identify outliers using the Z-score, which measures how many standard deviations an element is from the mean.
+IQR Score: Any data point that falls below the Lower quartile - 1.5IQR or above the Upper quartile + 1.5IQR can be considered as an outlier. IQR stands for Inter Quartile Range.
+Data Preprocessing: This includes various steps to make the data suitable for building models:
+
+Scaling: Scaling techniques, such as Standard Scaling or Min-Max Scaling, transform features to a certain range or scale. This is particularly useful for models that use distance measures like KNN or SVM.
+Encoding: Categorical variables need to be encoded into numerical format. This can be done through one-hot encoding, label encoding, or ordinal encoding.
+Feature Selection: This involves selecting the most useful features to train the model. Techniques like Recursive Feature Elimination, Lasso regularization, or simply correlation with the target variable can be used.
+Feature Engineering: This involves creating new features from existing ones to better represent the underlying problem to the models. For example, creating a "total family size" feature in a dataset that has "siblings" and "parents" features.
+The techniques mentioned above can be used for both regression and classification tasks. Some techniques may need to be adjusted depending on the specific characteristics of the dataset and the chosen model.
+
+  const [models, setModels] = useState([]);
+  // const [temperature, setTemperature] = useState(0.5);
+  const [temperature, setTemperature] = useState(0);
+  // language model
+  // const [currentModel, setCurrentModel] = useState("text-davinci-003");
+  const [currentModel, setCurrentModel] = useState("gpt-3.5-turbo");
+
+When users ask questions on understanding data distribution and summary statistics through the creation of insightful visualizations, please share the following information:
+
+  // this is the number of chat boxes in the result page
+  const [numChatBox, setNumChatBox] = useState(1);
+
+Histograms: Histograms are a type of bar chart that display the counts or relative frequencies of values falling in different ranges. Each bar in a histogram represents the tabulated frequency at each interval/bin. They are great for illustrating the underlying frequency distribution (shape) of the set of continuous or discrete data.
+
+Boxplots: Boxplots, or box-and-whisker plots, are a way to show the distribution of numerical data and skewness through displaying the data quartiles (or percentiles) and averages. The "box" shows the quartiles of the dataset while the "whiskers" extend to show the rest of the distribution, except for points that are determined to be outliers.
+
+Correlation Heatmaps: A correlation heatmap uses colored cells to represent correlation coefficients between variables. Each cell in the grid represents the correlation between two variables, and the color of the cell indicates the strength and direction (positive/negative) of the correlation. It's a powerful tool to understand linear relationships between variables.
+
+Scatter Plots: Scatter plots are used to observe relationships between variables. Each dot on the graph represents an observation from the data set, with its position along the x and y-axes representing the values of its two variables. They are used when we want to show how much one variable is affected by another.
+
+Bar Plots: Bar plots represent categorical data with rectangular bars. The lengths of the bars are proportional to the values they represent. They are used to compare a single category of data between individual sub-groups.
+
+For summary statistics, here are some key ones:
+
+Mean: The average of the data.
+Median: The middle value of the data.
+Mode: The most frequently occurring value in the data.
+Minimum and Maximum: The lowest and highest value in the data respectively.
+Standard Deviation: It tells the amount of variation or dispersion of a set of values.
+Quartiles: Values that divide your data into quarters provided data is sorted in an ascending order.
+
+
     `);
 
   const [models, setModels] = useState([]);
