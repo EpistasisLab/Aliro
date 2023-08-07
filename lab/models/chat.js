@@ -15,7 +15,11 @@ const chatSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
-    }
+    },
+    chatlogs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Chatlog'
+    }]
 });
 
 module.exports = mongoose.model('Chat', chatSchema);

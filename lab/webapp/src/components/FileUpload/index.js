@@ -40,6 +40,7 @@ import Papa from 'papaparse';
 
 
 
+
 import {
   Button,
   Dropdown,
@@ -64,6 +65,9 @@ import arrayMove from 'array-move';
 
 class FileUpload extends Component {
 
+
+
+
   
   
   //Some pseudo-constants to avoid typos
@@ -81,14 +85,12 @@ class FileUpload extends Component {
   * @constructor
   */
   constructor(props) {
+
+    
     super(props);
 
     this.state = this.initState;
 
-    // enter info in text fields
-    // this.cleanOtherTooltipFunction = this.cleanOtherTooltipFunction.bind(this);
-
-    // this.tooltipFileUploadFunction = this.tooltipFileUploadFunction.bind(this);
 
     this.resetState = this.resetState.bind(this);
     this.handleDepColDropdown = this.handleDepColDropdown.bind(this);
@@ -551,10 +553,99 @@ class FileUpload extends Component {
   /**
   * React lifecycle method, when component loads into html dom, 'reset' state
   */
-  componentDidMount() {
-    this.resetState(); //Not sure why this is called here
+
+  // make componentDidMount() async
+
+
+  
+
+
+  async componentDidMount() {
+    this.resetState(); 
+    //Not sure why this is called here
     //Add listener for keystrokes so we can process esc key globablly.
     this.enableKeyDownHandler(true);
+
+    console.log("window.location.href.splitfileId=",window.location.href.split("fileId="))
+
+    if (window.location.href.split("fileId=").length > 1)
+    {
+      // get fileId from url
+      let fileId = window.location.href.split("fileId=")[1].split("&")[0]
+
+      console.log("componentDidMount-fileId",fileId)
+
+      // get fileName from url
+      let fileName = window.location.href.split("fileName=")[1]
+    
+      console.log("componentDidMount-fileName",fileName)
+
+      const makeDataFormat =(files) => {
+      return {
+        dataTransfer: {
+          files,
+          items: files.map(file => ({
+            kind: 'file',
+            type: file.type,
+            getAsFile: () => file
+          })),
+          types: ['Files']
+        }
+      }
+      }
+
+
+
+      const handleClickGoToUploadDatasets = async (fileId,fileName) => {
+      
+      let href = `/api/v1/files/${fileId}`
+      // let href = `http://localhost:5080/api/v1/files/${fileId}`
+
+      let tempdata=await fetch(`${href}`, {
+        method: "GET",
+        headers: {
+            // "Content-Type": "application/json"
+            // content type is csv or tst
+            "Content-Type": "text/csv"
+        },
+    })
+    .then(response => response.text())
+    .then(data => {
+        // console.log("handleClickGoToUploadDatasets-data", data)
+        return data;
+    }
+    )
+    .catch(error => {
+        // console.log("handleClickGoToUploadDatasets-fetch-error", error)
+        return error;
+    }
+    )
+
+      console.log("tempdata", tempdata)
+
+      // make a file object with tempdata
+
+      const file = new File([tempdata], `${fileName}`, { type: "text/csv" });
+
+      // please send the file object to the upload datasets page 
+
+
+      // const file = new File([
+      //     JSON.stringify({ping: true})
+      //   ], 'ping.json', { type: 'application/json' })
+
+        const data = makeDataFormat([file])
+
+        // console.log("tempdata-data",data)
+      //   const onDragEnter = jest.fn()
+
+      // const file = new File(["file content"], "filename.csv", { type: "text/csv" });
+      return data;
+      };
+      let testdata = await handleClickGoToUploadDatasets(fileId,fileName);
+      this.handleSelectedFile(testdata.dataTransfer.files);
+    }
+
   }
 
   componentWillUnmount(){
@@ -853,7 +944,13 @@ handleCatFeaturesUserTextCancel() {
 
   handleSelectedFile = files => {
 
+    // const {getRootProps, acceptedFiles} = useDropzone();
+    // const files = acceptedFiles.map(file => <li key={file.path}>{file.path}</li>);
+
+    // console.log("handleSelectedFile")
     console.log("handleSelectedFile")
+    console.log("handleSelectedFile-files",files)
+    // console.log("this.props",this.props.files)
     if (files !=null)
     {
       console.log("it is null")
@@ -888,12 +985,13 @@ handleCatFeaturesUserTextCancel() {
         this.handleSelectedFileCompletedStub();
       }
     };
-
+    
     // check for selected file
     if(files && files[0]) {
       // immediately try to get dataset preview on file input html element change
       // need to be mindful of garbage data/files
       let uploadFile = files[0]
+      console.log("uploadFile",uploadFile)
       let fileExt = uploadFile.name.split('.').pop();
 
       // check file extensions
@@ -944,6 +1042,13 @@ handleCatFeaturesUserTextCancel() {
     }
   }
 
+  handleSelectedFileTest = test => {
+    
+    console.log("handleSelectedFile-test-test",test)
+  
+  
+  }
+
   /**
    * Starts download process, takes user input, creates a request payload (new html Form)
    * and sends data to server through redux action, uploadDataset, which is a promise.
@@ -961,9 +1066,22 @@ handleCatFeaturesUserTextCancel() {
     this.setState({uploadButtonDisabled:true});
 
     const { uploadDataset } = this.props;
+    console.log("uploadDataset",uploadDataset)
+    console.log("this.state.selectedFile",this.state.selectedFile)
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let data = this.generateFileData(); // should be FormData
+      console.log("this.generateFileData()-data",data)
+      // show each key/value pair in FormData
+      
+      // show all values and keys in FormData
+      for (var value of data.values()) {
+        console.log("value-data",value);
+      }
+      // show _metadata in FormData
+      console.log("data._metadata",data._metadata);
+      // show _files in FormData
+      console.log("data._files",data._files);
       // if trying to create FormData results in error, don't attempt upload
       if (data.errorResp) {
         this.showErrorModal("Error with file metadata", data.errorResp);
@@ -2355,16 +2473,12 @@ handleCatFeaturesUserTextCancel() {
         <Dropzone
             id="file-dropzone"
             onDropAccepted={this.handleSelectedFile}
+            // onDropAccepted={this.handleSelectedFileTest}
             onDropRejected={this.handleRejectedFile}
             
             // onDrop={onDrop}
 
             // mouse over the file icon, the file icon will be highlighted
-            
-
-            
-            
-            
             accept=".csv,.tsv,text/csv,text/tsv"
             multiple={false}
         >
@@ -2374,8 +2488,6 @@ handleCatFeaturesUserTextCancel() {
                 <input {...getInputProps()} />
                 <p>Choose a csv or tsv file</p>
                 <p>Drag 'n drop, or click here</p>
-                {/* <p>Click one of preloaded datasets</p> */}
-                
               </div>
             </section>
           )}
@@ -2477,10 +2589,10 @@ handleCatFeaturesUserTextCancel() {
     }
 
 
-    // console.log(this.state.selectedFile);
+    console.log("this.state.selectedFile",this.state.selectedFile);
     // console.log("file-upload-icon).length");
     // console.log(document.getElementsByClassName("file-upload-icon").length);
-
+    // 
     if (this.state.selectedFile != null) {
 
       console.log("selected file is not null and I am removing file icons")
@@ -2999,9 +3111,6 @@ handleCatFeaturesUserTextCancel() {
         
         
         </Form>
-
-        
-       
         {dataPrevTable}
       </div>
 
@@ -3018,319 +3127,3 @@ const mapStateToProps = (state) => ({
 
 export { FileUpload };
 export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUpload);
-
-
-
-
-
-
-
-
-
-// // tooltip for "Upload Dataset" page
-// document.addEventListener("DOMContentLoaded", function(e) {
-//   const x = document.getElementById("app");
-//   // find any elements with the tag name "a" with Hello Add new"
-//   const y = x.getElementsByTagName("a");
-
-//   // show content of the first element with the tag name "a"
-//   // y.
-//   // if y lentgh is 0, then wait for 1 second and try again
-//   if (y.length == 0) {
-//     setTimeout(function() {
-    
-
-//       // original code
-//       // .tooltip {
-//       //   position: relative;
-//       //   display: inline-block;
-//       //   border-bottom: 1px dotted black;
-//       // }
-      
-//       // .tooltip .tooltiptext {
-//       //   visibility: visible;
-//       //   width: 120px;
-//       //   background-color: #555;
-//       //   color: #fff;
-//       //   text-align: center;
-//       //   border-radius: 6px;
-//       //   padding: 5px 0;
-//       //   position: absolute;
-//       //   z-index: 1;
-//       //   bottom: 125%;
-//       //   left: 50%;
-//       //   margin-left: -60px;
-//       //   opacity: 1;
-//       //   transition: opacity 0.3s;
-//       // }
-      
-//       // .tooltip .tooltiptext::after {
-//       //   visibility: visible;
-//       //   content: "";
-//       //   position: absolute;
-//       //   top: 100%;
-//       //   left: 50%;
-//       //   margin-left: -5px;
-//       //   border-width: 5px;
-//       //   border-style: solid;
-//       //   border-color: #555 transparent transparent transparent;
-//       // }
-      
-//       // .tooltip:hover .tooltiptext {
-//       //   visibility: hidden;
-//       //   opacity: 1;
-//       // }
-
-      
-
-//     var styles = `
-//     .tooltip {
-//       position: relative;
-//       display: inline-block;
-//       border-bottom: 1px dotted black;
-//     }
-    
-//     .tooltip .tooltiptext {
-//       visibility: visible;
-//       width: 120px;
-//       background-color: #555;
-//       color: #fff;
-//       text-align: center;
-//       border-radius: 6px;
-//       padding: 5px 0;
-//       position: absolute;
-//       z-index: 1;
-//       bottom: 15%;
-//       left: 110%;
-//       margin-left: 0px;
-//       opacity: 1;
-//       transition: opacity 0.3s;
-//     }
-    
-//     .tooltip .tooltiptext::after {
-//       content: "";
-//       position: absolute;
-//       top: 30%;
-//       left: -8.3%;
-//       margin-left: 0px;
-//       border-width: 5px;
-//       border-style: solid;
-//       border-color: transparent #555 transparent transparent;
-//     }
-    
-//     .tooltip:hover .tooltiptext {
-//       visibility: hidden;
-//       opacity: 0;
-// `
-
-    
-
-//     // visibility: visible;
-//     // width: 120px;
-//     // background-color: #555;
-//     // color: #fff;
-//     // text-align: center;
-//     // border-radius: 6px;
-//     // padding: 5px 0;
-//     // position: absolute;
-//     // z-index: 1;
-//     // bottom: 50%;
-//     // left: 100%;
-//     // margin-left: 0px;
-//     // opacity: 1;
-//     // transition: opacity 0.3s;
-
-
-
-//     // var styleSheet = document.createElement("style")
-    
-//     var styleSheet = document.getElementsByTagName("style")
-//     styleSheet.innerText += styles
-//     document.head.appendChild(styleSheet)
-
-//     // <div class="tooltip">Hover over me
-//         // <span class="tooltiptext">Tooltip text</span>
-//     // </div>
-
-//     // create a div with class tooltip and html content "Hover over me"
-//     var div_test = document.createElement("div");
-//     div_test.className = "tooltip";
-//     // div_test.innerHTML = "Hover over me";
-//     div_test.innerHTML = "_";
-//     // background color is white
-//     div_test.style.backgroundColor = "white";
-//     // do not show div_test
-//     // div_test.style.display = "none";
-
-//     // create a span with class tooltiptext and html content "Tooltip text"
-//     var span_test = document.createElement("span");
-//     span_test.className = "tooltiptext";
-//     span_test.innerHTML = "step 1: add new data";
-
-//     // make span_test always visible
-//     span_test.style.visibility = "visible";
-
- 
-    
- 
-    
-
-
-
-
-   
-
-
-
-
-//     // locate the span_test right of the div_test
-//     // span_test.style.left = "100%";
-//     // span_test.style.top = "0";
-//     // span_test.style.marginLeft = "5px";
-//     // span_test.style.marginTop = "-5px";
-
-
-//     // make span_test always block whever div_test is hovered or not
-//     span_test.style.display = "block";
-    
-
-//     // append span_test to div_test
-//     div_test.appendChild(span_test);
-
-
-//     // append div_test to app
-//     // document.getElementById("app").appendChild(div_test);
-
-
-
-//     // real version
-//     const x = document.getElementById("app");
-//     // find any elements with the tag name "a" with Hello Add new"
-//     const y = x.getElementsByTagName("a");
-//     // add mouse over event to the div
-
-    
-
-//     // if current url includes "upload_dataset"
-//     if (window.location.href.includes("upload_dataset")) {
-
-//       console.log("pathname")
-   
-//       console.log(window.location.href)
-
-//       // find any elements with the tag name "div" with class dropzone"
-//       const z = x.getElementsByTagName("div");
-      
-//       // find any divs with class dropzone
-//       for (var i = 0; i < z.length; i++) {
-//         if (z[i].className.includes("dropzone")) {
-//           // add .appendChild(span_test);
-//           z[i].appendChild(span_test);
-//         }
-//       }
-  
-
-      
-      
-//     }
-    
-
-
-//   }, 1000);
-//   } 
- 
-// });
-
-
-
-
-
-// tooltip for "Upload Dataset" page
-// document.addEventListener("DOMContentLoaded", function(e) {
-
-//   // setTimeout(() => {
-//   //   //wait until the section is loaded
-//   //   const section = document.getElementsByTagName("section")[0];
-  
-//   //         if (section) {
-//   //           section.addEventListener("mouseover", function( event ) {
-//   //         // console.log("mouseover on dropzone");
-
-//   //         // document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//   //         if (document.getElementById("span_upload_dataset").style.visibility == "hidden")
-//   //         {
-//   //           document.getElementById("span_upload_dataset").style.visibility = "visible";
-//   //           console.log("document.getElementById(span_upload_dataset).style.visibility = visible");
-//   //         }
-//   //         else
-//   //         {
-//   //           document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//   //           console.log("document.getElementById(span_upload_dataset).style.visibility = hidden");
-//   //         }
-          
-//   //         // span_test.style.visibility = "hidden";
-        
-//   //       }, false);
-//   //     }
-//   // }, 1000); 
-
-//   //wait until the section is loaded
-
-
-
-//       // const section = document.getElementsByTagName("section")[0];
-      
-//       // // y[0] mouseover event
-      
-//       // section.addEventListener("mouseover", function( event ) {
-//       //   // console.log("mouseover on dropzone");
-
-//       //   // document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//       //   if (document.getElementById("span_upload_dataset").style.visibility == "hidden")
-//       //   {
-//       //     document.getElementById("span_upload_dataset").style.visibility = "visible";
-//       //     console.log("document.getElementById(span_upload_dataset).style.visibility = visible");
-//       //   }
-//       //   else
-//       //   {
-//       //     document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//       //     console.log("document.getElementById(span_upload_dataset).style.visibility = hidden");
-//       //   }
-        
-//       //   // span_test.style.visibility = "hidden";
-      
-//       // } , false);
- 
-// });
-
-
-
-
-
-
-// document.addEventListener("DOMContentLoaded", function(e) {
-  
- 
-  
-//     setTimeout(function() {
-    
-
-      
-
-    
-
-//    var preloaded_data_1 = document.getElementById("preloaded_data_1");
-   
-//   //  add to the document.getElementById("mydiv")
-//    document.getElementById("mydivheader").appendChild(preloaded_data_1);
-
-    
-
-
-    
-
-
-//   }, 500);
-  
- 
-// });

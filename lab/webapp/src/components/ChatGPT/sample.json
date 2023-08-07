@@ -1,5 +1,5 @@
 [
-{"AI":{"message":"Upload your data (.csv or .xslx)"}},
+{"AI":{"message":"HELLO!  Upload your data (.csv or .xslx)"}},
 {"AI":{"message":"Great. We noticed you have multiple worksheets. We suggest you use the 'Main' worksheet as your main worksheet. Which would you like to start the analysis with?"}},
 {"Human":{"buttons":["Main (suggested)", "Pre-operation MEDD ","Post-operation MEDD", "Last Outpatient Meds List","Meds List 6-18 Months","PQH Post Surgery (12 months)"]}},
 

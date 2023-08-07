@@ -1,0 +1,198 @@
+#%RAML 1.0
+title: Execution API
+version: v1
+baseUri: http://localhost:5080/execapi/{version}
+mediaType: application/json
+
+types:
+  file:
+    type: object
+    properties:
+      _id:
+        type: string
+      filename:
+        type: string
+      mimetype:
+        type: string
+      timestamp:
+        type: string
+  execution:
+    type: object
+    properties:
+      _id:
+        type: string
+      src_code:
+        type: string
+      status:
+        type: string
+        enum: [submitted, completed, error]
+      result:
+        type: string
+      files:
+        type: array
+        items: file
+      _dataset_file_id?:
+        type: string
+      _dataset_id?:
+        type: string
+      _experiment_id?:
+        type: string
+  PackageList:
+    type: object
+    properties:
+      command:
+        type: string
+        enum: [install, freeze]
+        required: true
+      packages:
+        type: array
+        items:
+          type: string
+        required: true
+    when:
+      command: freeze
+      packages:
+        required: false
+
+/executions:
+  post:
+    description: Create a new execution
+    body:
+      application/json:
+        properties:
+          src_code:
+            type: string
+          dataset_file_id?:
+            type: string
+          dataset_id?:
+            type: string
+          experiment_id?:
+            type: string
+        example:
+          {
+            "src_code": "df_new = df.head(10)\ndf_new.to_csv('example.csv')",
+            "dataset_id": "444555666",
+            "experiment_id": "777888999"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            type: execution
+            example:
+              {
+                "_id": "987654321",
+                "src_code": "df_new = df.head(10)\ndf_new.to_csv('example.csv')",
+                "status": "completed",
+                "result": "Hello, world!",
+                "files": [
+                  {
+                    "_id": "123456789",
+                    "filename": "example.csv",
+                    "mimetype": "text/csv",
+                    "timestamp": "2023-04-11T12:34:56Z"
+                  }
+                ],
+                "_dataset_file_id": "111222333",
+                "_dataset_id": "444555666",
+                "_experiment_id": "777888999"
+              }
+      400:
+        body:
+          application/json:
+            properties:
+              message:
+                type: string
+            example: { "message": 'No src_code provided' }
+  /{id}:
+    uriParameters:
+      id:
+        type: string
+    get:
+      description: Get execution by id
+      responses:
+        200:
+          body:
+            application/json:
+              type: execution
+              example:
+                {
+                  "_id": "987654321",
+                  "src_code": "df_new = df.head(10)\ndf_new.to_csv('example.csv')",
+                  "status": "completed",
+                  "result": "Hello, world!",
+                  "files": [
+                    {
+                      "_id": "123456789",
+                      "filename": "example.csv",
+                      "mimetype": "text/csv",
+                      "timestamp": "2023-04-11T12:34:56Z"
+                    }
+                  ],
+                  "_dataset_file_id": "111222333",
+                  "_dataset_id": "444555666",
+                  "_experiment_id": "777888999"
+                }
+        404:
+          body:
+            application/json:
+              properties:
+                message:
+                  type: string
+              example: { message: 'Cannot find execution: 123456789' }
+  /install:
+    post:
+      description: The 'install' command will install a list of python packages via pip. The 'freeze' command will retrive the list of currently installed packages.
+      body:
+        application/json:
+          properties:
+            command:
+              type: string
+              enum: [install, freeze]
+            packages:
+              type: array
+              items:
+                type: string
+          examples: [ { command: "install", packages: ["seaborn"] }, { command: "freeze" } ]
+      responses:
+        200:
+          body:
+            application/json:
+              properties:
+                command:
+                  type: string
+                  enum: [install, freeze]
+                packages:
+                  type: array
+                  items:
+                    type: string
+                  when:
+                    command: 'install'
+                exec_results:
+                  type: object
+                  properties:
+                    stdout:
+                      type: string
+                    stderr:
+                      type: string
+                    code:
+                      type: number
+              examples:
+                [
+                  {
+                    command: "install", packages: [ "seaborn" ],
+                    exec_results: {
+                      "stdout": "Successfully installed seaborn-0.12.2\n",
+                      "stderr": "WARNING: You are using pip version 22.0.4; however, version 23.0.1 is available.\nYou should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.\n",
+                      "code": 0
+                    }
+                  },
+                  {
+                    command: "freeze",
+                    exec_results: {
+                      "stdout": "certifi==2022.12.7\nchardet==4.0.0\ncloudpickle==2.2.1\ncycler==0.11.0\ndnspython==2.3.0\nfonttools==4.38.0\nidna==2.10\nimportlib-metadata==6.3.0\njoblib==1.2.0\nkiwisolver==1.4.4\nllvmlite==0.39.1\nmatplotlib==3.5.3\nmlxtend==0.16.0\nnumba==0.56.4\nnumpy==1.19.5\npackaging==23.0\npandas==1.0.5\nPillow==9.4.0\npydot==1.4.2\npymongo==4.3.3\npyparsing==3.0.9\npython-dateutil==2.8.2\npytz==2022.7.1\nrequests==2.25.1\nscikit-learn==0.23.2\nscipy==1.7.3\nseaborn==0.12.2\nshap==0.39.0\nsimplejson==3.17.2\nsix==1.16.0\nslicer==0.0.7\nthreadpoolctl==3.1.0\ntqdm==4.64.1\ntyping_extensions==4.5.0\nurllib3==1.26.14\nxgboost==1.6.2\nzipp==3.15.0\n",
+                      "code": 0
+                    }
+                  }
+                ]
+

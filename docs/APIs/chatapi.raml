@@ -33,7 +33,7 @@ types:
         body:
           application/json:
             type: Chat
-            example: !include Examples/Chats/GetOne.raml
+            example: !include Examples/Chats/GetChat.raml
       400:
         body:
           application/json:
@@ -47,7 +47,7 @@ types:
           body:
             application/json:
               type: object
-              example: !include Examples/Chats/GetOneChat.raml
+              example: !include Examples/Chats/GetFullChat.raml
         404:
           body:
             application/json:
@@ -69,7 +69,7 @@ types:
           body:
             application/json:
               type: Chat
-              example: !include Examples/Chats/GetOne.raml
+              example: !include Examples/Chats/GetChat.raml
         400:
           body:
             application/json:
@@ -98,6 +98,46 @@ types:
             application/json:
               type: object
               example: { message: 'Failed to connect to database' }
+  /experiment:
+    /{experiment_id}:
+      get:
+        description: Retrieve a chat and associated chatlogs by experiment id.
+        responses:
+          200:
+            body:
+              appliation/json:
+                type: object
+                example: !include Examples/Chats/GetAll.raml
+          404:
+            body:
+              application/json:
+                type: object
+                example: { message: 'Cannot find chats by experiment id: 63f7bc2da70e99abe4e83b9c' }
+          500:
+            body:
+              application/json:
+                type: object
+                example: { message: 'Internal Server Error' }
+  /dataset:
+    /{dataset_id}:
+      get:
+        description: Retrieve a chat and associated chatlogs by dataset id.
+        responses:
+          200:
+            body:
+              appliation/json:
+                type: object
+                example: !include Examples/Chats/GetAll.raml
+          404:
+            body:
+              application/json:
+                type: object
+                example: { message: 'Cannot find chats by dataset id: 63f7bc2da70e99abe4e83b9c' }
+          500:
+            body:
+              application/json:
+                type: object
+                example: { message: 'Internal Server Error' }
 /chatlogs:
   post:
     description: Create a chat log entry

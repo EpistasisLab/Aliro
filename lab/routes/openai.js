@@ -2,16 +2,19 @@ const { Configuration, OpenAIApi } = require('openai');
 const express = require('express');
 const router = express.Router();
 const db = require('../dbgoose').db;
-const getConfigById = require('../openaiutils').getConfigById;
-const logOpenAIRequest = require('../openaiutils').logOpenAIRequest;
+const { getConfigById, logOpenAIRequest } = require('../openaiutils');
 const OpenAIConfig = require('../models/openaiconfig');
-const configuration = new Configuration({
-    // the organization is not required, so we need to decide if we require it from the user
-    // this may become useful for our logs.
-    // organization: process.env.OPENAI_ORG_ID,
-    apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+
+let openai;
+let configuration;
+
+// const configuration = new Configuration({
+//     // the organization is not required, so we need to decide if we require it from the user
+//     // this may become useful for our logs.
+//     // organization: process.env.OPENAI_ORG_ID,
+//     apiKey: process.env.OPENAI_API_KEY,
+// });
+// const openai = new OpenAIApi(configuration);
 
 /* 
 ** OpenAI Config Settings API 
@@ -23,7 +26,7 @@ router.post('/configs', async (req, res) => {
     try {
         existing = await OpenAIConfig.find({})
         if (existing.length > 0) {
-            return res.status(400).json({ message: 'Config already exists' });
+            return res.status(400).json({ message: 'Config already exists', config_id: existing[0]._id });
         }
     } catch (err) {
         return res.status(500).json({ message: err.message });
@@ -43,21 +46,6 @@ router.post('/configs', async (req, res) => {
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
-});
-
-// Get all configs
-router.get('/configs', async (req, res) => {
-    try {
-        const config = await OpenAIConfig.find();
-        res.send(config);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// Get one config
-router.get('/configs/:id', getConfigById, (req, res) => {
-    res.send(res.config);
 });
 
 // Update one config
@@ -140,6 +128,84 @@ router.post('/edits', async (req, res) => {
     logOpenAIRequest(req.body, response);
 
     res.send(response);
+});
+
+// chat completions to use gpt 3.5 turbo models
+router.post('/chat/completions', async (req, res) => {
+    let params = req.body;
+    let response = await openai.createChatCompletion(params);
+    response = response.data;
+    // chats should be logged by the client
+    // logChats(params, response);
+    logOpenAIRequest(req.body, response);
+    res.send(response);
+});
+
+// It is likely that we don't need this GET
+// The POST below can handle checking and opening the connection.
+// get openai connections
+router.get('/connections', async (req, res) => {
+    try {
+        if (openai == null) {
+            return res.status(400).json({ message: 'No connection available' });
+        }
+        let response = await openai.listModels();
+        if (response == null) {
+            return res.status(400).json({ message: 'No connection available' });
+        } else {
+            response = { message: 'Connection open' };
+        }
+        res.send(response);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// make a connection to openai
+router.post('/connections', async (req, res) => {
+    try {
+        // get the api key from the db
+        let config = await OpenAIConfig.find({});
+        // check if config is empty
+        // check that we have an api key
+        if (config.length == 0 || config[0]['api_key'] == null) {
+            return res.status(400).json({ message: 'No api key available' });
+        }
+        // set the api key
+        configuration = new Configuration({
+            apiKey: config[0]['api_key']
+        });
+        // configuration.apiKey = config.api_key;
+        // check if we have the org_id
+        if (config[0]['org_id'] != null) {
+            org_id = config[0]['org_id'];
+            // set the organization id
+            configuration.organization = org_id;
+        }
+        
+        // open the connection
+        // openai = new OpenAIApi(configuration, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({ message: 'Connection failed' });
+        //     }
+        // });
+        openai = new OpenAIApi(configuration);
+        // test the connection
+        let response = await openai.listModels();
+        if (response == null) {
+            return res.status(400).json({ message: 'Connection failed' });
+        }
+        response = { connected: true };
+        res.send(response);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// close the connection to openai
+router.delete('/connections', async (req, res) => {
+    openai = null;
+    res.send({ message: 'Connection closed' });
 });
 
 module.exports = router;

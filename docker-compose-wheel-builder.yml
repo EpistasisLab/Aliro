@@ -3,7 +3,7 @@ version: '3'
 services:
   wheel_builder:
     image: "python:3.7.16-buster"
-    command: bash -c "sort /appsrc/docker/lab/files/requirements.txt /appsrc/docker/machine/files/requirements.txt | uniq >> /root/requirements.txt && pip wheel -r /root/requirements.txt"
+    command: bash -c "sort /appsrc/docker/lab/files/requirements.txt /appsrc/docker/machine/files/requirements.txt | uniq >> /root/requirements.txt && pip install --upgrade pip && pip wheel -r /root/requirements.txt"
     working_dir: /appsrc/docker/wheels
     volumes:
       - "./:/appsrc"
