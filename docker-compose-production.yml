@@ -7,7 +7,13 @@ services:
       context: .
       dockerfile: docker/lab/Dockerfile
       target: prod
-    image: "aliro_lab:${TAG}"
+      args:
+        - USE_WHEELS=0
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64/v8
+    image: "moorelab/aliro_lab:${TAG}"
     tty: true
     stdin_open: true
     volumes:
@@ -28,7 +34,13 @@ services:
       context: .
       dockerfile: docker/machine/Dockerfile
       target: prod
-    image: "aliro_machine:${TAG}"
+      args:
+        - USE_WHEELS=0
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64/v8
+    image: "moorelab/aliro_machine:${TAG}"
     tty: true
     stdin_open: true
     volumes:
@@ -47,7 +59,11 @@ services:
     build:
       context: .
       dockerfile: docker/dbmongo/Dockerfile
-    image: "aliro_dbmongo:${TAG}"
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64/v8
+    image: "moorelab/aliro_dbmongo:${TAG}"
     tty: true
     stdin_open: true
     ports:

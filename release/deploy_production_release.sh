@@ -57,10 +57,11 @@ fi
 #########################
 
 #### push to dockerhub
-echo "Pushing to images to DockerHub"
-docker push moorelab/aliro_lab:${TAG}
-docker push moorelab/aliro_machine:${TAG}
-docker push moorelab/aliro_dbmongo:${TAG}
+echo "Images should already be pushed to DockerHub"
+# echo "Pushing to images to DockerHub"
+# docker push moorelab/aliro_lab:${TAG}
+# docker push moorelab/aliro_machine:${TAG}
+# docker push moorelab/aliro_dbmongo:${TAG}
 
 # git tag
 git tag -fa "v${TAG}" -m "v${TAG}"
@@ -69,5 +70,3 @@ git push --tags
 # create github relase and attach zip
 # TODO
 #echo "Creating Github release and pushing production zip"
-
-
