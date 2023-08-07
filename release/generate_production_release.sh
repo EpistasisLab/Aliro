@@ -54,9 +54,11 @@ docker buildx create --name aliroreleasebuilder --driver docker-container --boos
 # build production images
 echo "Building docker production images"
 #docker volume prune
-docker-compose -f docker-compose-production.yml build -m 10g
+# docker-compose -f docker-compose-production.yml build -m 10g
+docker buildx bake -f docker-compose-production.yml --push
 
-echo "Tagging production images"
-docker tag aliro_lab:${TAG} moorelab/aliro_lab:${TAG}
-docker tag aliro_machine:${TAG} moorelab/aliro_machine:${TAG}
-docker tag aliro_dbmongo:${TAG} moorelab/aliro_dbmongo:${TAG}
+# tagging production images is not necessary with docker buildx bake
+# echo "Tagging production images"
+# docker tag aliro_lab:${TAG} moorelab/aliro_lab:${TAG}
+# docker tag aliro_machine:${TAG} moorelab/aliro_machine:${TAG}
+# docker tag aliro_dbmongo:${TAG} moorelab/aliro_dbmongo:${TAG}
