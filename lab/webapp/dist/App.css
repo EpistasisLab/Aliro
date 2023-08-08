@@ -617,14 +617,34 @@ a#addNewDatasetBtnCross i {
   /* margin-right: 5px; */
 }
 
-#addNewPopup, #algorithm-popup {
+/* #addNewPopup, #algorithm-popup {
   display: flex;
   flex-direction: row;
   align-items: center;
   animation: blinker 3s linear infinite;
+} */
+
+
+@keyframes blinker {
+  0% { border-color: red; }
+  50% { border-color: transparent; }
+  100% { border-color: red; }
+}
+
+#addNewPopup, #algorithm-popup{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border: 2px solid red; 
+  animation: blinker 1s linear infinite; 
 }
 
 
+#addNewPopup, #aiTooglePopup, #buildNewExpPopup, #algorithm-popup, #param-popup, #submit-experiment-popup {
+  background-color: #ffffff;
+  /* text color */
+  color: #1f1c1c;
+}
 
 /*@media (min-width: 140rem) {
   body {
