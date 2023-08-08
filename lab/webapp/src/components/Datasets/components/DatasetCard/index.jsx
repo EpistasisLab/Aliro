@@ -197,7 +197,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
                 }
               />
 
-              {/* cross x emoji */}
+              {/* trash emoji */}
               {/* <span
                 className="float-right"
                 onClick={clickDatasetCardDelButton}
@@ -251,16 +251,29 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
               var buildNewExpPopup =
                 document.getElementById("buildNewExpPopup");
 
-              // set display: flex;
-              buildNewExpPopup.style.cssText += ";display: flex;";
-              // set flex-direction: row;
-              buildNewExpPopup.style.cssText += ";flex-direction: row;";
-              // set align-items: center;
-              buildNewExpPopup.style.cssText += ";align-items: center;";
+              // // set display: flex;
+              // buildNewExpPopup.style.cssText += ";display: flex;";
+              // // set flex-direction: row;
+              // buildNewExpPopup.style.cssText += ";flex-direction: row;";
+              // // set align-items: center;
+              // buildNewExpPopup.style.cssText += ";align-items: center;";
 
-              // set animation: blinker 3s linear infinite;
+              // // set animation: blinker 3s linear infinite;
+              // buildNewExpPopup.style.cssText +=
+              //   ";animation: blinker 3s linear infinite;";
+
+              // display: flex;
+              // flex-direction: row;
+              // align-items: center;
+              // border: 2px solid red;
+              // animation: blinker 1s linear infinite;
+
+              buildNewExpPopup.style.cssText += ";display: flex;";
+              buildNewExpPopup.style.cssText += ";flex-direction: row;";
+              buildNewExpPopup.style.cssText += ";align-items: center;";
+              buildNewExpPopup.style.cssText += ";border: 2px solid red;";
               buildNewExpPopup.style.cssText +=
-                ";animation: blinker 3s linear infinite;";
+                ";animation: blinker 1s linear infinite;";
             }
           }}
         />
@@ -294,34 +307,14 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
           content="Step 3: Please click this button to build a machine learning experiment. 
         Warning: when you click this button, all tooltips will disappear."
           position="bottom center"
-          // openOnTriggerClick
-          // get information on whehter user click on the popup or not
-
-          // first when web page is loaded, the popup should be shown
-          // when user click on the popup, the popup should be hidden
-          // on ={['click', 'hover']}
-
           open={openTrueOrFalse_buildNewExpPopup()}
-          // open = {false}
-          // style={{display: "none !important"}}
-
           onClick={() => {
             if (document.getElementById("buildNewExpPopup") != null) {
               document.getElementById("buildNewExpPopup").style.cssText +=
                 ";display:none !important;";
 
-              // addNewPopup
-
-              // aiTooglePopup
-
-              // buildNewExpPopup
-
               // save flag to local storage to avoid showing the popup again
               localStorage.setItem("buildNewExpPopup", "true");
-
-              //  localStorage.setItem("aiTooglePopup", "true");
-
-              //  localStorage.setItem("addNewPopup", "true");
 
               // show the local storage on the console
               console.log(
@@ -359,7 +352,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
               />
             }
           />
-          {/* cross x emoji */}
+          {/* trash emoji */}
           {/* <span
             className="float-right"
             onClick={clickDatasetCardDelButton}
