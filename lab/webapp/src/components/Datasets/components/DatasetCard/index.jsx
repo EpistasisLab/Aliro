@@ -198,7 +198,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
               />
 
               {/* cross x emoji */}
-              <span
+              {/* <span
                 className="float-right"
                 onClick={clickDatasetCardDelButton}
                 onMouseEnter={mouseEnterCardDelectButton}
@@ -206,7 +206,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
                 style={{ cursor: "pointer" }}
               >
                 🗑
-              </span>
+              </span> */}
 
               <span className="float-right">
                 <DatasetActions
@@ -360,7 +360,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
             }
           />
           {/* cross x emoji */}
-          <span
+          {/* <span
             className="float-right"
             onClick={clickDatasetCardDelButton}
             onMouseEnter={mouseEnterCardDelectButton}
@@ -368,7 +368,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
             style={{ cursor: "pointer" }}
           >
             🗑
-          </span>
+          </span> */}
           <span className="float-right">
             <DatasetActions
               dataset={dataset}
