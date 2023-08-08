@@ -631,7 +631,7 @@ a#addNewDatasetBtnCross i {
   100% { border-color: red; }
 }
 
-#addNewPopup, #aiTooglePopup, #buildNewExpPopup, #algorithm-popup{
+#addNewPopup, #algorithm-popup{
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -639,6 +639,12 @@ a#addNewDatasetBtnCross i {
   animation: blinker 1s linear infinite; 
 }
 
+
+#addNewPopup, #aiTooglePopup, #buildNewExpPopup, #algorithm-popup, #param-popup, #submit-experiment-popup {
+  background-color: #ffffff;
+  /* text color */
+  color: #1f1c1c;
+}
 
 /*@media (min-width: 140rem) {
   body {
