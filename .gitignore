@@ -62,7 +62,7 @@ MANIFEST
 
 .xz
 *.exe
-*.mp4
+# *.mp4
 package-lock.json
 package.json
 package-copy.json
