@@ -12,7 +12,7 @@ const {
 } = require('../execapiutils');
 
 router.post('/executions', async (req, res, next) => {
-    if (req.body.src_code == null) {
+    if (req.body.src_code === null) {
         return res.status(400).json({ message: 'No src_code provided' });
     }
 
@@ -34,17 +34,17 @@ router.post('/executions', async (req, res, next) => {
         files: []
     });
 
-    if (req.body.dataset_file_id != null) {
+    if (req.body.dataset_file_id !== null) {
         execution._dataset_file_id = req.body.dataset_file_id;
-    } else if (req.body.dataset_id != null) {
+    } else if (req.body.dataset_id !== null) {
         execution._dataset_id = req.body.dataset_id;
         let dataset = await getDatasetById(req.body.dataset_id);
-        if (dataset != null) {
+        if (dataset !== null) {
             execution._dataset_file_id = dataset.files[0]._id;
         }
     }
 
-    if (req.body.experiment_id != null) {
+    if (req.body.experiment_id !== null) {
         execution._experiment_id = req.body.experiment_id;
     }
 
@@ -67,7 +67,7 @@ router.post('/executions', async (req, res, next) => {
     let machines;
     try {
         machines = await Machine.find({}, { address: 1 });
-        if (machines.length == 0) {
+        if (machines.length === 0) {
             return res.status(400).json({ message: 'No machines available' });
         }
         // call the machine api
@@ -91,7 +91,7 @@ router.post('/executions', async (req, res, next) => {
         const updatedExecution = await execution.save();
 
         // delete the tmp folder
-        fs.rm(tmppath, { recursive: true }, (err) => {
+        fs.rmdir(tmppath, { recursive: true }, (err) => {
             if (err) {
                 console.error(err);
             } else {
@@ -110,18 +110,19 @@ router.post('/executions', async (req, res, next) => {
 
 router.post('/executions/install', async (req, res, next) => {
 
-    if (req.body.command != 'install' && req.body.command != 'freeze') {
+    if (req.body.command !== 'install' && req.body.command !== 'freeze') {
         return res.status(400).json({ message: 'Invalid command' });
     }
     
-    if (req.body.packages == null && req.body.command != 'freeze') {
+    if ( (req.body.packages === null || req.body.packages.length === 0)
+        && req.body.command !== 'freeze') {
         return res.status(400).json({ message: 'No packages provided' });
     }
 
     let machines;
     try {
         machines = await Machine.find({}, { address: 1 });
-        if (machines.length == 0) {
+        if (machines.length === 0) {
             return res.status(400).json({ message: 'No machines available' });
         }
         // call the machine api
@@ -146,13 +147,13 @@ router.get('/executions/:id', getExecutionById, async (req, res, next) => {
 });
 
 router.patch('/executions/:id', getExecutionById, async (req, res, next) => {
-    if (req.body.status != null) {
+    if (req.body.status !== null) {
         res.execution.status = req.body.status;
     }
-    if (req.body.result != null) {  
+    if (req.body.result !== null) {  
         res.execution.result = req.body.result;
     }
-    if (req.body.files != null) {
+    if (req.body.files !== null) {
         res.execution.files = req.body.files;
     }
     try {
