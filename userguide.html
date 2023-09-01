@@ -8,7 +8,7 @@
 
     <title>User Guide &#8212; Aliro 1.1.a0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/basic_mod.css?v=0.7.0-1" />
+    <link rel="stylesheet" type="text/css" href="_static/basic_mod.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -256,17 +256,11 @@ popup menu.<span class="raw-html-m2r"><br></span></p>
 </li>
 <li><p>Click the <strong>WRITE</strong> button to begin writing the Operatying System to your
 MicroSD Card.<span class="raw-html-m2r"><br></span></p>
-<a class="reference external image-reference" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true"><img alt="Aliro Imager Write" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true" /></a>
-<ul>
-<li><p>Note that this will format your MicroSD Card and all existing data will
-be erased. Click <strong>Yes</strong> at the prompt to proceed.<span class="raw-html-m2r"><br></span></p>
-<a class="reference external image-reference" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true"><img alt="Aliro Imager Format" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true" /></a>
-</li>
-<li><p>This writing process may take several minutes, the progress will be shown
-on the <strong>AliroEd Imager.</strong><span class="raw-html-m2r"><br></span></p>
+<img alt="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true:target:https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true:alt:AliroImagerWrite-NotethatthiswillformatyourMicroSDCardandallexistingdatawill" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true:target:https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true:alt:AliroImagerWrite-NotethatthiswillformatyourMicroSDCardandallexistingdatawill" />
+<p>be erased. Click <strong>Yes</strong> at the prompt to proceed.<span class="raw-html-m2r"><br></span></p>
+<img alt="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true:target:https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true:alt:AliroImagerFormat-Thiswritingprocessmaytakeseveralminutes,theprogresswillbeshown" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true:target:https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true:alt:AliroImagerFormat-Thiswritingprocessmaytakeseveralminutes,theprogresswillbeshown" />
+<p>on the <strong>AliroEd Imager.</strong><span class="raw-html-m2r"><br></span></p>
 <a class="reference external image-reference" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_finish.png?raw=true"><img alt="Aliro Imager Finish" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_finish.png?raw=true" /></a>
-</li>
-</ul>
 </li>
 <li><p>Insert the MicroSD Card into your Raspberry Pi 400 and start it up.</p></li>
 <li><p>When the Operating System has finished starting up, double-click the
@@ -312,7 +306,7 @@ datasets to the data directory. Datasets have the following restrictions:</p>
 <li><p>Datasets cannot have any null or empty values</p></li>
 <li><p>Dataset features must be either numeric, categorical, or ordinal.</p>
 <ul>
-<li><p><strong>Note:</strong> all columns should be of a numeric type.</p>
+<li><p><strong>Note:</strong> Dataset values must be numeric. All categorical features must be encoded to a numeric value prior to upload.</p>
 <!-- - Only the label column or categorical or ordinal features can contain
 string values. --></li>
 </ul>
@@ -355,10 +349,10 @@ named <code class="docutils literal notranslate"><span class="pre">myDatafile_me
 <li><p>Example configuration file:</p></li>
 </ul>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;target_column&quot;</span><span class="p">:</span><span class="s2">&quot;my_custom_target_column_name&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;prediction_type&quot;</span><span class="p">:</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;categorical_features&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cat1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cat2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;ordinal_features&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ord&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;second&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;third&quot;</span><span class="p">]}</span>
+<span class="w">  </span><span class="nt">&quot;target_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_custom_target_column_name&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;prediction_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;categorical_features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cat1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cat2&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;ordinal_features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;ord&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;second&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;third&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
