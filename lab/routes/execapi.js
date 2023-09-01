@@ -114,9 +114,9 @@ router.post('/executions/install', async (req, res, next) => {
         return res.status(400).json({ message: 'Invalid command' });
     }
     
-    if ( (req.body.packages === null || req.body.packages.length === 0)
-        && req.body.command !== 'freeze') {
-        return res.status(400).json({ message: 'No packages provided' });
+    if (req.body.command !== 'freeze' && (req.body.packages === undefined || 
+        req.body.packages.length === 0)) {
+      return res.status(400).json({'message': 'No packages provided'})
     }
 
     let machines;
