@@ -489,12 +489,12 @@ app.post("/code/run/install", jsonParser, (req, res) => {
   pyProc.stdout.on("data", (data) => {
     // result.exec_results = JSON.parse(data.toString());
     console.log(`stdout: ${data}`);
-    result.exec_results.stdout = data.toString();
+    result.exec_results.stdout += data.toString();
   });
 
   pyProc.stderr.on("data", (data) => {
     console.log(`stderr: ${data}`);
-    result.exec_results.stderr = data.toString();
+    result.exec_results.stderr += data.toString();
     // try {
     //     result.exec_results = JSON.parse(data.toString());
     // }
