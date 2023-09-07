@@ -77,6 +77,13 @@ describe('machine', () => {
 		 	expect(data.capacity).toEqual(1)
 		});
 
+        it('Test the code run API endpoint results are correct.', async () => {
+            var labCodeRun = await labApi.postCodeExecutions({ src_code: "print('hello world')" })
+            expect(labCodeRun.status).toBeTruthy()
+            expect(labCodeRun._id).toBeTruthy()
+            expect(labCodeRun.result).toEqual('hello world\n')
+        });
+
 	});
 
 	describe('startup validation', () =>

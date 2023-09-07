@@ -60,3 +60,4 @@ export const getAiStatus = (datasetId) => get(`http://lab:5080/api/userdatasets/
 export const fetchExperimentModel = (id) => get(`http://lab:5080/api/v1/experiments/${id}/model`);
 export const fetchExperimentScript = (id) => get(`http://lab:5080/api/v1/experiments/${id}/script`);
 
+export const postCodeExecutions = (params) => post('http://lab:5080/execapi/v1/executions', params)
