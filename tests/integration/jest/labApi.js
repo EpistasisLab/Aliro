@@ -61,3 +61,4 @@ export const fetchExperimentModel = (id) => get(`http://lab:5080/api/v1/experime
 export const fetchExperimentScript = (id) => get(`http://lab:5080/api/v1/experiments/${id}/script`);
 
 export const postCodeExecutions = (params) => post('http://lab:5080/execapi/v1/executions', params)
+export const postPackageInstall = (params) => post('http://lab:5080/execapi/v1/executions/install', params)

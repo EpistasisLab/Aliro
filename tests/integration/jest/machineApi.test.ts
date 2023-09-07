@@ -80,8 +80,26 @@ describe('machine', () => {
         it('Test the code run API endpoint results are correct.', async () => {
             var labCodeRun = await labApi.postCodeExecutions({ src_code: "print('hello world')" })
             expect(labCodeRun.status).toBeTruthy()
+            expect(labCodeRun.status).toEqual('completed')
             expect(labCodeRun._id).toBeTruthy()
             expect(labCodeRun.result).toEqual('hello world\n')
+        });
+
+        // I'll need a specific dataset id for this test to work.
+        // it('Test code run API endpoint recognizes df.', async () => {
+        //     var labCodeRun = await labApi.postCodeExecutions({ src_code: "print(df.head(1))", dataset_id: })
+        //     expect(labCodeRun.status).toBeTruthy()
+        //     expect(labCodeRun.status).toEqual('completed')
+        //     expect(labCodeRun._id).toBeTruthy()
+        //     expect(labCodeRun.result).toBeTruthy()
+        // });
+
+        // it('Test code run API endpoint recognizes model')
+
+        it('Test the package install API endpoint.', async () => {
+            var labCodeInstall = await labApi.postPackageInstall({ command: 'install', packages: ['numpy'] })
+            expect(labCodeInstall.exec_results.code).toEqual(0)
+            expect(labCodeInstall.exec_results.stdout).toBeTruthy()
         });
 
 	});
