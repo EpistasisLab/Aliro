@@ -512,7 +512,11 @@ app.post("/code/run/install", jsonParser, (req, res) => {
 });
 
 // run code execution
-app.post("/code/run", jsonParser, (req, res) => {
+app.post('/code/run', jsonParser, (req, res) => {
+  res.send({ 'received': req.body })
+});
+
+app.post("/code/run_old", jsonParser, (req, res) => {
   let args = [
     "machine/pyutils/run_code.py",
     "--code",

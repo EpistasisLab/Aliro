@@ -11,7 +11,53 @@ const {
     uploadExecFiles
 } = require('../execapiutils');
 
+// The only responsibility this function will have is to find an available machine
+// pass the req object and return the res object.
+// All other processing needs to be handled by the machine.
+// Especially the code execution folder creation and deletions.
+// The previous endpoint worked when run locally and the docker volumes were mounted 
+// from local directorie, but it doesn't work when run as independent docker containers.
 router.post('/executions', async (req, res, next) => {
+    // find an available machine and send the request to the /code/run endpoint on the machine
+    let machines;
+    try {
+        machines = await Machine.find({}, { address: 1 });
+        if (machines.length == 0) {
+            return res.status(400).json({ message: 'No machines available' });
+        }
+        // call the machine api
+        let result = await fetch(machines[0].address + '/code/run', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(req.body)
+        });
+        result = await result.json();
+
+        res.send(result);
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: err.message });
+    }
+});
+
+/**
+ * Route for submitting a new code execution.
+ *
+ * @param {Object} req - HTTP request object containing request data.
+ *   @property {string} req.body.src_code - The source code to be executed.
+ *   @property {string} [req.body.dataset_file_id] - The dataset file ID (optional).
+ *   @property {string} [req.body.dataset_id] - The dataset ID (optional).
+ *   The dataset_file_id OR the dataset_id are used to load the dataset into a
+ *   Pandas DataFrame as variable 'df'
+ *   @property {string} [req.body.experiment_id] - The experiment ID (optional).
+ *   The experiment_id is used to load the experiment model as variable 'model'
+ * @param {Object} res - HTTP response object for sending the response back to the client.
+ * @param {Function} next - Function to proceed to the next middleware step.
+ */
+router.post('/executions_old', async (req, res, next) => {
     if (req.body.src_code == null) {
         return res.status(400).json({ message: 'No src_code provided' });
     }
