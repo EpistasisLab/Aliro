@@ -50,6 +50,7 @@ var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
 const machine_utils = require("./machine_utils.js");
+const Execution = require('./models/execution')
 
 /* App instantiation */
 var app = express();
@@ -519,6 +520,8 @@ app.post('/code/run', jsonParser, (req, res) => {
 });
 
 app.post("/code/run_old", jsonParser, (req, res) => {
+
+
   let args = [
     "machine/pyutils/run_code.py",
     "--code",
