@@ -96,11 +96,17 @@ describe('machine', () => {
 
         // it('Test code run API endpoint recognizes model')
 
-        it('Test the package install API endpoint.', async () => {
+        it('Test the package install API endpoint with good package.', async () => {
             var labCodeInstall = await labApi.postPackageInstall({ command: 'install', packages: ['numpy'] })
             expect(labCodeInstall.exec_results.code).toEqual(0)
             expect(labCodeInstall.exec_results.stdout).toBeTruthy()
         });
+
+        it('Test the package install API endpoint with a bad package.', async () => {
+            var labCodeInstall = await labApi.postPackageInstall({ command: 'install', packages: ['test'] })
+            expect(labCodeInstall.exec_results.code).toEqual(1)
+            expect(labCodeInstall.exec_results.stderr).toBeTruthy()
+        })
 
 	});
 
