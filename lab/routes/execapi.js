@@ -11,13 +11,36 @@ const {
     uploadExecFiles
 } = require('../execapiutils');
 
-// The only responsibility this function will have is to find an available machine
-// pass the req object and return the res object.
-// All other processing needs to be handled by the machine.
-// Especially the code execution folder creation and deletions.
-// The previous endpoint worked when run locally and the docker volumes were mounted 
-// from local directorie, but it doesn't work when run as independent docker containers.
+/**
+ * The only responsibility this function will have is to:
+ *  1. Check required and optional parameters
+ *  2. Find an available machine
+ *  3. Call the /code/run endpoint with the req.body
+ *  4. Return the res object from /code/run as JSON
+ * All other processing needs to be handled by the machine.
+ * Especially the code execution folder creation and deletions.
+ * The previous endpoint worked when run locally and the docker volumes were
+ *  mounted from local directories, but it doesn't work when run as independent
+ *  docker containers.
+ */
 router.post('/executions', async (req, res, next) => {
+
+    // src_code is required
+    if (req.body.src_code == null) {
+        return res.status(400).json({ message: 'No src_code provided' });
+    }
+
+    // dataset_file_id is optional, if a dataset_id is passed instead, then
+    // retrieve the dataset_file_id from the DB
+    if (req.body.dataset_file_id == null) {
+        if (req.body.dataset_id != null) {
+            let dataset = await getDatasetById(req.body.dataset_id)
+            if (dataset != null) {
+                req.body.dataset_file_id = dataset.files[0]._id;
+            }
+        }    
+    }
+
     // find an available machine and send the request to the /code/run endpoint on the machine
     let machines;
     try {

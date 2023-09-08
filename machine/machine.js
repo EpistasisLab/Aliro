@@ -513,7 +513,9 @@ app.post("/code/run/install", jsonParser, (req, res) => {
 
 // run code execution
 app.post('/code/run', jsonParser, (req, res) => {
-  res.send({ 'received': req.body })
+  // Note, the body params passed need to be updated in this new function.
+  // dataset_file_id instead of _data_file_id (i.e. drop the first _)
+  res.send({ 'echo': req.body })
 });
 
 app.post("/code/run_old", jsonParser, (req, res) => {
