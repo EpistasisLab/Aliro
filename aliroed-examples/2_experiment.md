@@ -1,7 +1,7 @@
 # Running experiments on AliroEd
 This guide shows you how to construct your own experiment, construct an AI experiment, and view and download results. It assumes that you have launched AliroEd in your Raspberry Pi.
 
-1. **Introduction page** The first page you will see when AliroEd (in the Rapsberry Pi) launches is the introduction page. You can browse this site while AliroEd is loading.
+1. **Introduction page** The first page you will see when AliroEd (in the Rapsberry Pi) launches is the introduction page. You can browse this site while AliroEd is loading.  
 ![AliroEd Intropage](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/1_aliroed_intropage.png?raw=true "AliroEd Intropage")
 
 2. **Ready to Run** On the top-right corner of the introductory page you will see a message saying **Loading AliroEd**. Once AliroEd is loaded, this message will change to **Aliro is ready to run**. This is a link, click on it and will take you to the Aliro landing page (step 3).  
@@ -19,7 +19,6 @@ This takes you to the experiment building page.
     * **Download model** downloads a pickled model file that contains the trained model. Use it to run analysis on more datasets.
 
     * **Download script** gives you a Python script to reproduce the analysis in the experiment.  
-
 ![AliroEd Experiments Page](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/5_aliroed_experimentspage.png?raw=true "AliroEd Experiments Page")
 
 6. **Experiment results** The Results page summarizes the experiment results through figures and statistics. The algorithm configuration and runtime information is displayed on the left. On the right, the training and testing balances accuracies are shown. For every experiment, the top 10 most important features are shown in a bar plot on the bottom left. For every classification problem, a confusion matrix is shown. For binary classification, an ROC curve and AUC score is provided.  
