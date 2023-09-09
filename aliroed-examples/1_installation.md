@@ -14,11 +14,11 @@
 
 ## AliroEd Installation
 ### Windows
-1. Download a copy of the [aliro-imager.exe](http://52.35.223.86/education/#download)
-2. Insert the MicroSD Card in your card reader.
+1. Download a copy of the [aliro-imager.exe](http://52.35.223.86/education/#download)  
+2. Insert the MicroSD Card in your card reader.  
 3. Double-click the downloaded **aliro-imager-\*.exe** on you computer. If prompted to allow
    the application to run, select **Yes**. You may need to enter your computer's
-   **Administrator** password to continue.
+   **Administrator** password to continue.  
 4. Follow the prompts to proceed with the installation.  
    ![Aliro Imager Install](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true "Aliro Imager Install")
 5. Once installed, you can run the **AliroEd Imager** from the Start Menu. When
@@ -29,9 +29,11 @@
     ![Aliro Imager Choose Storage](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true "Aliro Imager Choose Storage")
 7. Click the **WRITE** button to begin writing the Operatying System to your
    MicroSD Card.  
-    ![Aliro Imager Write](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true "Aliro Imager Write") - **NOTE** that this will **format** your MicroSD Card and all existing data will
+    ![Aliro Imager Write](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true "Aliro Imager Write")  
+    - **NOTE** that this will **format** your MicroSD Card and all existing data will
    be erased. Click **Yes** at the prompt to proceed.  
-    ![Aliro Imager Format](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true "Aliro Imager Format") - This writing process may take several minutes, the progress will be shown
+    ![Aliro Imager Format](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true "Aliro Imager Format")  
+    - This writing process may take several minutes, the progress will be shown
    on the **AliroEd Imager.**  
     ![Aliro Imager Finish](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_finish.png?raw=true "Aliro Imager Finish")
 8. Insert the MicroSD Card into your Raspberry Pi 400 and start it up.
