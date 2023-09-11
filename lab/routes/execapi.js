@@ -41,6 +41,29 @@ router.post('/executions', async (req, res, next) => {
         }    
     }
 
+    // create a new execution
+    let execution = new Execution({
+        src_code: req.body.src_code,
+        status: 'submitted',
+        result: null,
+        files: []
+    });
+
+    if (req.body.dataset_file_id != null) {
+        execution._dataset_file_id = req.body.dataset_file_id;
+    }
+
+    if (req.body.experiment_id != null) {
+        execution._experiment_id = req.body.experiment_id;
+    }
+
+    try {
+        const newExecution = await execution.save();
+        execution._id = newExecution._id;
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
     // find an available machine and send the request to the /code/run endpoint on the machine
     let machines;
     try {
@@ -54,11 +77,22 @@ router.post('/executions', async (req, res, next) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(req.body)
+            // body: JSON.stringify(req.body)
+            body: JSON.stringify(execution)
         });
         result = await result.json();
 
-        res.send(result);
+        // test echo first
+        execution = result
+        // update the execution status
+        // execution.status = result.exec_results.status;
+        // execution.result = result.exec_results.result;
+        // execution.files = result.exec_results.files;
+
+        // test echo first
+        // const updatedExecution = await execution.save();
+
+        res.send(execution);
     }
     catch (err) {
         console.error(err);

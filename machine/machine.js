@@ -50,7 +50,6 @@ var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
 const machine_utils = require("./machine_utils.js");
-const Execution = require('./models/execution')
 
 /* App instantiation */
 var app = express();
@@ -216,6 +215,47 @@ app.get("/projects/:id/capacity", (req, res) => {
  */
 app.get("/projects", (req, res) => {
   res.send(projects);
+});
+
+app.post('/code/run', jsonParser, (req, res) => {
+  // Note, the body params passed need to be updated in this new function.
+  // dataset_file_id instead of _data_file_id (i.e. drop the first _)
+
+  // These parameter will be included in req.body:
+  //    src_code - required
+  //    dataset_file_id - optional
+  //    _id - execution_id
+  //    experiment_id - optional
+
+  res.send({ 'echo': req.body });
+  console.log('Executing code...');
+
+  // Create a new Execution document for mongodb
+  // This will return an execution id
+  // Can this still be done in lab?
+
+  // Create the temp path to store the code execuction generated files
+  // This uses CODE_RUN_PATH
+
+  // Set up the args for the run_code.py (same as run_old)
+
+  // Spawn the process (same as run_old)
+
+  // Capture stdout (same as run_old)
+
+  // Capture stderr (same as run_old)
+
+  // Close close (same as run_old)
+
+  // Upload files from tmp folder
+  //    re-use sendResults ?
+  // Add a files array to the response with the file info
+  // like the one returned by uploadExecFiles.
+
+  // delete tmp folder
+
+  // Send result back
+  
 });
 
 // Starts experiment
@@ -513,14 +553,7 @@ app.post("/code/run/install", jsonParser, (req, res) => {
 });
 
 // run code execution
-app.post('/code/run', jsonParser, (req, res) => {
-  // Note, the body params passed need to be updated in this new function.
-  // dataset_file_id instead of _data_file_id (i.e. drop the first _)
-  res.send({ 'echo': req.body })
-});
-
 app.post("/code/run_old", jsonParser, (req, res) => {
-
 
   let args = [
     "machine/pyutils/run_code.py",
