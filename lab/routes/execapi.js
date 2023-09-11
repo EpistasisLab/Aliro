@@ -14,9 +14,10 @@ const {
 /**
  * The only responsibility this function will have is to:
  *  1. Check required and optional parameters
- *  2. Find an available machine
- *  3. Call the /code/run endpoint with the req.body
- *  4. Return the res object from /code/run as JSON
+ *  2. Create and save Executions
+ *  3. Find an available machine
+ *  4. Call the /code/run endpoint with the req.body
+ *  5. Return the res object from /code/run as JSON
  * All other processing needs to be handled by the machine.
  * Especially the code execution folder creation and deletions.
  * The previous endpoint worked when run locally and the docker volumes were
@@ -30,17 +31,6 @@ router.post('/executions', async (req, res, next) => {
         return res.status(400).json({ message: 'No src_code provided' });
     }
 
-    // dataset_file_id is optional, if a dataset_id is passed instead, then
-    // retrieve the dataset_file_id from the DB
-    if (req.body.dataset_file_id == null) {
-        if (req.body.dataset_id != null) {
-            let dataset = await getDatasetById(req.body.dataset_id)
-            if (dataset != null) {
-                req.body.dataset_file_id = dataset.files[0]._id;
-            }
-        }    
-    }
-
     // create a new execution
     let execution = new Execution({
         src_code: req.body.src_code,
@@ -49,12 +39,29 @@ router.post('/executions', async (req, res, next) => {
         files: []
     });
 
+    if (req.body.dataset_id != null) {
+        execution._dataset_id = req.body.dataset_id;
+    }
+
     if (req.body.dataset_file_id != null) {
         execution._dataset_file_id = req.body.dataset_file_id;
     }
 
     if (req.body.experiment_id != null) {
         execution._experiment_id = req.body.experiment_id;
+    }
+
+    // dataset_file_id is optional, if a dataset_id is passed instead, then
+    // retrieve the dataset_file_id from the DB
+    if (req.body.dataset_file_id == null) {
+        if (req.body.dataset_id != null) {
+            let dataset = await getDatasetById(req.body.dataset_id)
+            if (dataset != null) {
+                req.body.dataset_file_id = dataset.files[0]._id;
+                // update the execution _dataset_file_id
+                execution._dataset_file_id = dataset.files[0]._id;
+            }
+        }    
     }
 
     try {
@@ -82,15 +89,14 @@ router.post('/executions', async (req, res, next) => {
         });
         result = await result.json();
 
-        // test echo first
-        execution = result
-        // update the execution status
-        // execution.status = result.exec_results.status;
-        // execution.result = result.exec_results.result;
-        // execution.files = result.exec_results.files;
+        console.log("*****result:" + result);
 
-        // test echo first
-        // const updatedExecution = await execution.save();
+        // update the execution status
+        execution.status = result.exec_results.status;
+        execution.result = result.exec_results.result;
+        execution.files = result.exec_results.files;
+
+        const updatedExecution = await execution.save();
 
         res.send(execution);
     }
