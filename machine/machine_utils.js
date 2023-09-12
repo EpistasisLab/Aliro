@@ -31,6 +31,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 const path = require("path");
 const fs = require('fs');
 
+// const { isConstructorDeclaration } = require('typescript');
+const mime = require('mime-types');
 //Generate a list of projects based on machine_config.json
 var getProjects = function(algorithms) {
     var project_list = [];
@@ -84,46 +86,44 @@ var checkCapacity = function(projId, maxCapacity, projects) {
 };
 
 
-var uploadExecFiles = async function(executionId, filepath) {
-// async function uploadExecFiles(executionId, filepath) {
-    const files = [];
+async function sendExecFiles(executionId, filepath) {
+    try {
+        const uri = `http://${process.env.LAB_HOST}:${process.env.LAB_PORT}/execapi/v1/executions/${executionId}/files`;
 
-    const gfs = new GridFSBucket(db.db, {
-        bucketName: 'fs'
-    });
+        const files = [];
 
-    const filenames = await fs.promises.readdir(filepath);
+        const filenames = await fs.promises.readdir(filepath);
 
-    for (const file of filenames) {
-        const filename = path.join(filepath, file);
-        const stats = await fs.promises.stat(filename);
-        if (!stats.isDirectory()) {
-            const fileId = new mongoose.Types.ObjectId();
-            const writeStream = gfs.openUploadStreamWithId(fileId,
-                file,
-                {
-                    metadata: {
-                        execution_id: executionId,
-                        contentType: mime.lookup(file)
+        for (const file of filenames) {
+            const filename = path.join(filepath, file);
+            const stats = await fs.promises.stat(filename);
+            if (!stats.isDirectory()) {
+                const fileContent = await fs.readFile(filename);
+
+                const response = await fetch(uri, {
+                    method: 'POST',
+                    body: fileContent,
+                    headers: {
+                        'Content-Type': 'application/octet-stream',
                     },
-                    contentType: 'binary/octet-stream'
-                }
-            );
-            const readStream = fs.createReadStream(filename);
-            readStream.pipe(writeStream);
-
-            await new Promise((resolve, reject) => {
-                writeStream.on('error', reject);
-                writeStream.on('finish', () => {
-                    console.log('file uploaded to GridFS:' + filename);
-                    files.push({ _id: fileId, filename: file, mimetype: mime.lookup(file) });
-                    resolve();
                 });
-            });
-        }
-    }
 
-    return files;
+                if (!response.ok) {
+                    throw new Error(`Error sending file ${file}: ${response.status} ${response.statusText}`);
+                }
+
+                const responseBody = await response.text();
+                console.log(responseBody);
+
+                files.push({ filename, success: true });
+            }
+        }
+
+        return files;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
 }
 
 
@@ -131,4 +131,4 @@ var uploadExecFiles = async function(executionId, filepath) {
 exports.getProjects = getProjects;
 exports.getCapacity = getCapacity;
 exports.checkCapacity = checkCapacity;
-exports.uploadExecFiles = uploadExecFiles;
+exports.sendExecFiles = sendExecFiles;

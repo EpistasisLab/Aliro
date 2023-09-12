@@ -217,7 +217,7 @@ app.get("/projects", (req, res) => {
   res.send(projects);
 });
 
-app.post('/code/run', jsonParser, async (req, res) => {
+app.post('/code/run', jsonParser, (req, res) => {
   // Note, the body params passed need to be updated in this new function.
   // dataset_file_id instead of _data_file_id (i.e. drop the first _)
 
@@ -280,10 +280,13 @@ app.post('/code/run', jsonParser, async (req, res) => {
   });
 
   // Close close (same as run_old)
-  pyProc.on("close", (code) => {
+  pyProc.on("close", async (code) => {
     // result.code = code;
     console.log(`child process exited with code ${code}`);
-    result.exec_results.files = [];
+    // TODO: this part is still untested, need to work on this next.
+    const files = await machine_utils.sendExecFiles(executionId, tmppath);
+    result.exec_results.files = files;
+
     res.send(result);
   });
 

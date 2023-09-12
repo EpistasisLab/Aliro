@@ -6,6 +6,7 @@ const db = require('./dbgoose');
 const path = require("path");
 const fs = require('fs');
 const { default: mongoose } = require('mongoose');
+const Stream = require('stream');
 // const { isConstructorDeclaration } = require('typescript');
 const mime = require('mime-types');
 
@@ -49,46 +50,45 @@ async function getExecutionById(req, res, next) {
     next();
 }
 
-async function uploadExecFiles(executionId, filepath) {
+async function uploadExecFiles(executionId, req) {
     const files = [];
 
     const gfs = new GridFSBucket(db.db, {
         bucketName: 'fs'
     });
 
-    const filenames = await fs.promises.readdir(filepath);
+    const uploadedFiles = req.files;
 
-    for (const file of filenames) {
-        const filename = path.join(filepath, file);
-        const stats = await fs.promises.stat(filename);
-        if (!stats.isDirectory()) {
-            const fileId = new mongoose.Types.ObjectId();
-            const writeStream = gfs.openUploadStreamWithId(fileId,
-                file,
-                {
-                    metadata: {
-                        execution_id: executionId,
-                        contentType: mime.lookup(file)
-                    },
-                    contentType: 'binary/octet-stream'
-                }
-            );
-            const readStream = fs.createReadStream(filename);
-            readStream.pipe(writeStream);
+    for (const uploadedFile of uploadedFiles) {
+        const fileId = new mongoose.Types.ObjectId();
+        const writeStream = gfs.openUploadStreamWithId(fileId,
+            uploadedFile.originalname,
+            {
+                metadata: {
+                    execution_id: executionId,
+                    contentType: uploadedFile.mimetype
+                },
+                contentType: 'binary/octet-stream'
+            }
+        );
+        const bufferStream = new Stream.PassThrough();
+        bufferStream.end(uploadedFile.buffer);
 
-            await new Promise((resolve, reject) => {
-                writeStream.on('error', reject);
-                writeStream.on('finish', () => {
-                    console.log('file uploaded to GridFS:' + filename);
-                    files.push({ _id: fileId, filename: file, mimetype: mime.lookup(file) });
-                    resolve();
-                });
+        bufferStream.pipe(writeStream);
+
+        await new Promise((resolve, reject) => {
+            writeStream.on('error', reject);
+            writeStream.on('finish', () => {
+                console.log('file uploaded to GridFS:' + uploadedFile.originalname);
+                files.push({ _id: fileId, filename: uploadedFile.originalname, mimetype: uploadedFile.mimetype });
+                resolve();
             });
-        }
+        });
     }
 
     return files;
 }
+
 
 module.exports = {
     getDatasetById,

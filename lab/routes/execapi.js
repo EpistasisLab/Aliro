@@ -5,6 +5,7 @@ const fs = require('fs');
 const Machine = require('../models/machine');
 const Execution = require('../models/execution');
 const fetch = require('isomorphic-fetch');
+const upload = require('multer')();
 const { 
     getDatasetById,
     getExecutionById,
@@ -270,6 +271,25 @@ router.patch('/executions/:id', getExecutionById, async (req, res, next) => {
         res.json(updatedExecution);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+});
+
+router.put('/executions/:id/files', upload.array('files'), getExecutionById, async (req, res, next) => {
+    try {
+        console.log('req.files:', req.files);
+        const executionId = req.params.id;
+        const files = await uploadExecFiles(executionId, req);
+        res.execution.files = files;
+        const updatedExecution = await res.execution.save();
+        res.send({
+            message: "Files uploaded",
+            files: files,
+            updatedExecution: updatedExecution
+        });
+
+    } catch (err) {
+        console.error(err);
+        next(err);
     }
 });
 
