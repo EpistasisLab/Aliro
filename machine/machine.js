@@ -218,27 +218,11 @@ app.get("/projects", (req, res) => {
 });
 
 app.post('/code/run', jsonParser, (req, res) => {
-  // Note, the body params passed need to be updated in this new function.
-  // dataset_file_id instead of _data_file_id (i.e. drop the first _)
-
-  // These parameter will be included in req.body:
-  //    src_code - required
-  //    dataset_file_id - optional
-  //    _id - execution_id
-  //    experiment_id - optional
-
-  console.log('Executing code...');
-
-  // Create a new Execution document for mongodb
-  // This will return an execution id
-  // Can this still be done in lab?
-
+  
   // Create the temp path to store the code execuction generated files
-  // This uses CODE_RUN_PATH
   let tmppath = path.join(process.env.CODE_RUN_PATH, req.body._id.toString());
   if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, { recursive: true });
 
-  // Set up the args for the run_code.py (same as run_old)
   let executionId = req.body._id;
   let args = [
     "machine/pyutils/run_code.py",
@@ -258,18 +242,15 @@ app.post('/code/run', jsonParser, (req, res) => {
     args.push(req.body._experiment_id);
   }
 
-  // Spawn the process (same as run_old)
   let pyProc = spawn("python", args, { cwd: process.env.PROJECT_ROOT });
 
   let result = req.body;
   result.exec_results = {};
 
-  // Capture stdout (same as run_old)
   pyProc.stdout.on("data", (data) => {
     result.exec_results = JSON.parse(data.toString());
   });
 
-  // Capture stderr (same as run_old)
   pyProc.stderr.on("data", (data) => {
     // console.log(`stderr: ${data}`);
     try {
@@ -279,42 +260,23 @@ app.post('/code/run', jsonParser, (req, res) => {
     }
   });
 
-  // Close close (same as run_old)
   pyProc.on("close", async (code) => {
-    // result.code = code;
     console.log(`child process exited with code ${code}`);
-    // TODO: this part is still untested, need to work on this next.
     const files = await machine_utils.sendExecFiles(executionId, tmppath);
     result.exec_results.files = files;
 
-    res.send(result);
-  });
-
-  // Upload files from tmp folder
-  //    re-use sendResults ?
-  // Add a files array to the response with the file info
-  // like the one returned by uploadExecFiles.
-  // Lab should talk to Mongo. Not the Machine.
-  // Looks like I'll have to use sendResults!
-  // Suggestion: do what sendResults does inside machine_utils.uploadExecFiles
-  //   but, have it return the files array!
-  // const files = await machine_utils.uploadExecFiles(executionId, tmppath);
-  // result.exec_results.files = files;
-  // result.exec_results.files = [];
-
-  // Don't delete tmp folder until uploadExecFiles is working correctly.
   // delete tmp folder
-  // fs.rmdir(tmppath, { recursive: true }, (err) => {
-  //   if (err) {
-  //     console.error(err);
-  //   } else {
-  //     console.log(tmppath + ' folder deleted');
-  //   }
-  // });
-
-  // Send result back
-  // res.send(result);
-  
+    fs.rmdir(tmppath, { recursive: true }, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log(tmppath + ' folder deleted');
+      }
+    });
+    
+    res.send(result);
+    
+  });
 });
 
 // Starts experiment

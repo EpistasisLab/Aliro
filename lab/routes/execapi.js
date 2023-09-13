@@ -90,8 +90,6 @@ router.post('/executions', async (req, res, next) => {
         });
         result = await result.json();
 
-        console.log("*****result:" + result);
-
         // update the execution status
         execution.status = result.exec_results.status;
         execution.result = result.exec_results.result;
@@ -99,7 +97,8 @@ router.post('/executions', async (req, res, next) => {
 
         const updatedExecution = await execution.save();
 
-        res.send(execution);
+        // res.send(execution);
+        res.send(updatedExecution);
     }
     catch (err) {
         console.error(err);
@@ -274,17 +273,14 @@ router.patch('/executions/:id', getExecutionById, async (req, res, next) => {
     }
 });
 
-router.put('/executions/:id/files', upload.array('files'), getExecutionById, async (req, res, next) => {
+// This internal API endpoint will be called by the machine during a code execution.
+router.put('/executions/:id/files', upload.array('files'), async (req, res, next) => {
     try {
-        console.log('req.files:', req.files);
         const executionId = req.params.id;
         const files = await uploadExecFiles(executionId, req);
-        res.execution.files = files;
-        const updatedExecution = await res.execution.save();
         res.send({
             message: "Files uploaded",
-            files: files,
-            updatedExecution: updatedExecution
+            files: files
         });
 
     } catch (err) {
