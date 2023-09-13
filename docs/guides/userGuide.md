@@ -234,6 +234,8 @@ Before you can start using the ChatGPT component, you'll need an API key from Op
 
 After obtaining your API key, you can effortlessly connect to OpenAI. Once your machine learning experiment is complete, navigate to the results page to view performance metrics. A popup window will appear, prompting you to enter your OpenAI API key. Upon successful connection, a new popup window will display the message, "Connection to OpenAI is established," and the "Expert" button will turn blue.
 
+---
+
 #### 3. How to Use ChatGPT (Expert)
 
 Once you click on the blue "Expert" button, a chat interface will appear on the right side of the page.
