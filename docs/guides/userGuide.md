@@ -239,11 +239,11 @@ After obtaining your API key, you can effortlessly connect to OpenAI. Once your 
 
 Once you click on the blue "Expert" button, a chat interface will appear on the right side of the page.
 
-##### Settings
+**Settings**
 
 At the top of the chat interface, you'll find the "Settings" tab and a "+ New Chat" button. Within "Settings," you can adjust the model, temperature, and define prompt engineering.
 
-##### Renaming a ChatBox
+**Renaming a ChatBox**
 
 To rename the first ChatBox to "EDA":
 
@@ -252,20 +252,20 @@ To rename the first ChatBox to "EDA":
 3. Mouse over the pencil emoji, which will then change to a checkmark.
 4. Click the checkmark to save the new name.
 
-##### Creating a New ChatBox
+**Creating a New ChatBox**
 
 To create a new chatBox:
 
 1. Click the "+ New Chat" button.
 2. Name the new ChatBox following the process outlined in the "Renaming a ChatBox" section.
 
-##### Removing Chat Tabs
+**Removing Chat Tabs**
 
 To remove a ChatBox:
 
 1. Click on the trash bin emoji associated with that tab.
 
-##### Code Generation and Editing
+**Code Generation and Editing**
 
 To request Python code from ChatGPT, you can ask, for example: "Please write Python code to generate 10 random numbers and print them."
 
@@ -275,10 +275,10 @@ To edit the generated code:
 2. Make your changes.
 3. To save, press the ESC key or click the "Run" button.
 
-##### Installing New Packages
+**Installing New Packages**
 
 If you need to install new packages to run the given code, a "Install and Run" button will appear. Clicking this will install the necessary packages and execute the code.
 
-##### Code Error Handling
+**Code Error Handling**
 
 When encountering an error while running code, a button labeled "Submit Error" will appear. Clicking this button will prompt ChatGPT to provide an alternative code snippet to resolve the error.
