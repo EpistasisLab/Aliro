@@ -129,9 +129,8 @@ datasets to the data directory. Datasets have the following restrictions:
 
 - Datasets must have the extension .csv or .tsv
 - Datasets cannot have any null or empty values
-- Dataset features must be either numeric, categorical, or ordinal.
-  - **Note:** Dataset values must be numeric. All categorical features must be encoded to a numeric value prior to upload.
-  <!-- - Only the label column or categorical or ordinal features can contain
+- Dataset values must be numeric. All categorical features must be encoded to a numeric value prior to upload.
+  <!-- - Dataset features must be either numeric, categorical, or ordinal. Only the label column or categorical or ordinal features can contain
   string values. -->
 - Files must be smaller then 8mb
 
