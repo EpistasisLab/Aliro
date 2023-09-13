@@ -384,6 +384,83 @@ page.</p>
 for instructions on using the scripts and model exported from Aliro to
 reproduce the findings on the results page and classify new datasets.</p>
 </section>
+<section id="working-with-chatgpt-component">
+<h3>Working with ChatGPT component<a class="headerlink" href="#working-with-chatgpt-component" title="Permalink to this headline">¶</a></h3>
+<p>This document explains how to interact with the ChatGPT component. The guide covers the following topics:</p>
+<ol class="arabic simple">
+<li><p>Where to get your OpenAI API key</p></li>
+<li><p>How to connect to OpenAI using your API key</p></li>
+<li><p>How to use the ChatGPT (Expert)</p></li>
+</ol>
+<hr class="docutils" />
+<section id="where-to-get-your-openai-api-key">
+<h4>1. Where to Get Your OpenAI API Key<a class="headerlink" href="#where-to-get-your-openai-api-key" title="Permalink to this headline">¶</a></h4>
+<p>Before you can start using the ChatGPT component, you’ll need an API key from OpenAI. To get one:</p>
+<ol class="arabic simple">
+<li><p>Visit the <a class="reference external" href="https://platform.openai.com/">OpenAI website</a></p></li>
+<li><p>Create an account or log in if you already have one</p></li>
+<li><p>Click on your account icon in the top-right corner, then select “View API keys.”</p></li>
+<li><p>Generate your API key by clicking on “+ Create new secret key.”</p></li>
+<li><p>Please copy your API key and store it in a secure location.</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="how-to-connect-to-openai-using-your-api-key">
+<h4>2. How to Connect to OpenAI Using Your API Key<a class="headerlink" href="#how-to-connect-to-openai-using-your-api-key" title="Permalink to this headline">¶</a></h4>
+<p>After obtaining your API key, you can effortlessly connect to OpenAI. Once your machine learning experiment is complete, navigate to the results page to view performance metrics. A popup window will appear, prompting you to enter your OpenAI API key. Upon successful connection, a new popup window will display the message, “Connection to OpenAI is established,” and the “Expert” button will turn blue.</p>
+</section>
+<section id="how-to-use-chatgpt-expert">
+<h4>3. How to Use ChatGPT (Expert)<a class="headerlink" href="#how-to-use-chatgpt-expert" title="Permalink to this headline">¶</a></h4>
+<p>Once you click on the blue “Expert” button, a chat interface will appear on the right side of the page.</p>
+<section id="settings">
+<h5>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h5>
+<p>At the top of the chat interface, you’ll find the “Settings” tab and a “+ New Chat” button. Within “Settings,” you can adjust the model, temperature, and define prompt engineering.</p>
+</section>
+<section id="renaming-a-chatbox">
+<h5>Renaming a ChatBox<a class="headerlink" href="#renaming-a-chatbox" title="Permalink to this headline">¶</a></h5>
+<p>To rename the first ChatBox to “EDA”:</p>
+<ol class="arabic simple">
+<li><p>Double-click the ChatBox to enable editing.</p></li>
+<li><p>Type in the new name, for example, “EDA.”</p></li>
+<li><p>Mouse over the pencil emoji, which will then change to a checkmark.</p></li>
+<li><p>Click the checkmark to save the new name.</p></li>
+</ol>
+</section>
+<section id="creating-a-new-chatbox">
+<h5>Creating a New ChatBox<a class="headerlink" href="#creating-a-new-chatbox" title="Permalink to this headline">¶</a></h5>
+<p>To create a new chatBox:</p>
+<ol class="arabic simple">
+<li><p>Click the “+ New Chat” button.</p></li>
+<li><p>Name the new ChatBox following the process outlined in the “Renaming a ChatBox” section.</p></li>
+</ol>
+</section>
+<section id="removing-chat-tabs">
+<h5>Removing Chat Tabs<a class="headerlink" href="#removing-chat-tabs" title="Permalink to this headline">¶</a></h5>
+<p>To remove a ChatBox:</p>
+<ol class="arabic simple">
+<li><p>Click on the trash bin emoji associated with that tab.</p></li>
+</ol>
+</section>
+<section id="code-generation-and-editing">
+<h5>Code Generation and Editing<a class="headerlink" href="#code-generation-and-editing" title="Permalink to this headline">¶</a></h5>
+<p>To request Python code from ChatGPT, you can ask, for example: “Please write Python code to generate 10 random numbers and print them.”</p>
+<p>To edit the generated code:</p>
+<ol class="arabic simple">
+<li><p>Double-click the code box.</p></li>
+<li><p>Make your changes.</p></li>
+<li><p>To save, press the ESC key or click the “Run” button.</p></li>
+</ol>
+</section>
+<section id="installing-new-packages">
+<h5>Installing New Packages<a class="headerlink" href="#installing-new-packages" title="Permalink to this headline">¶</a></h5>
+<p>If you need to install new packages to run the given code, a “Install and Run” button will appear. Clicking this will install the necessary packages and execute the code.</p>
+</section>
+<section id="code-error-handling">
+<h5>Code Error Handling<a class="headerlink" href="#code-error-handling" title="Permalink to this headline">¶</a></h5>
+<p>When encountering an error while running code, a button labeled “Submit Error” will appear. Clicking this button will prompt ChatGPT to provide an alternative code snippet to resolve the error.</p>
+</section>
+</section>
+</section>
 </section>
 </section>
 
@@ -424,6 +501,21 @@ reproduce the findings on the results page and classify new datasets.</p>
 </li>
 <li><a class="reference internal" href="#id4">Analyzing Data</a></li>
 <li><a class="reference internal" href="#id5">Downloading and Using Models</a></li>
+<li><a class="reference internal" href="#working-with-chatgpt-component">Working with ChatGPT component</a><ul>
+<li><a class="reference internal" href="#where-to-get-your-openai-api-key">1. Where to Get Your OpenAI API Key</a></li>
+<li><a class="reference internal" href="#how-to-connect-to-openai-using-your-api-key">2. How to Connect to OpenAI Using Your API Key</a></li>
+<li><a class="reference internal" href="#how-to-use-chatgpt-expert">3. How to Use ChatGPT (Expert)</a><ul>
+<li><a class="reference internal" href="#settings">Settings</a></li>
+<li><a class="reference internal" href="#renaming-a-chatbox">Renaming a ChatBox</a></li>
+<li><a class="reference internal" href="#creating-a-new-chatbox">Creating a New ChatBox</a></li>
+<li><a class="reference internal" href="#removing-chat-tabs">Removing Chat Tabs</a></li>
+<li><a class="reference internal" href="#code-generation-and-editing">Code Generation and Editing</a></li>
+<li><a class="reference internal" href="#installing-new-packages">Installing New Packages</a></li>
+<li><a class="reference internal" href="#code-error-handling">Code Error Handling</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
