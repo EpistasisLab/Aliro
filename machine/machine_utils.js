@@ -32,9 +32,8 @@ const path = require("path");
 const fetch = require('isomorphic-fetch');
 const fs = require('fs');
 const FormData = require('form-data');
-
-// const { isConstructorDeclaration } = require('typescript');
 const mime = require('mime-types');
+
 //Generate a list of projects based on machine_config.json
 var getProjects = function(algorithms) {
     var project_list = [];

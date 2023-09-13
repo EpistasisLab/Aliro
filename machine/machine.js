@@ -217,68 +217,6 @@ app.get("/projects", (req, res) => {
   res.send(projects);
 });
 
-app.post('/code/run', jsonParser, (req, res) => {
-  
-  // Create the temp path to store the code execuction generated files
-  let tmppath = path.join(process.env.CODE_RUN_PATH, req.body._id.toString());
-  if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, { recursive: true });
-
-  let executionId = req.body._id;
-  let args = [
-    "machine/pyutils/run_code.py",
-    "--code",
-    req.body.src_code,
-    "--execution_id",
-    executionId,
-  ];
-
-  if (req.body._dataset_file_id !== undefined) {
-    args.push("--dataset_file_id");
-    args.push(req.body._dataset_file_id);
-  }
-
-  if (req.body._experiment_id !== undefined) {
-    args.push("--experiment_id");
-    args.push(req.body._experiment_id);
-  }
-
-  let pyProc = spawn("python", args, { cwd: process.env.PROJECT_ROOT });
-
-  let result = req.body;
-  result.exec_results = {};
-
-  pyProc.stdout.on("data", (data) => {
-    result.exec_results = JSON.parse(data.toString());
-  });
-
-  pyProc.stderr.on("data", (data) => {
-    // console.log(`stderr: ${data}`);
-    try {
-      result.exec_results = JSON.parse(data.toString());
-    } catch (e) {
-      console.log(e);
-    }
-  });
-
-  pyProc.on("close", async (code) => {
-    console.log(`child process exited with code ${code}`);
-    const files = await machine_utils.sendExecFiles(executionId, tmppath);
-    result.exec_results.files = files;
-
-  // delete tmp folder
-    fs.rmdir(tmppath, { recursive: true }, (err) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(tmppath + ' folder deleted');
-      }
-    });
-    
-    res.send(result);
-    
-  });
-});
-
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
   var experimentId = req.body._id;
@@ -574,14 +512,19 @@ app.post("/code/run/install", jsonParser, (req, res) => {
 });
 
 // run code execution
-app.post("/code/run_old", jsonParser, (req, res) => {
+app.post('/code/run', jsonParser, (req, res) => {
+  
+  // Create the temp path to store the code execuction generated files
+  let tmppath = path.join(process.env.CODE_RUN_PATH, req.body._id.toString());
+  if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, { recursive: true });
 
+  let executionId = req.body._id;
   let args = [
     "machine/pyutils/run_code.py",
     "--code",
     req.body.src_code,
     "--execution_id",
-    req.body._id,
+    executionId,
   ];
 
   if (req.body._dataset_file_id !== undefined) {
@@ -612,10 +555,22 @@ app.post("/code/run_old", jsonParser, (req, res) => {
     }
   });
 
-  pyProc.on("close", (code) => {
-    // result.code = code;
+  pyProc.on("close", async (code) => {
     console.log(`child process exited with code ${code}`);
+    const files = await machine_utils.sendExecFiles(executionId, tmppath);
+    result.exec_results.files = files;
+
+  // delete tmp folder
+    fs.rmdir(tmppath, { recursive: true }, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log(tmppath + ' folder deleted');
+      }
+    });
+    
     res.send(result);
+    
   });
 });
 
