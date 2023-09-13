@@ -208,3 +208,77 @@ Please see the
 [Jupiter Notebook script demo](https://github.com/EpistasisLab/Aliro/blob/production/docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.ipynb)
 for instructions on using the scripts and model exported from Aliro to
 reproduce the findings on the results page and classify new datasets.
+
+### Working with ChatGPT component
+
+This document explains how to interact with the ChatGPT component. The guide covers the following topics:
+
+1. Where to get your OpenAI API key
+2. How to connect to OpenAI using your API key
+3. How to use the ChatGPT (Expert)
+
+---
+
+#### 1. Where to Get Your OpenAI API Key
+
+Before you can start using the ChatGPT component, you'll need an API key from OpenAI. To get one:
+
+1. Visit the [OpenAI website](https://platform.openai.com/)
+2. Create an account or log in if you already have one
+3. Click on your account icon in the top-right corner, then select "View API keys."
+4. Generate your API key by clicking on "+ Create new secret key."
+5. Please copy your API key and store it in a secure location.
+
+---
+
+#### 2. How to Connect to OpenAI Using Your API Key
+
+After obtaining your API key, you can effortlessly connect to OpenAI. Once your machine learning experiment is complete, navigate to the results page to view performance metrics. A popup window will appear, prompting you to enter your OpenAI API key. Upon successful connection, a new popup window will display the message, "Connection to OpenAI is established," and the "Expert" button will turn blue.
+
+#### 3. How to Use ChatGPT (Expert)
+
+Once you click on the blue "Expert" button, a chat interface will appear on the right side of the page.
+
+##### Settings
+
+At the top of the chat interface, you'll find the "Settings" tab and a "+ New Chat" button. Within "Settings," you can adjust the model, temperature, and define prompt engineering.
+
+##### Renaming a ChatBox
+
+To rename the first ChatBox to "EDA":
+
+1. Double-click the ChatBox to enable editing.
+2. Type in the new name, for example, "EDA."
+3. Mouse over the pencil emoji, which will then change to a checkmark.
+4. Click the checkmark to save the new name.
+
+##### Creating a New ChatBox
+
+To create a new chatBox:
+
+1. Click the "+ New Chat" button.
+2. Name the new ChatBox following the process outlined in the "Renaming a ChatBox" section.
+
+##### Removing Chat Tabs
+
+To remove a ChatBox:
+
+1. Click on the trash bin emoji associated with that tab.
+
+##### Code Generation and Editing
+
+To request Python code from ChatGPT, you can ask, for example: "Please write Python code to generate 10 random numbers and print them."
+
+To edit the generated code:
+
+1. Double-click the code box.
+2. Make your changes.
+3. To save, press the ESC key or click the "Run" button.
+
+##### Installing New Packages
+
+If you need to install new packages to run the given code, a "Install and Run" button will appear. Clicking this will install the necessary packages and execute the code.
+
+##### Code Error Handling
+
+When encountering an error while running code, a button labeled "Submit Error" will appear. Clicking this button will prompt ChatGPT to provide an alternative code snippet to resolve the error.
