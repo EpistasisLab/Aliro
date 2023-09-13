@@ -75,7 +75,7 @@ to be up and running as soon as you boot up the Operating System.)
    ![Aliro Imager Install](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true "Aliro Imager Install")
 4. Once installed, you can run the **AliroEd Imager** from the Start Menu. When
    the program starts up you will see this screen:  
-    ![Aliro Imager Start](https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true "Aliro Imager Start")
+    ![Aliro Imager Start](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true "Aliro Imager Start")
 5. Click the **CHOOSE STORAGE** button and select your MicroSD Card from the
    popup menu.  
     ![Aliro Imager Choose Storage](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true "Aliro Imager Choose Storage")
