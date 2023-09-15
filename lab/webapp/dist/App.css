@@ -631,7 +631,7 @@ a#addNewDatasetBtnCross i {
   100% { border-color: red; }
 }
 
-#addNewPopup, #algorithm-popup{
+#addNewPopup,#aiTooglePopup, #algorithm-popup, #file_upload_popup{
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -1981,3 +1981,12 @@ th, td {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+
+
+
+.gauge {
+  max-width: 500px; /* or whatever maximum size you're comfortable with */
+  max-height: 250px; /* Adjust as needed */
+  display: block; /* To center the SVG */
+  margin: 0 auto; /* To center the SVG */
+}

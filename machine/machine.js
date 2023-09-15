@@ -489,12 +489,12 @@ app.post("/code/run/install", jsonParser, (req, res) => {
   pyProc.stdout.on("data", (data) => {
     // result.exec_results = JSON.parse(data.toString());
     console.log(`stdout: ${data}`);
-    result.exec_results.stdout = data.toString();
+    result.exec_results.stdout += data.toString();
   });
 
   pyProc.stderr.on("data", (data) => {
     console.log(`stderr: ${data}`);
-    result.exec_results.stderr = data.toString();
+    result.exec_results.stderr += data.toString();
     // try {
     //     result.exec_results = JSON.parse(data.toString());
     // }
@@ -512,13 +512,19 @@ app.post("/code/run/install", jsonParser, (req, res) => {
 });
 
 // run code execution
-app.post("/code/run", jsonParser, (req, res) => {
+app.post('/code/run', jsonParser, (req, res) => {
+  
+  // Create the temp path to store the code execuction generated files
+  let tmppath = path.join(process.env.CODE_RUN_PATH, req.body._id.toString());
+  if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, { recursive: true });
+
+  let executionId = req.body._id;
   let args = [
     "machine/pyutils/run_code.py",
     "--code",
     req.body.src_code,
     "--execution_id",
-    req.body._id,
+    executionId,
   ];
 
   if (req.body._dataset_file_id !== undefined) {
@@ -549,10 +555,22 @@ app.post("/code/run", jsonParser, (req, res) => {
     }
   });
 
-  pyProc.on("close", (code) => {
-    // result.code = code;
+  pyProc.on("close", async (code) => {
     console.log(`child process exited with code ${code}`);
+    const files = await machine_utils.sendExecFiles(executionId, tmppath);
+    result.exec_results.files = files;
+
+  // delete tmp folder
+    fs.rmdir(tmppath, { recursive: true }, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log(tmppath + ' folder deleted');
+      }
+    });
+    
     res.send(result);
+    
   });
 });
 

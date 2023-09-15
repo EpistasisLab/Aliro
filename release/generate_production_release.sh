@@ -42,7 +42,7 @@ echo "Installing multi-platform installation support"
 docker run --privileged -rm tonistiigi/binfmt --install all
 
 # create an aliro release builder with buildx
-docker buildx create --name aliroreleasebuilder --driver docker-container --boostrap --use
+docker buildx create --name aliroreleasebuilder --driver docker-container --bootstrap --use
 
 ##### NOTES #######
 # Alternatively, I should be able to use the --builder flag, for example docker buildx bake --builder aliroreleasebuilder

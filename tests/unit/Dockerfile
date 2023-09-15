@@ -71,3 +71,9 @@ WORKDIR /appsrc/lab/webapp
 COPY lab/webapp/package.json /appsrc/lab/webapp/
 RUN dos2unix /appsrc/lab/webapp/package.json
 RUN npm install --silent --progress=false
+
+# install lab/machine/node_modules to an anon volume
+WORKDIR /appsrc/machine
+COPY machine/package.json /appsrc/machine/
+RUN dos2unix /appsrc/machine/package.json
+RUN npm install --silent --progress=false
