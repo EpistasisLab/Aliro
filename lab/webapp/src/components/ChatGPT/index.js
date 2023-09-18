@@ -1811,6 +1811,10 @@ export default function ChatGPT({ experiment }) {
 
     let resultMessage = resp["result"];
 
+    if (resp["status"] === "error") {
+      resultMessage = "Error: " + resultMessage;
+    }
+
     // if resultMessage is undefined, resultMessage = "Undefined"
     if (
       resultMessage === undefined ||
