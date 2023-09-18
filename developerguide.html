@@ -558,9 +558,10 @@ branch and push the changes to github.</p></li>
 build the production images and generate the user production .zip by running
 <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">release/generate_production_release.sh</span></code>.  This will:</p>
 <ul>
-<li><p>Create local lab, machine, and dbmongo production docker images with the
+<li><p>Create lab, machine, and dbmongo production docker images with the
 tag defined in the .env file</p></li>
-<li><p>Create the production .zip named <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}.zip</span></code></p>
+<li><p>Create the production .zip named <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}.zip</span></code></p></li>
+<li><p>Build multi-architecture (amd64, arm64) docker images using <code class="docutils literal notranslate"><span class="pre">buildx</span> <span class="pre">bake</span></code> and push the images to docker hub.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>production
 bash<span class="w"> </span>release/generate_production_release.sh
 </pre></div>
@@ -568,11 +569,11 @@ bash<span class="w"> </span>release/generate_production_release.sh
 </li>
 </ul>
 </li>
-<li><p><strong>Push docker images to DockerHub and tag the production git branch by
+<li><p><strong>Check that the docker images were pushed to DockerHub and tag the production git branch by
 running ``deploy_production_release.sh``.</strong>  While in the produciton branch, run
 <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">release/deploy_production_release.sh</span></code>.  This will:</p>
 <ul>
-<li><p>Push the production lab, machine and dbmongo production docker images to dockerHub</p></li>
+<li><p>Check that the production lab, machine and dbmongo production docker images exist in dockerHub</p></li>
 <li><p>Tag the production git branch with the version defined in <code class="docutils literal notranslate"><span class="pre">.env</span></code></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>production
 bash<span class="w"> </span>release/deploy_production_release.sh
