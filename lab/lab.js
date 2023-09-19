@@ -55,6 +55,7 @@ const openaiRouter = require('./routes/openai');
 const chatapiRouter = require('./routes/chatapi');
 const execapiRouter = require('./routes/execapi');
 const { getDatasetById } = require("./execapiutils");
+const { deleteByIdHandler } = require('./labutils');
 
 /***************
 * Enums
@@ -627,43 +628,43 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
         });
 });
 
-app.delete('/api/v1/datasets/:id', async (req, res) => {
-    // find the dataset to get the list of experiment ids
-    try {
-        let dataset = await getDatasetById(req.params.id);
-        console.log('***** found dataset start *****');
-        console.log(dataset);
-        console.log('***** found dataset end *****');
-        res.send(dataset);
-    } catch (err) {
-        console.log(err)
-        res.send({'error': err})
-    }
-    // for the list of experiments, get the list of experiment files (maybe the delete experiment files endpoint can be re-used)
-    // delete the GridFS files (endpoint exists to delete experiment files)
-    // find all chats by this experiment id (they also have a dataset_id)
-      // there are no guarantees that the experiment_id or the dataset_id will always be available (since they are optional)
-    // delete all chats and chatlogs (cascade)
-    // find all code executions with by experiment_id, dataset_id, (OR dataset_file_id)
-      // the dataset_file_id is an optional parameter, a code execution may be saved without a dataset_id but with a dataset_file_id
-})  
+// app.delete('/api/v1/datasets/:id', async (req, res) => {
+//     // find the dataset to get the list of experiment ids
+//     try {
+//         let dataset = await getDatasetById(req.params.id);
+//         console.log('***** found dataset start *****');
+//         console.log(dataset);
+//         console.log('***** found dataset end *****');
+//         res.send(dataset);
+//     } catch (err) {
+//         console.log(err)
+//         res.send({'error': err})
+//     }
+//     // for the list of experiments, get the list of experiment files (maybe the delete experiment files endpoint can be re-used)
+//     // delete the GridFS files (endpoint exists to delete experiment files)
+//     // find all chats by this experiment id (they also have a dataset_id)
+//       // there are no guarantees that the experiment_id or the dataset_id will always be available (since they are optional)
+//     // delete all chats and chatlogs (cascade)
+//     // find all code executions with by experiment_id, dataset_id, (OR dataset_file_id)
+//       // the dataset_file_id is an optional parameter, a code execution may be saved without a dataset_id but with a dataset_file_id
+// })  
 
 // Delete existing entry
-app.delete("/api/v1/:collection/:id", (req, res, next) => {
-    req.collection.removeByIdAsync(req.params.id)
-        .then((result) => {
-            // Remove returns the count of affected objects
-            res.send((result === 1) ? {
-                msg: "success"
-            } : {
-                msg: "error"
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
-
+// app.delete("/api/v1/:collection/:id", (req, res, next) => {
+//     req.collection.removeByIdAsync(req.params.id)
+//         .then((result) => {
+//             // Remove returns the count of affected objects
+//             res.send((result === 1) ? {
+//                 msg: "success"
+//             } : {
+//                 msg: "error"
+//             });
+//         })
+//         .catch((err) => {
+//             next(err);
+//         });
+// });
+app.delete('/api/v1/:collection/:id', deleteByIdHandler);
 
 
 // Experiment page
