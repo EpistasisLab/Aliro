@@ -628,26 +628,25 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
         });
 });
 
-// app.delete('/api/v1/datasets/:id', async (req, res) => {
-//     // find the dataset to get the list of experiment ids
-//     try {
-//         let dataset = await getDatasetById(req.params.id);
-//         console.log('***** found dataset start *****');
-//         console.log(dataset);
-//         console.log('***** found dataset end *****');
-//         res.send(dataset);
-//     } catch (err) {
-//         console.log(err)
-//         res.send({'error': err})
-//     }
-//     // for the list of experiments, get the list of experiment files (maybe the delete experiment files endpoint can be re-used)
-//     // delete the GridFS files (endpoint exists to delete experiment files)
-//     // find all chats by this experiment id (they also have a dataset_id)
-//       // there are no guarantees that the experiment_id or the dataset_id will always be available (since they are optional)
-//     // delete all chats and chatlogs (cascade)
-//     // find all code executions with by experiment_id, dataset_id, (OR dataset_file_id)
-//       // the dataset_file_id is an optional parameter, a code execution may be saved without a dataset_id but with a dataset_file_id
-// })  
+app.delete('/api/v1/datasets/:id', async (req, res, next) => {
+    // find the dataset to get the list of experiment ids
+    console.log('***** in the new delete endpoint *****');
+    req.collection = db['datasets'];
+    deleteByIdHandler(req, res, next);
+    console.log('***** AFTER RES *****');
+
+    // delete all experiments linked to this dataset.
+    // first find all experiments and collect the experiment ids. I can reuse the current delete dataset files endpoint for this
+    // after extracting the delete file logic into a shared handler.
+
+    // delete all chats and cascade the delete of chatlogs for all linked to either the experiment_id, dataset_id, or dataset_file_id
+    // will need the dataset_file_id for this. (ie need to get the datasetById to get the dataset_file_id)
+
+    // delete all code executions for all linked to either the experiment_id, dataset_id, or dataset_file_id
+    // same as for chats, need to gather this info.
+
+    res.send({deleted: true})
+})  
 
 // Delete existing entry
 // app.delete("/api/v1/:collection/:id", (req, res, next) => {
