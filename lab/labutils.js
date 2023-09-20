@@ -1,5 +1,14 @@
 const db = require("./db").db;
 
+async function getByIdHandler(collection, id) {
+  try {
+    const result = await collection.findByIdAsync(id);
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
 async function deleteByIdHandler(collection, id) {
   try {
     const result = await collection.removeByIdAsync(id);
@@ -8,6 +17,68 @@ async function deleteByIdHandler(collection, id) {
     throw err;
   }
 }
+
+async function deleteByFieldHandler(collection, field) {
+  try {
+    const result = await collection.removeAsync(field)
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getExperimentsByDatasetId(datasetId) {
+  try {
+    const result = await db['experiments'].find({ _dataset_id: db.toObjectID(datasetId) });
+    return result.toArrayAsync();
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function deleteFilesFromGridstore(files) {
+  try {
+    console.log('*** new delete from gridstore 1 ***')
+    let filesP = [];
+
+    for (let i = 0; i < files.length; i++) {
+      let gfs = new db.GridStore(db, files[i]._id, 'w', {
+        promiseLibrary: Promise
+      });
+      filesP.push(gfs.unlinkAsync());
+    }
+
+    await Promise.all(filesP);
+    console.log('Promise.all files deleted');
+    return { message: 'Files deleted' };
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+// async function deleteFilesFromGridstore(files) {
+//   try {
+//     let filesP = Array(files.length);
+
+//     for (let i = 0; i < files.length; i++) {
+//       let gfs = new db.GridStore(db, files[i]._id, 'w', {
+//         promiseLibrary: Promise
+//       });
+//       filesP[i] = gfs.unlinkAsync();
+//     }
+
+//     Promise.all(filesP).then(() => {
+//       console.log('Promise.all files deleted');
+//       return { message: 'Files deleted' };
+//     }).catch((err) => {
+//       console.log(err);
+//       throw err;
+//     })
+//   } catch (err) {
+//     throw err;
+//   }
+// }
 
 // async function deleteByIdHandler(req, res, next) {
 //   req.collection.removeByIdAsync(req.params.id)
@@ -25,5 +96,9 @@ async function deleteByIdHandler(collection, id) {
 // }
 
 module.exports = {
-  deleteByIdHandler
+  getByIdHandler,
+  deleteByIdHandler,
+  deleteByFieldHandler,
+  getExperimentsByDatasetId,
+  deleteFilesFromGridstore
 }

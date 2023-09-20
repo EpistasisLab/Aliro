@@ -55,7 +55,13 @@ const openaiRouter = require('./routes/openai');
 const chatapiRouter = require('./routes/chatapi');
 const execapiRouter = require('./routes/execapi');
 const { getDatasetById } = require("./execapiutils");
-const { deleteByIdHandler } = require('./labutils');
+const { 
+    getByIdHandler,
+    deleteByIdHandler,
+    deleteByFieldHandler,
+    getExperimentsByDatasetId,
+    deleteFilesFromGridstore
+ } = require('./labutils');
 
 /***************
 * Enums
@@ -631,24 +637,53 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
 app.delete('/api/v1/datasets-new/:id', async (req, res, next) => {
     // find the dataset to get the list of experiment ids
     console.log('***** in the new delete endpoint *****');
-    req.collection = db['datasets'];
+    // req.collection = db['datasets'];
+    const result = {};
     try {
-        const result = await deleteByIdHandler(req.collection, req.params.id);        
-        console.log('***** AFTER RES *****');
+        // delete the dataset file from the Gridstore
+        const dataset = await getByIdHandler(db.datasets, req.params.id);
+        const dataset_deleted = await deleteByIdHandler(db.datasets, req.params.id);
+        const dataset_files_deleted = await deleteFilesFromGridstore(dataset.files);
+        result.dataset = dataset;
+        result.dataset_deleted = dataset_deleted;
+        result.dataset_files_deleted = dataset_files_deleted;
+
+        // the following code is working, just need to re-test and refine.
+        // // delete all experiments linked to this dataset.
+        // // first find all experiments and collect the experiment ids. I can reuse the current delete dataset files endpoint for this
+        // // after extracting the delete file logic into a shared handler.
+        // const experiments = await getExperimentsByDatasetId(req.params.id);
+        // result.experiments = Array(experiments.length);
+        // // console.log('*** experiments array: *****');
+        // // console.log(experiments);
+        // // console.log('experiments.length:', experiments.length);
+        // // console.log('experiments[0].files:', experiments[0].files);
+        // for (let i = 0; i < experiments.length; i++) {
+        //     // console.log(experiments[i]._id);
+        //     result.experiments[i] = {};
+        //     result.experiments[i].id = experiments[i]._id;
+        //     result.experiments[i].files = experiments[i].files;
+        //     console.log('files:', experiments[i].files);
+        //     console.log('files length:', experiments[i].files.length);
+        //     console.log('does deleted have message?');
+        //     result.experiments[i].deleted = await deleteFilesFromGridstore(experiments[i].files);
+        //     console.log('deleted:', result.experiments[i].deleted);
+        //     // result.experiments[i].deleted = await deleteByIdHandler(db)
+        // }
+        // // delete all experiments by dataset id.
+        // // result.ex
+
+        // delete all chats and cascade the delete of chatlogs for all linked to either the experiment_id, dataset_id, or dataset_file_id
+        // will need the dataset_file_id for this. (ie need to get the datasetById to get the dataset_file_id)
+
+        // delete all code executions for all linked to either the experiment_id, dataset_id, or dataset_file_id
+        // same as for chats, need to gather this info.
+
         res.send(result);
+
     } catch (err) {
         next(err);
     }
-
-    // delete all experiments linked to this dataset.
-    // first find all experiments and collect the experiment ids. I can reuse the current delete dataset files endpoint for this
-    // after extracting the delete file logic into a shared handler.
-
-    // delete all chats and cascade the delete of chatlogs for all linked to either the experiment_id, dataset_id, or dataset_file_id
-    // will need the dataset_file_id for this. (ie need to get the datasetById to get the dataset_file_id)
-
-    // delete all code executions for all linked to either the experiment_id, dataset_id, or dataset_file_id
-    // same as for chats, need to gather this info.
 
 })  
 
