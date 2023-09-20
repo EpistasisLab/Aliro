@@ -628,12 +628,17 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
         });
 });
 
-app.delete('/api/v1/datasets/:id', async (req, res, next) => {
+app.delete('/api/v1/datasets-new/:id', async (req, res, next) => {
     // find the dataset to get the list of experiment ids
     console.log('***** in the new delete endpoint *****');
     req.collection = db['datasets'];
-    deleteByIdHandler(req, res, next);
-    console.log('***** AFTER RES *****');
+    try {
+        const result = await deleteByIdHandler(req.collection, req.params.id);        
+        console.log('***** AFTER RES *****');
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
 
     // delete all experiments linked to this dataset.
     // first find all experiments and collect the experiment ids. I can reuse the current delete dataset files endpoint for this
@@ -645,7 +650,6 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
     // delete all code executions for all linked to either the experiment_id, dataset_id, or dataset_file_id
     // same as for chats, need to gather this info.
 
-    res.send({deleted: true})
 })  
 
 // Delete existing entry
@@ -663,7 +667,10 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
 //             next(err);
 //         });
 // });
-app.delete('/api/v1/:collection/:id', deleteByIdHandler);
+app.delete('/api/v1/:collection/:id', async (req, res) => {
+    const result = await deleteByIdHandler(req.collection, req.params.id);
+    res.send(result);
+});
 
 
 // Experiment page
