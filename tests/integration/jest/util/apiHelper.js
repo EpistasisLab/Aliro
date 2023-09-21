@@ -130,6 +130,25 @@ export const putFormData = (route, form) => {
     .then(json => json);
 };
 
+export const deleteRecord = (route) => {
+  let myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json');
+
+  return fetch(route, {
+    method: 'DELETE',
+    headers: myHeaders,
+    mode: 'cors',
+    cache: 'default'
+  }).then(checkStatus)
+    .then(response => {
+      return response.json();
+    })
+    .catch((err) => {
+           throw(err);
+    })
+    .then(json => json);
+};
+
 
 function checkStatus(response) {
   if (response.status >= 400) {

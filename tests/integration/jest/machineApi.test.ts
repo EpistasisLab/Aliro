@@ -152,6 +152,8 @@ describe('machine', () => {
 			expect(labCodeRun._dataset_id).toEqual(dataset_id)
         });
 
+		let dataset_result;
+
         it('Test code run API endpoint recognizes model.', async () => {
 			
 			jest.setTimeout(util.JEST_TIMEOUT*10)
@@ -176,21 +178,22 @@ describe('machine', () => {
 
 			console.log('form:', form);
 
-			let result;
+			// let result;
 
 			try {
-				result = await labApi.putDataset(form);
-				console.log('result:');
-				console.log(result);
+				// result = await labApi.putDataset(form);
+				dataset_result = await labApi.putDataset(form);
+				console.log('dataset_result:');
+				console.log(dataset_result);
 			} catch (e) {
 				var json = await e.response.json()
 				expect(json.error).toBeUndefined()
 				expect(e).toBeUndefined()
 			}
 
-			expect(result).toHaveProperty('dataset_id');
+			expect(dataset_result).toHaveProperty('dataset_id');
 
-			let dataset_id = result.dataset_id;
+			let dataset_id = dataset_result.dataset_id;
 
 			let algoName = 'LogisticRegression'
 			let algoParams = {
@@ -264,6 +267,18 @@ describe('machine', () => {
 			expect(labCodeRun._dataset_id).toEqual(dataset_id);
 			expect(labCodeRun.result).toMatch(new RegExp(`^${algoName}?`))
         });
+
+
+		// it('Test that a dataset is deleted correctly', async () => {
+		// 	expect(dataset_result).toBeTruthy();
+		// 	expect(dataset_result).toHaveProperty('dataset_id');
+		// 	let delete_dataset_result = await labApi.deleteDataset(dataset_result.dataset_id);
+		// 	console.log('delete_dataset_result', delete_dataset_result);
+		// 	expect(delete_dataset_result).toBeTruthy();
+		// 	expect(delete_dataset_result).toHaveProperty('dataset_deleted');
+		// 	expect(delete_dataset_result.dataset_deleted).toHaveProperty('msg');
+		// 	expect(delete_dataset_result.dataset_deleted.msg).toEqual('success');
+		// })
 
         it('Test the package install API endpoint with good package.', async () => {
             var labCodeInstall = await labApi.postPackageInstall({ command: 'install', packages: ['numpy'] })

@@ -14,13 +14,24 @@ async function deleteByIdHandler(collection, id) {
     const result = await collection.removeByIdAsync(id);
     return (result === 1) ? { msg: 'success' } : { msg: 'error' };
   } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+async function getByFieldHandler(collection, field) {
+  try {
+    const result = await collection.find(field);
+    return result.toArrayAsync();
+  } catch (err) {
+    console.log(err);
     throw err;
   }
 }
 
 async function deleteByFieldHandler(collection, field) {
   try {
-    const result = await collection.removeAsync(field)
+    const result = await collection.removeAsync(field);
     return result;
   } catch (err) {
     throw err;
@@ -38,7 +49,7 @@ async function getExperimentsByDatasetId(datasetId) {
 
 async function deleteFilesFromGridstore(files) {
   try {
-    console.log('*** new delete from gridstore 1 ***')
+    console.log('*** new delete from gridstore 3 ***')
     let filesP = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -97,6 +108,7 @@ async function deleteFilesFromGridstore(files) {
 
 module.exports = {
   getByIdHandler,
+  getByFieldHandler,
   deleteByIdHandler,
   deleteByFieldHandler,
   getExperimentsByDatasetId,
