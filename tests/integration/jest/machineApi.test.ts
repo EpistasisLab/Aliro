@@ -269,16 +269,17 @@ describe('machine', () => {
         });
 
 
-		// it('Test that a dataset is deleted correctly', async () => {
-		// 	expect(dataset_result).toBeTruthy();
-		// 	expect(dataset_result).toHaveProperty('dataset_id');
-		// 	let delete_dataset_result = await labApi.deleteDataset(dataset_result.dataset_id);
-		// 	console.log('delete_dataset_result', delete_dataset_result);
-		// 	expect(delete_dataset_result).toBeTruthy();
-		// 	expect(delete_dataset_result).toHaveProperty('dataset_deleted');
-		// 	expect(delete_dataset_result.dataset_deleted).toHaveProperty('msg');
-		// 	expect(delete_dataset_result.dataset_deleted.msg).toEqual('success');
-		// })
+		it('Test that a dataset is deleted correctly', async () => {
+			// dataset_result is reused from the previous test
+			expect(dataset_result).toBeTruthy();
+			expect(dataset_result).toHaveProperty('dataset_id');
+			let delete_dataset_result = await labApi.deleteDataset(dataset_result.dataset_id);
+			console.log('delete_dataset_result', delete_dataset_result);
+			expect(delete_dataset_result).toBeTruthy();
+			expect(delete_dataset_result).toHaveProperty('dataset_deleted');
+			expect(delete_dataset_result.dataset_deleted).toHaveProperty('msg');
+			expect(delete_dataset_result.dataset_deleted.msg).toEqual('success');
+		});
 
         it('Test the package install API endpoint with good package.', async () => {
             var labCodeInstall = await labApi.postPackageInstall({ command: 'install', packages: ['numpy'] })
