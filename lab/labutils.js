@@ -49,7 +49,7 @@ async function getExperimentsByDatasetId(datasetId) {
 
 async function deleteFilesFromGridstore(files) {
   try {
-    console.log('*** new delete from gridstore 3 ***')
+    console.log('*** new delete from gridstore 1 ***')
     let filesP = [];
 
     for (let i = 0; i < files.length; i++) {

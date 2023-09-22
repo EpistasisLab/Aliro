@@ -684,18 +684,54 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
             result.chatsByDatasetFileId_deleted = await deleteByFieldHandler(db.chats, { _dataset_file_id: dataset_file_id });
         }
 
+        // we can have multiple experiments with multiple chats
         if (result.experiments != null) {
             result.chatsByExperimentId = Array(result.experiments.length);
             for (let i = 0; i < result.experiments.length; i++) {
                 result.chatsByExperimentId[i] = {};
                 result.chatsByExperimentId[i].chats = await getByFieldHandler(db.chats, { _experiment_id: result.experiments[i]._id })
-                result.chatsByExperimentId[i].chatlogs = await deleteByFieldHandler(db.chatlogs, { _chat_id: result.chatsByExperimentId[i].chats._id });
+                for (let j = 0; j < result.chatsByExperimentId[i].chats.length; j++) {
+                    result.chatsByExperimentId[i].chats[j].chatlogs = await deleteByFieldHandler(db.chatlogs, { _chat_id: result.chatsByExperimentId[i].chats[j]._id });
+                }
                 result.chatsByExperimentId[i].chats_deleted = await deleteByFieldHandler(db.chats, { _experiment_id: result.experiments[i]._id });
             }
         }
 
         // delete all code executions for all linked to either the experiment_id, dataset_id, or dataset_file_id
         // same as for chats, need to gather this info.
+        result.executionsByDatasetId = await getByFieldHandler(db.executions, { _dataset_id: dataset_id });
+        if (result.executionsByDatasetId != null) {
+            result.executionFilesByDatasetId = Array(result.executionsByDatasetId.length);
+            for (let i = 0; i < result.executionsByDatasetId.length; i++) {
+                result.executionFilesByDatasetId[i] = {};
+                result.executionFilesByDatasetId[i].id = result.executionsByDatasetId[i]._id;
+                result.executionFilesByDatasetId[i].deleted = await deleteFilesFromGridstore(result.executionsByDatasetId[i].files);
+            }
+            result.executionsByDatasetId_deleted = await deleteByFieldHandler(db.executions, { _dataset_id: dataset_id });
+        }
+
+        result.executionsByDatasetFileId = await getByFieldHandler(db.executions, { _dataset_file_id: dataset_file_id });
+        if (result.executionsByDatasetFileId != null) {
+            result.executionFilesByDatasetFileId = Array(result.executionsByDatasetFileId.length);
+            for (let i = 0; i < result.executionsByDatasetFileId.length; i++) {
+                result.executionFilesByDatasetFileId[i] = {};
+                result.executionFilesByDatasetFileId[i].id = result.executionsByDatasetFileId[i]._id;
+                result.executionFilesByDatasetFileId[i].deleted = await deleteFilesFromGridstore(result.executionsByDatasetFileId[i].files);
+            }
+            result.executionsByDatasetFileId_deleted = await deleteByFieldHandler(db.executions, { _dataset_file_id: dataset_file_id });
+        }
+
+        if (result.experiments != null) {
+            result.executionsByExperimentId = Array(result.experiments.length);
+            for (let i = 0; i < result.experiments.length; i++) {
+                result.executionsByExperimentId[i] = {};
+                result.executionsByExperimentId[i].executions = await getByFieldHandler(db.executions, { _experiment_id: result.experiments[i]._id });
+                for (let j = 0; j < result.executionsByExperimentId[i].executions.length; j++) {
+                    result.executionsByExperimentId[i].executions[j].files_deleted = await deleteFilesFromGridstore(result.executionsByExperimentId[i].executions[j].files);
+                }
+                result.executionsByExperimentId[i].chats_deleted = await deleteByFieldHandler(db.executions, { _experiment_id: result.experiments[i]._id });
+            }
+        }
 
         res.send(result);
 
