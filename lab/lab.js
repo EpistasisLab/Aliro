@@ -637,10 +637,11 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
 
 app.delete('/api/v1/datasets/:id', async (req, res, next) => {
     // find the dataset to get the list of experiment ids
-    console.log('***** in the new delete endpoint 4 *****');
+    console.log('***** in the new delete endpoint 1 *****');
     // req.collection = db['datasets'];
     const result = {};
     try {
+        const dataset_id = db.toObjectID(req.params.id);
         // delete the dataset file from the Gridstore
         result.dataset = await getByIdHandler(db.datasets, req.params.id);
         if (result.dataset != null) {
@@ -648,7 +649,7 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
         }
         result.dataset_deleted = await deleteByIdHandler(db.datasets, req.params.id);
 
-        result.experiments = await getByFieldHandler(db.experiments, { _dataset_id: db.toObjectID(req.params.id) });
+        result.experiments = await getByFieldHandler(db.experiments, { _dataset_id: dataset_id });
         if (result.experiments != null) {
             result.experiment_files = Array(result.experiments.length);
             for (let i = 0; i < result.experiments.length; i++) {
@@ -657,11 +658,41 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
                 result.experiment_files[i].files = result.experiments[i].files;
                 result.experiment_files[i].deleted = await deleteFilesFromGridstore(result.experiments[i].files);
             }
-            result.experiments_deleted = await deleteByFieldHandler(db.experiments, { _dataset_id: db.toObjectID(req.params.id)});
+            result.experiments_deleted = await deleteByFieldHandler(db.experiments, { _dataset_id: dataset_id });
         }
 
         // delete all chats and cascade the delete of chatlogs for all linked to either the experiment_id, dataset_id, or dataset_file_id
         // will need the dataset_file_id for this. (ie need to get the datasetById to get the dataset_file_id)
+        result.chatsByDatasetId = await getByFieldHandler(db.chats, { _dataset_id: dataset_id });
+        if (result.chatsByDatasetId != null) {
+            result.chatlogsByDatasetId = Array(result.chatsByDatasetId.length);
+            for (let i = 0; i < result.chatsByDatasetId.length; i++) {
+                result.chatlogsByDatasetId[i] = {};
+                result.chatlogsByDatasetId[i].chatlogs = await deleteByFieldHandler(db.chatlogs, { _chat_id: result.chatsByDatasetId[i]._id });
+            }
+            result.chatsByDatasetId_deleted = await deleteByFieldHandler(db.chats, { _dataset_id: dataset_id });
+        }
+
+        let dataset_file_id = result.dataset.files[0]._id;
+        result.chatsByDatasetFileId = await getByFieldHandler(db.chats, { _dataset_file_id: dataset_file_id });
+        if (result.chatsByDatasetFileId != null) {
+            result.chatlogsByDatasetFileId = Array(result.chatsByDatasetFileId.length);
+            for (let i = 0; i < result.chatsByDatasetFileId.length; i++) {
+                result.chatlogsByDatasetFileId[i] = {};
+                result.chatlogsByDatasetFileId[i].chatlogs = await deleteByFieldHandler(db.chatlogs, { _chat_id: result.chatsByDatasetFileId[i]._id });
+            }
+            result.chatsByDatasetFileId_deleted = await deleteByFieldHandler(db.chats, { _dataset_file_id: dataset_file_id });
+        }
+
+        if (result.experiments != null) {
+            result.chatsByExperimentId = Array(result.experiments.length);
+            for (let i = 0; i < result.experiments.length; i++) {
+                result.chatsByExperimentId[i] = {};
+                result.chatsByExperimentId[i].chats = await getByFieldHandler(db.chats, { _experiment_id: result.experiments[i]._id })
+                result.chatsByExperimentId[i].chatlogs = await deleteByFieldHandler(db.chatlogs, { _chat_id: result.chatsByExperimentId[i].chats._id });
+                result.chatsByExperimentId[i].chats_deleted = await deleteByFieldHandler(db.chats, { _experiment_id: result.experiments[i]._id });
+            }
+        }
 
         // delete all code executions for all linked to either the experiment_id, dataset_id, or dataset_file_id
         // same as for chats, need to gather this info.
