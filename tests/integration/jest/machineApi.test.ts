@@ -276,10 +276,102 @@ describe('machine', () => {
 			let delete_dataset_result = await labApi.deleteDataset(dataset_result.dataset_id);
 			console.log('delete_dataset_result', delete_dataset_result);
 			expect(delete_dataset_result).toBeTruthy();
-			expect(delete_dataset_result).toHaveProperty('dataset_deleted');
-			expect(delete_dataset_result.dataset_deleted).toHaveProperty('msg');
-			expect(delete_dataset_result.dataset_deleted.msg).toEqual('success');
+			expect(delete_dataset_result).toHaveProperty('datasetCount');
+			expect(delete_dataset_result.datasetCount).toEqual(1);
+			expect(delete_dataset_result).toHaveProperty('experimentCount');
+			expect(delete_dataset_result.experimentCount).toBeTruthy();
 		});
+
+		it('Test that an experiment can run after deleting a dataset', async () => {
+			jest.setTimeout(util.JEST_TIMEOUT*10)
+			
+			// upload a test dataset
+			let filename = 'bananamodel.csv'
+			let filepath = `${util.DATASET_PATH}/${filename}`
+			let form = new FormData();
+			let metadata = JSON.stringify({
+				'name': filename,
+				'username': 'testuser',
+				'timestamp': Date.now(),
+				'dependent_col': 'class',
+				'prediction_type': 'classification',
+				'categorical_features': [],
+				'ordinal_features': []
+			})
+
+			console.log(metadata)
+			form.append('_metadata', metadata)
+			form.append('_files', fs.createReadStream(filepath));
+
+			console.log('form:', form);
+
+			// let result;
+
+			try {
+				// result = await labApi.putDataset(form);
+				dataset_result = await labApi.putDataset(form);
+				console.log('dataset_result:');
+				console.log(dataset_result);
+			} catch (e) {
+				var json = await e.response.json()
+				expect(json.error).toBeUndefined()
+				expect(e).toBeUndefined()
+			}
+
+			expect(dataset_result).toHaveProperty('dataset_id');
+
+			let dataset_id = dataset_result.dataset_id;
+
+			let algoName = 'LogisticRegression'
+			let algoParams = {
+				"penalty": "l1",
+				"C": 1.0,
+				"dual": false,
+				"dataset": dataset_id
+			};
+
+			// get algorithms
+			var algorithms = await labApi.fetchAlgorithms();
+			expect(algorithms.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_LAB_ALGO_COUNT);
+			var algoId = algorithms.find(function(element) { return element.name == algoName; })._id;
+			expect(algoId).toBeTruthy();
+
+			// submit a simple experiment
+			try {
+				var submitResult = await labApi.submitExperiment(algoId, algoParams);
+			} catch (e) {
+				console.log("submit experiment exception")
+				var json = await e.response.json();
+				expect(json).toBeFalsy();
+				expect(e).toBeFalsy();
+			}
+
+			expect(submitResult).toBeTruthy();
+
+			// expect that the experiment started running
+			var experimentResult = await labApi.fetchExperiment(submitResult._id)
+			//console.log("experimentResults: ", experimentResults)
+			expect(experimentResult._status).toBeTruthy()
+			expect(experimentResult._status).toEqual('running')
+			expect(experimentResult._prediction_type).toEqual('classification')
+
+			// wait for the experiment to finish running, probably a better way to do this then delay...
+			var count = 0
+			console.log("starting timeout...")
+			// while (experimentResult._status === ('running') && count < 10) {
+			while (experimentResult._status === ('running') && count < 30) {
+				util.delay(10000)
+				count = count + 1
+				experimentResult = await labApi.fetchExperiment(experimentResult._id)
+				console.log("experimentResult._status, count (" + count + "): ", experimentResult._status)
+			}
+			console.log("finished timeout...")
+
+			// check that the expected results are there
+			//console.log("experimentResult: ", experimentResult)
+			expect(experimentResult._status).toBeTruthy()
+			expect(experimentResult._status).toEqual('success')
+		})
 
         it('Test the package install API endpoint with good package.', async () => {
             var labCodeInstall = await labApi.postPackageInstall({ command: 'install', packages: ['numpy'] })
