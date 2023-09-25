@@ -32,7 +32,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 * Api interfact to a lab instance
 */
 
-import { get, post, put, putFormData } from './util/apiHelper';
+import { get, post, put, putFormData, deleteRecord } from './util/apiHelper';
 
 export const fetchDatasets = () => get('http://lab:5080/api/userdatasets');
 export const fetchDataset = (id) => get(`http://lab:5080/api/datasets/${id}`);
@@ -60,5 +60,6 @@ export const getAiStatus = (datasetId) => get(`http://lab:5080/api/userdatasets/
 export const fetchExperimentModel = (id) => get(`http://lab:5080/api/v1/experiments/${id}/model`);
 export const fetchExperimentScript = (id) => get(`http://lab:5080/api/v1/experiments/${id}/script`);
 
-export const postCodeExecutions = (params) => post('http://lab:5080/execapi/v1/executions', params)
-export const postPackageInstall = (params) => post('http://lab:5080/execapi/v1/executions/install', params)
+export const postCodeExecutions = (params) => post('http://lab:5080/execapi/v1/executions', params);
+export const postPackageInstall = (params) => post('http://lab:5080/execapi/v1/executions/install', params);
+export const deleteDataset = (id) => deleteRecord(`http://lab:5080/api/v1/datasets/${id}`);
