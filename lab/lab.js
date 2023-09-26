@@ -637,7 +637,7 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
         let dataset = await db.datasets.findByIdAsync(dataset_id);
         
         if (dataset == null) {
-            return res.send({ message: 'dataset ' + req.params.id + ' not found'});
+            return res.status(404).send({ message: 'dataset ' + req.params.id + ' not found'});
         }
         
         const dataset_file_id = db.toObjectID(dataset.files[0]._id);
@@ -648,7 +648,14 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
             {"_dataset_id": {"$eq": dataset_id}},
             {"_dataset_file_id": {"$eq": dataset_file_id}},
         ]}
+
         let experiments = await db.experiments.find(query).toArrayAsync();
+        let runningExp = experiments.find(exp => exp._status == 'running');
+
+        if (runningExp) {
+            return res.status(409).send({message: 'cannot delete dataset, experiments running'});
+        }
+
         let experimentIds = []; // maybe I don't need this one.
         experiments.forEach(exp => {
             experimentIds.push(exp._id);
