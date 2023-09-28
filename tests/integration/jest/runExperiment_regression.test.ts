@@ -31,7 +31,8 @@ describe('run regression experiment', () => {
 			"min_samples_split": 2,
 			"min_samples_leaf": 1,
 			"min_weight_fraction_leaf": 0.0,
-			"max_features": "sqrt"
+			"max_features": "sqrt",
+			"dataset": ""
 		};
 
 		let datasetName = "192_vineyard.csv";
@@ -109,7 +110,8 @@ describe('run regression experiment', () => {
 
 		let algoName = 'XGBRegressor'
 		let algoParms = {
-			"n_estimators":120000
+			"n_estimators":120000,
+			"dataset": ""
 		};
 
 		let datasetName = "192_vineyard.csv";

@@ -100,6 +100,8 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     // print chartKey
     window.console.log('chartKey: ', chartKey);
 
+
+
     var chart = c3.generate({
       bindto: `.${chartKey}`,
       data: {
@@ -130,12 +132,22 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       // tooltip: {
       //   format: {
 
+
     });
 
     // if document element has testuser text, then make it unvisiable 
 
 
-    
+    //  var svg = div.append("svg")
+    // // make viewbox to make svg responsive
+    // .attr("viewBox", "0 0 600 400")
+    // .attr("preserveAspectRatio", "xMinYMin meet")
+    // .append("g")
+    // // transform to center svg
+    // .attr("transform", "translate(180,50)");
+
+    // // bind the svg to the bindto: `.${chartKey}`,
+    // var svg = d3.select(`.${chartKey}`).append("svg")
 
 
 
@@ -143,7 +155,19 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`donut ${this.props.chartKey}`} />
+      // <div className={`donut ${this.props.chartKey}`} />
+     
+
+    <div >
+        
+        <svg className={`donut ${this.props.chartKey}`} viewBox={`0 0 ${window.innerWidth*0.31} ${window.innerHeight*0.31}`}
+        preserveAspectRatio="xMinYMin meet" >
+            
+        </svg>
+    </div>
+      
+     
+      
     );
   }
 }

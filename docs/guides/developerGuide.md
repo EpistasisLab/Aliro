@@ -92,10 +92,10 @@ start the AI service:
   python -m ai.ai -v -n 2
   ```
 
-  - Note: If `docker exec -it "aliro_lab_1" /bin/bash` returns
+  - Note: If `docker exec -it "aliro-lab-1" /bin/bash` returns
   **'Error: no such container'**, use `docker container ps` to get the name of
   the lab container
-  - Note: `docker attach aliro_lab_1` will attach to the lab container, but if
+  - Note: `docker attach aliro-lab-1` will attach to the lab container, but if
   the last command run by the startup script was not bash it will appear to
   hang.
 
@@ -334,6 +334,8 @@ puts the test results and code coverage reports in the `.\target` directory
 
 To create a production release:
 
+The following steps will be performed by following the **Release procedure**
+steps below:
 - the source should be added to the `production` branch with a tagged commit
 - the production docker images should be added to DockerHub with appropriate
 tags
@@ -364,20 +366,21 @@ branch and push the changes to github.
 build the production images and generate the user production .zip by running
 `bash release/generate_production_release.sh`.  This will:
 
-    - Create local lab, machine, and dbmongo production docker images with the
+    - Create lab, machine, and dbmongo production docker images with the
     tag defined in the .env file
     - Create the production .zip named `target/production/Aliro-${VERSION}.zip`
+    - Build multi-architecture (amd64, arm64) docker images using `buildx bake` and push the images to docker hub.
 
     ```bash
     git checkout production
     bash release/generate_production_release.sh
     ```
 
-4. **Push docker images to DockerHub and tag the production git branch by
+4. **Check that the docker images were pushed to DockerHub and tag the production git branch by
 running `deploy_production_release.sh`.**  While in the produciton branch, run
 `bash release/deploy_production_release.sh`.  This will:
 
-    - Push the production lab, machine and dbmongo production docker images to dockerHub
+    - Check that the production lab, machine and dbmongo production docker images exist in dockerHub
     - Tag the production git branch with the version defined in `.env`
 
     ```bash

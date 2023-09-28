@@ -24,23 +24,23 @@ suite.
     - [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
     - [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
   - **Runtime Memory**: (Mac and Windows only) We recommend docker VM to be
-  configured with at least 6GB of runtime memory
-  ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced),
-  [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)).
-  By default, docker VM on Windows or Mac starts with 2G runtime memory.
+    configured with at least 6GB of runtime memory
+    ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced),
+    [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)).
+    By default, docker VM on Windows or Mac starts with 2G runtime memory.
   - **File Sharing**: (Windows only) Share the drive that will contain the
-  Aliro directory with Docker by opening Docker Desktop, navigating to
-  Resources->File Sharing and sharing the drive.
-  [Docker Desktop File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing)
+    Aliro directory with Docker by opening Docker Desktop, navigating to
+    Resources->File Sharing and sharing the drive.
+    [Docker Desktop File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing)
 - Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate
-installation is only needed for linux, docker-compose is bundled with windows
-and mac docker installations
+  installation is only needed for linux, docker-compose is bundled with windows
+  and mac docker installations
   - [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
 ### Installation
 
 1. Download the production zip `Aliro-*.zip` from the asset section of the
-[latest release](https://github.com/EpistasisLab/Aliro/releases/latest)
+   [latest release](https://github.com/EpistasisLab/Aliro/releases/latest)
    - Note that this is different from the source code zip file.
 2. Unzip the archive
 
@@ -57,40 +57,38 @@ to be up and running as soon as you boot up the Operating System.)
 - A computer running Windows 10 or higher
 - A Card Reader
   - If your computer does not have an integrated card reader, you will need a
-  USB card reader.
+    USB card reader.
 - MicroSD Card
   - Minimum capacity: 32GB
   - **Note:** There are different speed classes for MicroSD Cards, Application
-  Performance Class 1 (A1) and Application Performance 2 (A2). A2 cards are
-  **highly recommended** as these are much faster than A1 cards.
+    Performance Class 1 (A1) and Application Performance 2 (A2). A2 cards are
+    **highly recommended** as these are much faster than A1 cards.
 - A copy of the [aliro-imager.exe](http://52.35.223.86/infAndDownloadpage.html)
 
 ### AliroEd Installation
 
 1. Insert the MicroSD Card in your card reader.
 2. Double-click the **aliro-imager.exe** on you computer. If prompted to allow
-the application to run, select **Yes**. You may need to enter your computer's
-**Administrator** password to continue.
+   the application to run, select **Yes**. You may need to enter your computer's
+   **Administrator** password to continue.
 3. Follow the prompts to proceed with the installation.  
    ![Aliro Imager Install](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true "Aliro Imager Install")
 4. Once installed, you can run the **AliroEd Imager** from the Start Menu. When
-the program starts up you will see this screen:  
-   ![Aliro Imager Start](https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true "Aliro Imager Start")
+   the program starts up you will see this screen:  
+    ![Aliro Imager Start](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true "Aliro Imager Start")
 5. Click the **CHOOSE STORAGE** button and select your MicroSD Card from the
-popup menu.  
-   ![Aliro Imager Choose Storage](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true "Aliro Imager Choose Storage")
+   popup menu.  
+    ![Aliro Imager Choose Storage](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true "Aliro Imager Choose Storage")
 6. Click the **WRITE** button to begin writing the Operatying System to your
-MicroSD Card.  
-   ![Aliro Imager Write](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true "Aliro Imager Write")
-    - Note that this will format your MicroSD Card and all existing data will
-    be erased. Click **Yes** at the prompt to proceed.  
-  ![Aliro Imager Format](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true "Aliro Imager Format")
-    - This writing process may take several minutes, the progress will be shown
-    on the **AliroEd Imager.**  
-  ![Aliro Imager Finish](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_finish.png?raw=true "Aliro Imager Finish")
+   MicroSD Card.  
+    ![Aliro Imager Write](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true "Aliro Imager Write") - Note that this will format your MicroSD Card and all existing data will
+   be erased. Click **Yes** at the prompt to proceed.  
+    ![Aliro Imager Format](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true "Aliro Imager Format") - This writing process may take several minutes, the progress will be shown
+   on the **AliroEd Imager.**  
+    ![Aliro Imager Finish](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_finish.png?raw=true "Aliro Imager Finish")
 7. Insert the MicroSD Card into your Raspberry Pi 400 and start it up.
 8. When the Operating System has finished starting up, double-click the
-AliroEd Icon on the Destop or launch the Web Browser.
+   AliroEd Icon on the Destop or launch the Web Browser.
 
 Now that Aliro is up and running, you are ready to run experiments, AliroEd
 comes preloaded with some data sets for you to experiment with. Other datasets
@@ -131,10 +129,9 @@ datasets to the data directory. Datasets have the following restrictions:
 
 - Datasets must have the extension .csv or .tsv
 - Datasets cannot have any null or empty values
-- Dataset features must be either numeric, categorical, or ordinal.
-  - **Note:** all columns should be of a numeric type.
-<!-- - Only the label column or categorical or ordinal features can contain
-string values. -->
+- Dataset values must be numeric. All categorical features must be encoded to a numeric value prior to upload.
+  <!-- - Dataset features must be either numeric, categorical, or ordinal. Only the label column or categorical or ordinal features can contain
+  string values. -->
 - Files must be smaller then 8mb
 
 Some example datasets can be found in the
@@ -176,10 +173,10 @@ named `myDatafile_metadata.json`
 
 ```json
 {
-    "target_column":"my_custom_target_column_name",
-    "prediction_type":"classification",
-    "categorical_features" : ["cat1", "cat2"],
-    "ordinal_features" : {"ord" : ["first", "second", "third"]}
+  "target_column": "my_custom_target_column_name",
+  "prediction_type": "classification",
+  "categorical_features": ["cat1", "cat2"],
+  "ordinal_features": { "ord": ["first", "second", "third"] }
 }
 ```
 
@@ -210,3 +207,79 @@ Please see the
 [Jupiter Notebook script demo](https://github.com/EpistasisLab/Aliro/blob/production/docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.ipynb)
 for instructions on using the scripts and model exported from Aliro to
 reproduce the findings on the results page and classify new datasets.
+
+### Working with ChatGPT component
+
+This document explains how to interact with the ChatGPT component. The guide covers the following topics:
+
+1. Where to get your OpenAI API key
+2. How to connect to OpenAI using your API key
+3. How to use the ChatGPT (Expert)
+
+---
+
+#### 1. Where to Get Your OpenAI API Key
+
+Before you can start using the ChatGPT component, you'll need an API key from OpenAI. To get one:
+
+1. Visit the [OpenAI website](https://platform.openai.com/)
+2. Create an account or log in if you already have one
+3. Click on your account icon in the top-right corner, then select "View API keys."
+4. Generate your API key by clicking on "+ Create new secret key."
+5. Please copy your API key and store it in a secure location.
+
+---
+
+#### 2. How to Connect to OpenAI Using Your API Key
+
+After obtaining your API key, you can effortlessly connect to OpenAI. Once your machine learning experiment is complete, navigate to the results page to view performance metrics. A popup window will appear, prompting you to enter your OpenAI API key. Upon successful connection, a new popup window will display the message, "Connection to OpenAI is established," and the "Expert" button will turn blue.
+
+---
+
+#### 3. How to Use ChatGPT (Expert)
+
+Once you click on the blue "Expert" button, a chat interface will appear on the right side of the page.
+
+**Settings**
+
+At the top of the chat interface, you'll find the "Settings" tab and a "+ New Chat" button. Within "Settings," you can adjust the model, temperature, and define prompt engineering.
+
+**Renaming a ChatBox**
+
+To rename the first ChatBox to "EDA":
+
+1. Double-click the ChatBox to enable editing.
+2. Type in the new name, for example, "EDA."
+3. Mouse over the pencil emoji, which will then change to a checkmark.
+4. Click the checkmark to save the new name.
+
+**Creating a New ChatBox**
+
+To create a new chatBox:
+
+1. Click the "+ New Chat" button.
+2. Name the new ChatBox following the process outlined in the "Renaming a ChatBox" section.
+
+**Removing Chat Tabs**
+
+To remove a ChatBox:
+
+1. Click on the trash bin emoji associated with that tab.
+
+**Code Generation and Editing**
+
+To request Python code from ChatGPT, you can ask, for example: "Please write Python code to generate 10 random numbers and print them."
+
+To edit the generated code:
+
+1. Double-click the code box.
+2. Make your changes.
+3. To save, press the ESC key or click the "Run" button.
+
+**Installing New Packages**
+
+If you need to install new packages to run the given code, a "Install and Run" button will appear. Clicking this will install the necessary packages and execute the code.
+
+**Code Error Handling**
+
+When encountering an error while running code, a button labeled "Submit Error" will appear. Clicking this button will prompt ChatGPT to provide an alternative code snippet to resolve the error.

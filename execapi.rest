@@ -1,0 +1,36 @@
+###
+
+POST http://localhost:5080/execapi/v1/executions
+Content-Type: application/json
+
+{
+  "src_code": "import seaborn as sns\nimport matplotlib.pyplot as plt\ndf = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})\nsns.lineplot(x='a', y='b', data=df)\nplt.savefig('test.png')"
+}
+
+###
+
+GET http://localhost:5080/execapi/v1/executions/6437292626976afd48985dd9
+
+###
+
+POST http://localhost:5080/execapi/v1/executions/643454b92138bd29cd7b1670/files
+Content-Type: application/json
+
+{
+  "file_path": "/appsrc/machine/code_runs"
+}
+
+###
+
+GET http://localhost:5080/api/v1/files/643741c06bc496632a35694c
+
+###
+
+POST http://localhost:5080/execapi/v1/executions/install
+Content-Type: application/json
+
+{
+  "command": "freeze",
+  # "command": "install",
+  # "packages": ["seaborn", "matplotlib"]
+}

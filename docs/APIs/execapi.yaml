@@ -1,0 +1,137 @@
+swagger: '2.0'
+info:
+  title: Execution API
+  version: v1
+basePath: /execapi/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+
+definitions:
+  file:
+    type: object
+    properties:
+      _id:
+        type: string
+      filename:
+        type: string
+      mimetype:
+        type: string
+      timestamp:
+        type: string
+  execution:
+    type: object
+    properties:
+      _id:
+        type: string
+      src_code:
+        type: string
+      status:
+        type: string
+        enum:
+          - submitted
+          - completed
+          - error
+      result:
+        type: string
+      files:
+        type: array
+        items:
+          $ref: '#/definitions/file'
+      _dataset_file_id:
+        type: string
+      _dataset_id:
+        type: string
+      _experiment_id:
+        type: string
+
+paths:
+  /executions:
+    post:
+      summary: Create a new execution
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: execution
+          schema:
+            type: object
+            properties:
+              src_code:
+                type: string
+              dataset_file_id:
+                type: string
+              dataset_id:
+                type: string
+              experiment_id:
+                type: string
+            example:
+              src_code: df_new = df.head(10)\ndf_new.to_csv('example.csv')
+              dataset_id: '444555666'
+              experiment_id: '777888999'
+      responses:
+        200:
+          description: Execution created successfully
+          schema:
+            $ref: '#/definitions/execution'
+          examples:
+            application/json:
+              _id: '987654321'
+              src_code: df_new = df.head(10)\ndf_new.to_csv('example.csv')
+              status: completed
+              result: Hello, world!
+              files:
+                - _id: '123456789'
+                  filename: example.csv
+                  mimetype: text/csv
+                  timestamp: '2023-04-11T12:34:56Z'
+              _dataset_file_id: '111222333'
+              _dataset_id: '444555666'
+              _experiment_id: '777888999'
+        400:
+          description: Bad request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            example: { message: No src_code provided }
+    /{id}:
+      get:
+        summary: Get execution by id
+        parameters:
+          - in: path
+            name: id
+            description: ID of the execution
+            type: string
+            required: true
+        responses:
+          200:
+            description: Execution found
+            schema:
+              $ref: '#/definitions/execution'
+            examples:
+              application/json:
+                _id: '987654321'
+                src_code: df_new = df.head(10)\ndf_new.to_csv('example.csv')
+                status: completed
+                result: Hello, world!
+                files:
+                  - _id: '123456789'
+                    filename: example.csv
+                    mimetype: text/csv
+                    timestamp: '2023-04-11T12:34:56Z'
+                _dataset_file_id: '111222333'
+                _dataset_id: '444555666'
+                _experiment_id: '777888999'
+          404:
+            description: Execution not found
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+              example: { message: Cannot find execution 123456789 }

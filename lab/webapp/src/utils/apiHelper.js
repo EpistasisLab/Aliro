@@ -105,6 +105,14 @@ export const uploadFile = (route, body) => {
   // error in question - Error: Multipart: Boundary not found
   // don't need to pass headers when uploading files with - check here:
   // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+
+  console.log('uploadFile-route', route);
+  console.log('uploadFile-body', body);
+  // show keys in body
+  for (var key in body) {
+    console.log('key', key);
+    console.log('value', body[key]);
+  }
   return fetch("/api/v1/datasets", {
     method: 'PUT',
     credentials: 'include',
