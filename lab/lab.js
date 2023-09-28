@@ -54,6 +54,7 @@ const assert = require("assert");
 const openaiRouter = require('./routes/openai');
 const chatapiRouter = require('./routes/chatapi');
 const execapiRouter = require('./routes/execapi');
+const { deleteFilesFromGridstore } = require('./labutils');
 
 /***************
 * Enums
@@ -601,6 +602,7 @@ app.get("/api/v1/:collection/:id", (req, res, next) => {
 
 // Update existing entry
 app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
+
     delete req.body._id; // Delete ID (will not update otherwise)
     req.collection.updateByIdAsync(req.params.id, {
             $set: req.body
@@ -626,6 +628,91 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
         });
 });
 
+app.delete('/api/v1/datasets/:id', async (req, res, next) => {
+    const result = {};
+    let files = [];
+    let query = '';
+    try {
+        const dataset_id = db.toObjectID(req.params.id);
+        let dataset = await db.datasets.findByIdAsync(dataset_id);
+        
+        if (dataset == null) {
+            return res.status(404).send({ message: 'dataset ' + req.params.id + ' not found'});
+        }
+        
+        const dataset_file_id = db.toObjectID(dataset.files[0]._id);
+        files.push(...dataset.files);
+        
+        // experiments
+        query = { $or: [
+            {"_dataset_id": {"$eq": dataset_id}},
+            {"_dataset_file_id": {"$eq": dataset_file_id}},
+        ]}
+
+        let experiments = await db.experiments.find(query).toArrayAsync();
+        let runningExp = experiments.find(exp => exp._status == 'running');
+
+        if (runningExp) {
+            return res.status(409).send({message: 'cannot delete dataset, experiments running'});
+        }
+
+        let experimentIds = []; // maybe I don't need this one.
+        experiments.forEach(exp => {
+            experimentIds.push(exp._id);
+            files.push(...exp.files);
+        })
+        
+        // chats
+        query = { $or: [
+            {"_dataset_id": {"$eq": dataset_id}},
+            {"_experiment_id": {"$in": experimentIds}}
+        ]}
+        let chats = await db.chats.find(query).toArrayAsync();
+        let chatIds = [];
+        let chatlogIds = [];
+        chats.forEach(chat => {
+            chatIds.push(chat._id);
+            chatlogIds.push(...chat.chatlogs);
+        })
+        
+        // executions
+        query = { $or: [
+            {"_dataset_id": {"$eq": dataset_id}},
+            {"_dataset_file_id": {"$eq": dataset_file_id}},
+            {"_experiment_id": {"$in": experimentIds}}
+        ]}
+        let executions = await db.executions.find(query).toArrayAsync();
+        executions.forEach(exec => {
+            files.push(...exec.files);
+        })
+
+        // *** DELETE ***
+        result.datasetCount = await db.datasets.removeByIdAsync(dataset_id);
+        if (experiments.length > 0) {
+            result.experimentCount = await db.experiments.removeAsync({'_id': { '$in': experimentIds }});
+            console.log('experiment count');
+        }
+        if (chatIds.length > 0) {
+            result.chatlogCount = (await db.chatlogs.removeAsync({'_id': { '$in': chatlogIds }}));
+            console.log('chatlogs deleted');
+            result.chatCount = (await db.chats.removeAsync({'_id': { '$in': chatIds }}));
+            console.log('chats deleted');
+        }
+        result.fileCount = await deleteFilesFromGridstore(files);
+
+        // temp values
+        // result.datasets = dataset;
+        // result.experiments = experiments;
+        // result.chats = chats;
+        // result.executions = executions;
+        // result.files = files;
+
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 // Delete existing entry
 app.delete("/api/v1/:collection/:id", (req, res, next) => {
     req.collection.removeByIdAsync(req.params.id)
@@ -641,7 +728,6 @@ app.delete("/api/v1/:collection/:id", (req, res, next) => {
             next(err);
         });
 });
-
 
 
 // Experiment page

@@ -42,7 +42,7 @@ import {
   Popup,
   Message,
 } from "semantic-ui-react";
-import { formatDataset } from "../../../../utils/formatter";
+import { formatDataset, formatDatasetOuter } from "../../../../utils/formatter";
 
 const DatasetCard = ({ dataset, recommender, toggleAI }) => {
   const datasetLink = `/#/datasets/${dataset._id}`;
@@ -100,9 +100,45 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
     // api call to remove dataset
   }
 
-  function removeDatasetCard(e) {
+  // // ==================== chat api ====================
+  // async function postChats(experimentId) {
+  //   // POST http://localhost:5080/chatapi/v1/chats
+  //   // Content-Type: application/json
+
+  //   // {
+  //   //     "title" : "Chat with experiment id 2",
+  //   //     "_experiment_id": "63f6e4987c5f93004a3e3ca8",
+  //   //     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
+  //   // }
+
+  //   let data = await fetch("/chatapi/v1/chats", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       title: "ChatBox",
+  //       _experiment_id: experimentId,
+  //       _dataset_id: experiment.data._dataset_id,
+  //     }),
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       // console.log("postChats", data);
+  //       return data;
+  //     })
+  //     .catch((err) => {
+  //       // console.log("err--postChats",err);
+  //       return err;
+  //     });
+
+  //   return data;
+  // }
+
+  // Removes a dataset card element from the DOM upon an event
+  async function removeDatasetCard(e) {
     let parent = e.target.closest(".dataset-card");
-    console.log(parent);
+    // console.log(parent);
     parent.style.cssText += ";display:none!important;";
 
     // find child which has <a> tag from the parent
@@ -115,9 +151,33 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
     // and the last element is the dataset id
     let dataset_id = href.split("/").pop();
 
+    await removeDatasetFiles(dataset_id);
+
     console.log(dataset_id);
 
     // api call to remove dataset
+  }
+
+  // api call to remove all files related to the data id
+  async function removeDatasetFiles(dataset_id) {
+    // api call to remove dataset files example
+    // /api/v1/datasets/63f6e4947c5f93004a3e3ca7
+
+    await fetch("/api/v1/datasets/" + dataset_id, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("removeDatasetFiles", data);
+        return data;
+      })
+      .catch((err) => {
+        console.log("err--removeDatasetFiles", err);
+        return err;
+      });
   }
 
   function mouseEnterCardDelectButton(e) {
@@ -125,7 +185,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
     console.log(e.target);
 
     // make the red boundary in the trash can emoji
-    e.target.style.cssText += ";border: 0.5px solid red;";
+    e.target.style.cssText += ";border: 0.1px solid red;";
   }
 
   function mouseLeaveCardDelectButton(e) {
@@ -188,17 +248,18 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
                   <Header
                     as="a"
                     inverted
-                    size="large"
+                    // size="large"
+                    size="medium"
                     icon={icon_type}
-                    content={formatDataset(dataset.name)}
+                    content={formatDatasetOuter(dataset.name)}
                     href={datasetLink}
                     className="title"
                   />
                 }
               />
-
+              {/* <div style={{ display: "flex", justifyContent: "flex-end" }}> */}
               {/* trash emoji */}
-              {/* <span
+              <span
                 className="float-right"
                 onClick={clickDatasetCardDelButton}
                 onMouseEnter={mouseEnterCardDelectButton}
@@ -206,7 +267,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
                 style={{ cursor: "pointer" }}
               >
                 🗑
-              </span> */}
+              </span>
 
               <span className="float-right">
                 <DatasetActions
@@ -215,6 +276,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
                   toggleAI={toggleAI}
                 />
               </span>
+              {/* </div> */}
             </Segment>
           }
           position="bottom right"
@@ -344,16 +406,17 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
               <Header
                 as="a"
                 inverted
-                size="large"
+                // size="large"
+                size="medium"
                 icon={icon_type}
-                content={formatDataset(dataset.name)}
+                content={formatDatasetOuter(dataset.name)}
                 href={datasetLink}
                 className="title"
               />
             }
           />
           {/* trash emoji */}
-          {/* <span
+          <span
             className="float-right"
             onClick={clickDatasetCardDelButton}
             onMouseEnter={mouseEnterCardDelectButton}
@@ -361,7 +424,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
             style={{ cursor: "pointer" }}
           >
             🗑
-          </span> */}
+          </span>
           <span className="float-right">
             <DatasetActions
               dataset={dataset}
