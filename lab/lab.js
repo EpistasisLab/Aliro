@@ -639,6 +639,10 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
         if (dataset == null) {
             return res.status(404).send({ message: 'dataset ' + req.params.id + ' not found'});
         }
+
+        if (dataset.ai && (dataset.ai.status == recommenderStatus.RUNNING || dataset.ai.status == recommenderStatus.INITIALIZING)) {
+            return res.status(409).send({message: 'cannot delete dataset, recommender running'});
+        }
         
         const dataset_file_id = db.toObjectID(dataset.files[0]._id);
         files.push(...dataset.files);
