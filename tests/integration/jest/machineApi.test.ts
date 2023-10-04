@@ -373,6 +373,73 @@ describe('machine', () => {
 			expect(experimentResult._status).toEqual('success')
 		})
 
+		it('Test that a dataset cannot be deleted while running experiments', async () => {
+			// submit experiment, reuse dataset_result from previous test
+			let dataset_id = dataset_result.dataset_id;
+			let algoName = 'LogisticRegression'
+			let algoParams = {
+				"penalty": "l1",
+				"C": 1.0,
+				"dual": false,
+				"dataset": dataset_id
+			};
+			// get algorithms
+			var algorithms = await labApi.fetchAlgorithms();
+			expect(algorithms.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_LAB_ALGO_COUNT);
+			var algoId = algorithms.find(function(element) { return element.name == algoName; })._id;
+			expect(algoId).toBeTruthy();
+
+			// submit a simple experiment
+			try {
+				var submitResult = await labApi.submitExperiment(algoId, algoParams);
+			} catch (e) {
+				console.log("submit experiment exception")
+				var json = await e.response.json();
+				expect(json).toBeFalsy();
+				expect(e).toBeFalsy();
+			}
+
+			expect(submitResult).toBeTruthy();
+
+			// expect that the experiment started running
+			var experimentResult = await labApi.fetchExperiment(submitResult._id)
+			//console.log("experimentResults: ", experimentResults)
+			expect(experimentResult._status).toBeTruthy()
+			expect(experimentResult._status).toEqual('running')
+
+			// delete dataset
+			let delete_dataset_result
+			try {
+				delete_dataset_result = await labApi.deleteDataset(dataset_id);
+			} catch (e) {
+				console.log('delete_dataset_result exception', e);
+				var json = await e.response.json()
+				expect(json).toBeTruthy()
+				expect(e.response.status).toEqual(409);
+			}
+
+			expect(delete_dataset_result).toBeFalsy();
+
+			// check that the experiment continued running and finished successfully
+			// wait for the experiment to finish running, probably a better way to do this then delay...
+			var count = 0
+			console.log("starting timeout...")
+			// while (experimentResult._status === ('running') && count < 10) {
+			while (experimentResult._status === ('running') && count < 30) {
+				util.delay(10000)
+				count = count + 1
+				experimentResult = await labApi.fetchExperiment(experimentResult._id)
+				console.log("experimentResult._status, count (" + count + "): ", experimentResult._status)
+			}
+			console.log("finished timeout...")
+
+			// check that the expected results are there
+			//console.log("experimentResult: ", experimentResult)
+			expect(experimentResult._status).toBeTruthy()
+			expect(experimentResult._status).toEqual('success')
+
+		})
+
         it('Test the package install API endpoint with good package.', async () => {
             var labCodeInstall = await labApi.postPackageInstall({ command: 'install', packages: ['numpy'] })
             expect(labCodeInstall.exec_results.code).toEqual(0)

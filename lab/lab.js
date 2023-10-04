@@ -640,8 +640,10 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
             return res.status(404).send({ message: 'dataset ' + req.params.id + ' not found'});
         }
 
-        if (dataset.ai && (dataset.ai.status == recommenderStatus.RUNNING || dataset.ai.status == recommenderStatus.INITIALIZING)) {
-            return res.status(409).send({message: 'cannot delete dataset, recommender running'});
+        // if (dataset.ai && (dataset.ai.status == recommenderStatus.RUNNING || dataset.ai.status == recommenderStatus.INITIALIZING)) {
+        if (dataset.ai && ['on', 'requested'].some(status => dataset.ai.status === status)) {
+            console.log('cannot delete dataset, AI is enabled');
+            return res.status(409).send({message: 'cannot delete dataset, AI is enabled'});
         }
         
         const dataset_file_id = db.toObjectID(dataset.files[0]._id);
@@ -654,9 +656,11 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
         ]}
 
         let experiments = await db.experiments.find(query).toArrayAsync();
-        let runningExp = experiments.find(exp => exp._status == 'running');
+        console.log(experiments);
+        let runningExp = experiments.find(exp => ['running', 'pending', 'suggested'].some(status => exp._status === status));
 
         if (runningExp) {
+            console.log('cannot delete dataset, experiments running');
             return res.status(409).send({message: 'cannot delete dataset, experiments running'});
         }
 
