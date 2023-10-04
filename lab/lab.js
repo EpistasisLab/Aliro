@@ -654,7 +654,7 @@ app.delete('/api/v1/datasets/:id', async (req, res, next) => {
         ]}
 
         let experiments = await db.experiments.find(query).toArrayAsync();
-        let runningExp = experiments.find(exp => exp._status == 'running');
+        let runningExp = experiments.find(exp => exp._status.includes('running', 'pending', 'suggested'));
 
         if (runningExp) {
             return res.status(409).send({message: 'cannot delete dataset, experiments running'});
