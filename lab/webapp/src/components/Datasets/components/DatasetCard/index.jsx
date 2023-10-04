@@ -138,8 +138,8 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
   // Removes a dataset card element from the DOM upon an event
   async function removeDatasetCard(e) {
     let parent = e.target.closest(".dataset-card");
-    // console.log(parent);
-    parent.style.cssText += ";display:none!important;";
+    console.log("dom", parent);
+    // parent.style.cssText += ";display:none!important;";
 
     // find child which has <a> tag from the parent
     let child = parent.querySelector("a");
@@ -151,9 +151,23 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
     // and the last element is the dataset id
     let dataset_id = href.split("/").pop();
 
-    await removeDatasetFiles(dataset_id);
+    // console.log(dataset_id);
 
-    console.log(dataset_id);
+    let datacardDelResult = await removeDatasetFiles(dataset_id);
+
+    console.log("datacardDelResult", datacardDelResult);
+
+    // if datacardDelResult["message"] is undefined, do parent.style.cssText += ";display:none!important;";
+    if (datacardDelResult["message"] == undefined) {
+      // just not display the element.
+      // parent.style.cssText += ";display:none!important;";
+
+      // direct DOM manipulation
+      parent.remove();
+    } else {
+      // show alert "datacardDelResult["message"]
+      alert(datacardDelResult["message"]);
+    }
 
     // api call to remove dataset
   }
@@ -163,7 +177,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
     // api call to remove dataset files example
     // /api/v1/datasets/63f6e4947c5f93004a3e3ca7
 
-    await fetch("/api/v1/datasets/" + dataset_id, {
+    let dataDeletionResult = await fetch("/api/v1/datasets/" + dataset_id, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -178,6 +192,8 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
         console.log("err--removeDatasetFiles", err);
         return err;
       });
+
+    return dataDeletionResult;
   }
 
   function mouseEnterCardDelectButton(e) {
