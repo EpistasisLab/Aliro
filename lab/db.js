@@ -54,6 +54,9 @@ db.bind("batches");
 db.bind("users");
 db.bind("datasets");
 db.bind("settings");
+db.bind("chats");
+db.bind("chatlogs");
+db.bind("executions");
 
 // Promisify all methods
 Object.keys(mongoskin).forEach((key) => {
