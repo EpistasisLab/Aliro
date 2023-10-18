@@ -1,0 +1,1 @@
+.. mdinclude:: ../guides/AliroEd.md

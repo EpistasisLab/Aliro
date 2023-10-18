@@ -18,6 +18,7 @@ And, it has an *AI* assistant that can choose the analysis to run for you.
    quickstart
    userguide
    developerguide
+   aliroed
    lab_api
    openai_api
    chatapi
