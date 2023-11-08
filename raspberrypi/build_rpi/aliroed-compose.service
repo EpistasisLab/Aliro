@@ -1,0 +1,12 @@
+[Unit]
+Description=AliroEd Docker Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+WorkingDirectory=/target/production/Aliro-0.21
+ExecStart=/usr/bin/docker compose up -d
+
+[Install]
+WantedBy=multi-user.target
