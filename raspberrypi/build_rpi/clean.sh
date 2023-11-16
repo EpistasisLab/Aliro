@@ -9,6 +9,10 @@ sudo apt purge bluez -y
 sudo apt autoremove -y
 sudo apt autoclean -y
 sudo apt clean -y
+sudo journalctl --vacuum-time=7d
+docker builder prune --all
+sudo rm -rf /var/log/*
+sudo rm -rf /tmp/*
 # clear bash history
 history -c
 
