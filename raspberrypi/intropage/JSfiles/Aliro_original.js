@@ -59,7 +59,7 @@ function pingURL() {
         // sele.style.width = "100%";
         // sele.style.height = "100%";
 
-        sele.innerHTML = "Aliro is ready to run";
+        sele.innerHTML = "AliroEd is ready to run";
 
         // Add URL to the button id temp href
         sele.href = URL;
@@ -82,7 +82,7 @@ function pingURL() {
 
         // make the blinkingtextcir clickable and link to the URL
 
-        sele2.innerHTML = "Aliro is ready to run";
+        sele2.innerHTML = "AliroEd is ready to run";
         sele2.href = URL;
 
         // make the mouse cursor pointer like hand
@@ -142,7 +142,7 @@ function pingURL_DOWNLOAD() {
 
         // make the blinkingtextcir clickable and link to the URL
 
-        sele2.innerHTML = "Aliro is ready to run";
+        sele2.innerHTML = "AliroEd is ready to run";
         sele2.href = URL;
 
         // make the mouse cursor pointer like hand
