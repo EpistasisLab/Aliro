@@ -34,6 +34,7 @@ import * as actions from "data/datasets/dataset/actions";
 import DatasetActions from "./components/DatasetActions";
 import BestResult from "./components/BestResult";
 import ExperimentStatus from "./components/ExperimentStatus";
+
 import {
   Grid,
   Segment,
@@ -41,6 +42,7 @@ import {
   Button,
   Popup,
   Message,
+  Icon,
 } from "semantic-ui-react";
 import { formatDataset, formatDatasetOuter } from "../../../../utils/formatter";
 
@@ -54,13 +56,6 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
   } else if (dataset.metafeatures._prediction_type == "regression") {
     icon_type = "line graph";
   }
-
-  // const [showGrid, setShowGrid] = useState(false);
-
-  // const handleGridClick = () => {
-  //   console.log("handleGridClick");
-  //   setShowGrid(false);
-  // };
 
   function clickDatasetCardDelButton(e) {
     let parent = e.target.closest(".dataset-card");
@@ -278,11 +273,12 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
               <span
                 className="float-right"
                 onClick={clickDatasetCardDelButton}
-                onMouseEnter={mouseEnterCardDelectButton}
-                onMouseLeave={mouseLeaveCardDelectButton}
+                // onMouseEnter={mouseEnterCardDelectButton}
+                // onMouseLeave={mouseLeaveCardDelectButton}
                 style={{ cursor: "pointer" }}
               >
-                🗑
+                {/* use trash icon from sementic ui */}
+                <Icon name="trash alternate outline" />
               </span>
 
               <span className="float-right">
@@ -435,11 +431,11 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
           <span
             className="float-right"
             onClick={clickDatasetCardDelButton}
-            onMouseEnter={mouseEnterCardDelectButton}
-            onMouseLeave={mouseLeaveCardDelectButton}
+            // onMouseEnter={mouseEnterCardDelectButton}
+            // onMouseLeave={mouseLeaveCardDelectButton}
             style={{ cursor: "pointer" }}
           >
-            🗑
+            <Icon name="trash alternate outline" />
           </span>
           <span className="float-right">
             <DatasetActions
@@ -469,63 +465,10 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
       </Grid.Column>
     );
   }
-
-  // return (
-  //   <Grid.Column className="dataset-card">
-
-  //     <Segment inverted attached="top" className="panel-header">
-  //       <Popup
-  //         position="right center"
-  //         header={formatDataset(dataset.name)}
-  //         content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}, Classes: ${dataset.metafeatures.n_classes}  Prediction type: ${dataset.files[0].prediction_type}`}
-  //         trigger={
-  //           <Header
-  //             as="a"
-  //             inverted
-  //             size="large"
-  //             icon={icon_type}
-  //             content={formatDataset(dataset.name)}
-  //             href={datasetLink}
-  //             className="title"
-  //           />
-  //         }
-  //       />
-  //       <span className="float-right">
-  //         <DatasetActions
-  //           dataset={dataset}
-  //           recommender={recommender}
-  //           toggleAI={toggleAI}
-  //         />
-  //       </span>
-  //     </Segment>
-
-  //     <BestResult
-  //       result={dataset.best_result}
-  //       hasMetadata={dataset.has_metadata}
-  //     />
-  //     <ExperimentStatus
-  //       filter={dataset._id}
-  //       experiments={dataset.experiments}
-  //       notifications={dataset.notifications}
-  //     />
-  //    <Button
-  //         as="a"
-  //         color="blue"
-  //         attached="bottom"
-  //         content="Build New Experiment"
-  //         href={builderLink}
-  //       />
-
-  //   </Grid.Column>
-  // );
 };
 
 export { DatasetCard };
 export default connect(null, actions)(DatasetCard);
-
-//  get aiTooglePopup id
-//  if aiTooglePopup is not null, then hide it
-// wait until document.getElementById("aiTooglePopup") loaded
 
 setTimeout(function () {
   if (document.getElementById("aiTooglePopup") != null) {
@@ -538,11 +481,5 @@ setTimeout(function () {
     // length of aiTooglePopups
     var len = aiTooglePopups.length;
     console.log(len);
-
-    // if (aiTooglePopups != null) {
-    //   for (var i = 1; i < aiTooglePopups.length; i++) {
-    //     aiTooglePopups[i].style.cssText += ';display:none !important;';
-    //   }
-    // }
   }
 }, 100);
