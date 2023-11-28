@@ -1,0 +1,15 @@
+[Unit]
+Description=AliroEd Load Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/images
+ExecStart=/usr/bin/docker load -i /images/aliro_dbmongo.tar.gz
+ExecStart=/usr/bin/docker load -i /images/aliro_lab.tar.gz
+ExecStart=/usr/bin/docker load -i /images/aliro_machine.tar.gz
+ExecStartPost=/bin/systemctl disable aliroed-load.service
+
+[Install]
+WantedBy=multi-user.target

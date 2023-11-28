@@ -1,24 +1,34 @@
 # Raspberry Pi OS Setup Instructions
 1. Use the raspberry pi imager to write Raspberry Pi OS Lite (64-bit) onto an sd card
-2. Boot the Raspberry Pi OS and setup the locale, keyboard layout and initial username and password. Enable **Auto-Login** in **System Options**
-**NOTE:** The following steps require that the Raspberry Pi have an active internet connection. Wifi can be configured by running `sudo raspi-config` and setting up the **Wireless LAN** in **System Options**.
-3. run install.sh
+2. Boot the Raspberry Pi OS   
+**NOTE:** The following steps require that the Raspberry Pi have an active internet connection.
+Wifi can be configured by running `sudo raspi-config` and setting up the **Wireless LAN** in **System Options**.
+3. Run install.sh
   a. verify that docker is installed. Run `docker --version`
-4. save the autostart file in /etc/xdg/openbox/
-5. copy the .bash_profile file into the initial user's home directory (~/.bash_profile)
-6. copy the ./Aliro/raspberrypi/intropage directory into the root directory (/intropage)
-7. copy the extracted contents of the Aliro-*.zip file from the GitHub release page into the root directory. (/target)
-8. change directory into /target/production/Aliro-*/ and run `docker compose pull`
-  **NOTE:** The docker images will only be **pulled**. The containers will not be built inside the Pi (to keep the final custom OS as light as possible)
-9. copy the aliroed-compose.service file in /etc/systemd/system/ (`sudo cp aliroed-compose.service /etc/systemd/system/`
-10. enable the aliroed-compose service with `sudo systemctl enable aliroed-compose.service`
+4. Copy the ./Aliro/raspberrypi/intropage directory into the root directory (/intropage)
+5. Open the chromium-browser (`right-click the desktop and open the web browser`)
+6. Configure the browser to open a custom page when it starts `file:///home/aliroed/intropage/index.html`
+4. Add the line in the `autostart` file in the existing `/etc/xdg/openbox/autostart` file.  
+**Note:** if the `autostart` file doesn't exist, you can copy the one here as-is.
+5. Download the `Aliro-*.zip` file from the GitHub release page into the home directory. (`~/Alizo-*.zip`)
+6. unzip the `.zip` file
+7. Move the contents of the `~/target/production/Aliro-*/` directory into `/aliro/` (`mkdir /aliro` first)
+8. Change directory into the aliro directory `cd /aliro` and run `docker compose pull`  
+9. run the `docker_compress.sh` script to compress the pulled docker images.  
+Check that the images were saved in the `/images` directory, you should see 3 .tar.gz files:  
+`aliro_dbmongo.tar.gz`  
+`aliro_lab.tar.gz`  
+`aliro_machine.tar.gz`  
+10. Remove the pulled docker images by running the `docker_prune.sh` script. This will greatly reduce
+the space used by the images.
+11. copy the aliroed-compose.service file in /etc/systemd/system/ (`sudo cp aliroed-compose.service /etc/systemd/system/`
+12. enable the aliroed-compose service with `sudo systemctl enable aliroed-compose.service`
+
+# not sure if the next steps will be necessary
 12. Remove any unused kernels:
 use `uname -r` to check the current kernel in use  
 use `dpkg -l | grep linux-image` to see a list of installed kernels
 remove the ones we don't need with `sudo apt purge linux-image-<kernel-name>`
-13. Zero out free space for better compression:
-    This one was useless!
-Inside the Raspberry Pi, run `sudo dd if=/dev/zero of=/EMPTY bs=1M` and `sudo rm -f /EMPTY`
 14. run clean.sh
 
 # Building the aliro-image executable
