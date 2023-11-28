@@ -4,6 +4,8 @@ import { ThemeContext } from "./context/ThemeContext";
 
 import { AllContext } from "./context/AllContext";
 
+import { Icon } from "semantic-ui-react";
+
 export default function SideMenu() {
   const {
     currentModel,
@@ -237,6 +239,7 @@ export default function SideMenu() {
       .slice(3)
       .forEach((node) => {
         node.childNodes[1].style.display = "none";
+        // <Icon name="trash alternate outline" />
         node.childNodes[1].innerHTML = "🗑️";
       });
   }

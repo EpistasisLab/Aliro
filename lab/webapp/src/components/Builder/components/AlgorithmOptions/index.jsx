@@ -49,14 +49,27 @@ function AlgorithmOptions({
 
   function openTrueOrFalse_algorithm_popup() {
     if (localStorage.getItem("algorithm-popup") == "true") {
-      // if (document.getElementById("aiTooglePopup")!==null){
-      //   document.getElementById("aiTooglePopup").style.cssText = "display: block !important";
-      // }
-
       return false;
     } else {
       return true;
     }
+  }
+
+  // Function to determine the OS type
+  function getOsType() {
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    if (userAgent.includes("win")) return "Windows";
+    if (userAgent.includes("mac")) return "macOS";
+    if (userAgent.includes("linux")) {
+      // Check user agent for Raspberry Pi OS identification
+      if (userAgent.includes("raspberry")) return "Raspberry Pi OS";
+      return "Linux";
+    }
+    if (userAgent.includes("iphone") || platform.includes("ipad")) return "iOS";
+    if (userAgent.includes("android")) return "Android";
+
+    return "Unknown OS";
   }
 
   return (
@@ -99,14 +112,20 @@ function AlgorithmOptions({
                       content={
                         <div className="content">
                           <p>{algorithm.description}</p>
-                          {algorithm.url && (
-                            <a href={algorithm.url} target="_blank">
-                              <strong>
-                                Read more here{" "}
-                                <Icon name="angle double right" />
-                              </strong>
-                            </a>
-                          )}
+                          {algorithm.url &&
+                            getOsType() !== "Raspberry Pi OS" && (
+                              // getOsType() === "rasp" && (
+                              <a
+                                href={algorithm.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <strong>
+                                  Read more here{" "}
+                                  <Icon name="angle double right" />
+                                </strong>
+                              </a>
+                            )}
                         </div>
                       }
                       trigger={
