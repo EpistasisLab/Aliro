@@ -136,7 +136,9 @@ function Score({
   if (typeof scoreValue !== "number" && !scoreValueList.length) {
     return <InvertedCard header={scoreName} content={getCardContent()} />;
   } else {
+    console.log("777-scoreValueList", scoreValueList);
     let fold = scoreValueList[0][1] / scoreValueList[1][1];
+    console.log("777-fold", fold);
     var icons = foldcheck(fold);
     let headericon = (
       <Popup

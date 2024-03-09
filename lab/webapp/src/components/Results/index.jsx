@@ -90,7 +90,7 @@ class Results extends Component {
     let expScores = experiment.data.scores;
 
     // console.log("experiment.data")
-    console.log("experiment.data", experiment.data);
+    console.log("experiment-999.data", experiment.data);
     // console.log(experiment.data['class_1'][0])
     // console.log(experiment.data['class_-1'][0])
 

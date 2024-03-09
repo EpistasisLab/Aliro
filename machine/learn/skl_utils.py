@@ -38,7 +38,7 @@ from sklearn.utils import safe_sqr, check_X_y
 from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
-from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, KFold
+from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, RepeatedStratifiedKFold, KFold
 from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
 import itertools
 import json
@@ -175,6 +175,36 @@ def get_column_names_from_ColumnTransformer(column_transformer, feature_names):
             new_feature_names += feature_columns
     return new_feature_names
 
+# decision rule for cross validation 2, 3, 4, 5, 6, 7, 8, 9, 10
+def decision_rule_cv_based_on_classes(each_class):
+    """
+    Adjusts the number of cross-validation folds based on the class distribution.
+    
+    Parameters
+    ----------
+    each_class : dict
+        A dictionary where keys are the classes and the values are the number of samples per class.
+    
+    Returns
+    -------
+    cv : int
+        Adjusted number of cross-validation folds.
+    """
+    # Find the class with the minimum number of samples based on the class sample counts
+    min_samples = min(each_class.values())
+    
+    # Calculate the number of classes
+    n_classes = len(each_class)
+    
+    # Determine the appropriate number of cv folds based on the class with the minimum samples
+    if n_classes == 2:
+        # For binary classification, ensure at least one sample of each class is present in the folds, to the extent possible
+        n_split = min(max(2, min_samples), 10)
+    else:
+        # For multi-class, use more folds if possible to balance between classes
+        n_split = min(max(3, min_samples), 10)
+    
+    return n_split
 
 def generate_results(model, input_data,
                      tmpdir, _id, target_name='class',
@@ -246,6 +276,14 @@ def generate_results(model, input_data,
     feature_names = np.array(
         [x for x in input_data.columns.values if x != target_name])
     num_classes = input_data[target_name].unique().shape[0]
+    
+    # calculate number of each class
+    each_class = input_data[target_name].value_counts()
+    print("each_class", each_class)
+    print("num_classes", num_classes)
+    # Temporary fix to handle NaN values
+    # n_splits = decision_rule_cv_based_on_classes(each_class)
+    # cv = StratifiedKFold(n_splits=n_splits)
     features = input_data.drop(target_name, axis=1).values
     target = input_data[target_name].values
 
@@ -382,14 +420,27 @@ def generate_results(model, input_data,
 
         # # plot learning curve
         # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
+        # StratifiedKFold 
+        # stratified_cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+        # Initialize RepeatedStratifiedKFold
+        
+        # n_splits = 2
+        # n_repeats = 2
+        # stratified_cv = RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=42)
 
+        # print("stratified_cv", stratified_cv)
         # computing cross-validated metrics
+            
+        # Temporary fix to handle NaN values
+        stratified_cv = StratifiedKFold(n_splits=8)
+
+
         cv_scores = cross_validate(
             estimator=model,
             X=features,
             y=target,
             scoring=scoring,
-            cv=cv,
+            cv = stratified_cv,
             return_train_score=True,
             return_estimator=True
         )
@@ -398,26 +449,73 @@ def generate_results(model, input_data,
         train_scores = cv_scores['train_' + s]
         test_scores = cv_scores['test_' + s]
 
+        print("train_scores", train_scores)
+        print("test_scores", test_scores)
+
+        # if abs(train_scores.mean()) is np.nan OR abs(test_scores.mean()) is np.nan
+        if np.isnan(abs(train_scores.mean())) or np.isnan(abs(test_scores.mean())):
+            print("777-NaN")
+            print("train_scores", train_scores)
+            print("test_scores", test_scores)
+
         # remove _macro
         score_name = s.replace('_macro', '')
         # make balanced_accuracy as default score
         if score_name in ["balanced_accuracy", "neg_mean_squared_error"]:
             scores['train_score'] = abs(train_scores.mean())
             scores['test_score'] = abs(test_scores.mean())
+            
+            # Temporary fix to handle NaN values
+            if np.isnan(scores['train_score']):
+                scores['train_score'] = np.nanmean(train_scores)
+            if np.isnan(scores['test_score']):
+                scores['test_score'] = np.nanmean(test_scores)
         # for api will fix later
 
         if score_name == "balanced_accuracy":
             scores['accuracy_score'] = test_scores.mean()
+            # Temporary fix to handle NaN values
+            if np.nanmean(test_scores)!=np.nan:
+                scores['accuracy_score'] = np.nanmean(test_scores)
+            else:
+                scores['accuracy_score'] = 0
         # for experiment tables
         if score_name == "balanced_accuracy" or score_name == "r2":
             scores['exp_table_score'] = test_scores.mean()
+            # Temporary fix to handle NaN values
+            if np.nanmean(test_scores)!=np.nan:
+                scores['exp_table_score'] = np.nanmean(test_scores)
+            else:
+                scores['exp_table_score'] = 0
         if score_name in ["neg_mean_squared_error", "neg_mean_absolute_error"]:
             scores['train_{}_score'.format(score_name)] = abs(
                 train_scores.mean())
+            # Temporary fix to handle NaN values
+            if np.nanmean(train_scores)!=np.nan:
+                scores['train_{}_score'.format(score_name)] = np.nanmean(
+                    train_scores)
+            else:
+                scores['train_{}_score'.format(score_name)] = 0
             scores['{}_score'.format(score_name)] = abs(test_scores.mean())
+            # Temporary fix to handle NaN values
+            if np.nanmean(test_scores)!=np.nan:
+                scores['{}_score'.format(score_name)] = np.nanmean(test_scores)
+            else:
+                scores['{}_score'.format(score_name)] = 0
         else:
             scores['train_{}_score'.format(score_name)] = train_scores.mean()
+            # Temporary fix to handle NaN values
+            if np.nanmean(train_scores)!=np.nan:
+                scores['train_{}_score'.format(score_name)] = np.nanmean(
+                    train_scores)
+            else:
+                scores['train_{}_score'.format(score_name)] = 0
             scores['{}_score'.format(score_name)] = test_scores.mean()
+            # Temporary fix to handle NaN values
+            if np.nanmean(test_scores)!=np.nan:
+                scores['{}_score'.format(score_name)] = np.nanmean(test_scores)
+            else:
+                scores['{}_score'.format(score_name)] = 0
 
     # dump fitted module as pickle file
     export_model(tmpdir, _id, model, filename, target_name, mode, random_state)
@@ -686,7 +784,9 @@ def plot_confusion_matrix(
     None
     """
     pred_y = np.empty(y.shape)
-    cv = StratifiedKFold(n_splits=10)
+    # cv = StratifiedKFold(n_splits=10)
+    # Temporary fix to handle NaN values
+    cv = StratifiedKFold(n_splits=8)
     for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
         train, test = cv_split
         pred_y[test] = est.predict(X[test])
@@ -979,12 +1079,13 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     """
     from scipy import interp
     from scipy.stats import sem, t
-    cv = StratifiedKFold(n_splits=10)
+    # cv = StratifiedKFold(n_splits=10)
+    # Temporary fix to handle NaN values
+    cv = StratifiedKFold(n_splits=8)
     tprs = []
     aucs = []
     mean_fpr = np.linspace(0, 1, 100)
 
-    # print(cv_scores['train_roc_auc'])
     for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
         train, test = cv_split
         try:
@@ -998,8 +1099,16 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
             [list(est.classes_).index(c)
              for c in y[test]], dtype=np.int
         )
+        # print("Each classes_encoded:", classes_encoded)
         fpr, tpr, thresholds = roc_curve(classes_encoded, probas_)
+    
+        # Temporary fix to handle NaN values 
+        # When the given data is extremely unbalanced, as illustrated by the example where classes_encoded consists solely of the class 0, both true positives (TP) and false negatives (FN) are zero. Consequently, the true positive rate (TPR) is calculated as TPR = TP / (TP + FN), which results in an undefined value (NaN) due to division by zero. In the specific scenario provided, where roc_curve([0,0,0], [0,0.9,0]) is called, it highlights a situation with no positive instances present in the true labels. For purposes of data visualization or further analysis where a numerical value is required, this NaN value is replaced with 0 to indicate the absence of true positives under these conditions.
+        fpr = np.nan_to_num(fpr)
+        tpr = np.nan_to_num(tpr)
+
         tprs.append(interp(mean_fpr, fpr, tpr))
+
         tprs[-1][0] = 0.0
         roc_auc = auc(fpr, tpr)
         aucs.append(roc_auc)
@@ -1047,6 +1156,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         'tpr': mean_tpr.tolist(),
         'roc_auc_score': mean_auc
     }
+    print("roc_curve_dict:", roc_curve_dict)
 
     file_name = 'roc_curve' + '.json'
     save_json_fmt(outdir=tmpdir, _id=_id,
@@ -1159,6 +1269,18 @@ def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=T
         # replace nan with -1
         test_scores = np.nan_to_num(test_scores, nan=-1)
 
+
+    
+
+    # temp solution for nan values
+    train_sizes = np.nan_to_num(train_sizes, nan=-1)
+    train_scores = np.nan_to_num(train_scores, nan=-1)
+    test_scores = np.nan_to_num(test_scores, nan=-1)
+
+    print("train_sizes.tolist():", train_sizes.tolist())
+    print("train_scores.tolist():", train_scores.tolist())
+    print("test_scores.tolist():", test_scores.tolist())
+
     learning_curve_dict = {
         'train_sizes': train_sizes.tolist(),
         'train_scores': train_scores.tolist(),
@@ -1240,13 +1362,11 @@ def plot_pca_3d(tmpdir, _id, features, target):
     # np.random.seed(5)
 
     # iris = datasets.load_iris()
-    # print(features)
+
     X = np.array(features)
     y = np.array(target)
     y[y == -1] = 0
 
-    # print(X)
-    # print(y)
 
     fig = plt.figure(1, figsize=(4, 3))
     plt.clf()
