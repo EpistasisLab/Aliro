@@ -275,11 +275,7 @@ def generate_results(model, input_data,
     
     # calculate number of each class
     each_class = input_data[target_name].value_counts()
-    print("each_class", each_class)
-    print("num_classes", num_classes)
-    # Temporary fix to handle NaN values
-    # n_splits = decision_rule_cv_based_on_classes(each_class)
-    # cv = StratifiedKFold(n_splits=n_splits)
+
     features = input_data.drop(target_name, axis=1).values
     target = input_data[target_name].values
 
