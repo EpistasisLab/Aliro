@@ -182,7 +182,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">make_pipeline</span><span class="p">,</span> <span class="n">Pipeline</span>
 <span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">LabelEncoder</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span><span class="p">,</span> <span class="n">cross_validate</span><span class="p">,</span> <span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">KFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span><span class="p">,</span> <span class="n">cross_validate</span><span class="p">,</span> <span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">RepeatedStratifiedKFold</span><span class="p">,</span> <span class="n">KFold</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">SCORERS</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span><span class="p">,</span> <span class="n">make_scorer</span><span class="p">,</span> <span class="n">confusion_matrix</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -319,6 +319,32 @@
             <span class="n">new_feature_names</span> <span class="o">+=</span> <span class="n">feature_columns</span>
     <span class="k">return</span> <span class="n">new_feature_names</span>
 
+<span class="c1">#  decision rule for choosing number of folds based on the class distribution in the given dataset</span>
+<span class="k">def</span> <span class="nf">decision_rule_fold_cv_based_on_classes</span><span class="p">(</span><span class="n">each_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adjusts the number of cross-validation folds based on the class distribution.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    each_class : dict</span>
+<span class="sd">        A dictionary where keys are the classes and the values are the number of samples per class.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cv : int</span>
+<span class="sd">        The suitable number of cross-validation folds ensuring that each fold can include instances of each class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Find the minimum class count to ensure every fold can contain at least one instance of every class.</span>
+    <span class="n">min_class_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">each_class</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    
+    <span class="c1"># The maximum number of folds is determined by the smallest class to ensure representation in each fold.</span>
+    <span class="c1"># However, we cannot have more folds than the minimum class count.</span>
+    <span class="n">n_folds</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_class_count</span><span class="p">)</span>  <span class="c1"># Starting with a default max of 10 folds</span>
+    
+    <span class="c1"># Ensure at least 2 folds for meaningful cross-validation.</span>
+    <span class="n">n_folds</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_folds</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">n_folds</span>
 
 <div class="viewcode-block" id="generate_results"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.generate_results">[docs]</a><span class="k">def</span> <span class="nf">generate_results</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span>
                      <span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="s1">&#39;class&#39;</span><span class="p">,</span>
@@ -390,6 +416,10 @@
     <span class="n">feature_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">target_name</span><span class="p">])</span>
     <span class="n">num_classes</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">target_name</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># calculate number of each class</span>
+    <span class="n">each_class</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">target_name</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+
     <span class="n">features</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
     <span class="n">target</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">target_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
@@ -524,16 +554,17 @@
                                 <span class="n">target</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">return_times</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 
-        <span class="c1"># # plot learning curve</span>
-        <span class="c1"># plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)</span>
+       
+        
 
-        <span class="c1"># computing cross-validated metrics</span>
+
         <span class="n">cv_scores</span> <span class="o">=</span> <span class="n">cross_validate</span><span class="p">(</span>
             <span class="n">estimator</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
             <span class="n">X</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
             <span class="n">y</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
             <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">,</span>
-            <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
+            <span class="c1"># cv = stratified_cv,</span>
+            <span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span><span class="p">,</span>
             <span class="n">return_train_score</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">return_estimator</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
@@ -542,26 +573,73 @@
         <span class="n">train_scores</span> <span class="o">=</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;train_&#39;</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span>
         <span class="n">test_scores</span> <span class="o">=</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;test_&#39;</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span>
 
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train_scores&quot;</span><span class="p">,</span> <span class="n">train_scores</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;test_scores&quot;</span><span class="p">,</span> <span class="n">test_scores</span><span class="p">)</span>
+
+        <span class="c1"># if abs(train_scores.mean()) is np.nan OR abs(test_scores.mean()) is np.nan</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;777-NaN&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train_scores&quot;</span><span class="p">,</span> <span class="n">train_scores</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;test_scores&quot;</span><span class="p">,</span> <span class="n">test_scores</span><span class="p">)</span>
+
         <span class="c1"># remove _macro</span>
         <span class="n">score_name</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_macro&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="c1"># make balanced_accuracy as default score</span>
         <span class="k">if</span> <span class="n">score_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">]:</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            
+            <span class="c1"># Temporary fix to handle NaN values</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_score&#39;</span><span class="p">]):</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">train_scores</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_score&#39;</span><span class="p">]):</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span>
         <span class="c1"># for api will fix later</span>
 
         <span class="k">if</span> <span class="n">score_name</span> <span class="o">==</span> <span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">:</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="c1"># Temporary fix to handle NaN values</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span><span class="o">!=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># for experiment tables</span>
         <span class="k">if</span> <span class="n">score_name</span> <span class="o">==</span> <span class="s2">&quot;balanced_accuracy&quot;</span> <span class="ow">or</span> <span class="n">score_name</span> <span class="o">==</span> <span class="s2">&quot;r2&quot;</span><span class="p">:</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;exp_table_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="c1"># Temporary fix to handle NaN values</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span><span class="o">!=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;exp_table_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;exp_table_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">score_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">,</span> <span class="s2">&quot;neg_mean_absolute_error&quot;</span><span class="p">]:</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span>
                 <span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="c1"># Temporary fix to handle NaN values</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">train_scores</span><span class="p">)</span><span class="o">!=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span>
+                    <span class="n">train_scores</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="c1"># Temporary fix to handle NaN values</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span><span class="o">!=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="c1"># Temporary fix to handle NaN values</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">train_scores</span><span class="p">)</span><span class="o">!=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span>
+                    <span class="n">train_scores</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="c1"># Temporary fix to handle NaN values</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span><span class="o">!=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">test_scores</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1"># dump fitted module as pickle file</span>
     <span class="n">export_model</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">target_name</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
@@ -831,6 +909,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pred_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="c1"># Temporary fix to handle NaN values</span>
+    <span class="c1"># cv = StratifiedKFold(n_splits=8)</span>
     <span class="k">for</span> <span class="n">cv_split</span><span class="p">,</span> <span class="n">est</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">]):</span>
         <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">cv_split</span>
         <span class="n">pred_y</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">])</span>
@@ -1124,11 +1204,12 @@
     <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interp</span>
     <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">sem</span><span class="p">,</span> <span class="n">t</span>
     <span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="c1"># Temporary fix to handle NaN values</span>
+    <span class="c1"># cv = StratifiedKFold(n_splits=8)</span>
     <span class="n">tprs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">aucs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">mean_fpr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
-    <span class="c1"># print(cv_scores[&#39;train_roc_auc&#39;])</span>
     <span class="k">for</span> <span class="n">cv_split</span><span class="p">,</span> <span class="n">est</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">]):</span>
         <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">cv_split</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1142,8 +1223,16 @@
             <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
              <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">y</span><span class="p">[</span><span class="n">test</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span>
         <span class="p">)</span>
+        <span class="c1"># print(&quot;Each classes_encoded:&quot;, classes_encoded)</span>
         <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">classes_encoded</span><span class="p">,</span> <span class="n">probas_</span><span class="p">)</span>
+    
+        <span class="c1"># Temporary fix to handle NaN values </span>
+        <span class="c1"># When the given data is extremely unbalanced, as illustrated by the example where classes_encoded consists solely of the class 0, both true positives (TP) and false negatives (FN) are zero. Consequently, the true positive rate (TPR) is calculated as TPR = TP / (TP + FN), which results in an undefined value (NaN) due to division by zero. In the specific scenario provided, where roc_curve([0,0,0], [0,0.9,0]) is called, it highlights a situation with no positive instances present in the true labels. For purposes of data visualization or further analysis where a numerical value is required, this NaN value is replaced with 0 to indicate the absence of true positives under these conditions.</span>
+        <span class="n">fpr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">fpr</span><span class="p">)</span>
+        <span class="n">tpr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">tpr</span><span class="p">)</span>
+
         <span class="n">tprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interp</span><span class="p">(</span><span class="n">mean_fpr</span><span class="p">,</span> <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">))</span>
+
         <span class="n">tprs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">roc_auc</span> <span class="o">=</span> <span class="n">auc</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">)</span>
         <span class="n">aucs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">roc_auc</span><span class="p">)</span>
@@ -1191,6 +1280,7 @@
         <span class="s1">&#39;tpr&#39;</span><span class="p">:</span> <span class="n">mean_tpr</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
         <span class="s1">&#39;roc_auc_score&#39;</span><span class="p">:</span> <span class="n">mean_auc</span>
     <span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;roc_curve_dict:&quot;</span><span class="p">,</span> <span class="n">roc_curve_dict</span><span class="p">)</span>
 
     <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;roc_curve&#39;</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
@@ -1303,6 +1393,18 @@
         <span class="c1"># replace nan with -1</span>
         <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">test_scores</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
+
+    
+
+    <span class="c1"># temp solution for nan values</span>
+    <span class="n">train_sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">train_sizes</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">train_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">train_scores</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">test_scores</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train_sizes.tolist():&quot;</span><span class="p">,</span> <span class="n">train_sizes</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train_scores.tolist():&quot;</span><span class="p">,</span> <span class="n">train_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;test_scores.tolist():&quot;</span><span class="p">,</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
     <span class="n">learning_curve_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;train_sizes&#39;</span><span class="p">:</span> <span class="n">train_sizes</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
         <span class="s1">&#39;train_scores&#39;</span><span class="p">:</span> <span class="n">train_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
@@ -1384,13 +1486,11 @@
     <span class="c1"># np.random.seed(5)</span>
 
     <span class="c1"># iris = datasets.load_iris()</span>
-    <span class="c1"># print(features)</span>
+
     <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
     <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="c1"># print(X)</span>
-    <span class="c1"># print(y)</span>
 
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
