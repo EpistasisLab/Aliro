@@ -1,56 +1,71 @@
 [
-{
+  {
     "username": "pennai",
     "firstname": "Penn",
     "lastname": "AI",
     "apikey": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
     "roles": ["ai"],
-    "algorithms": ["DecisionTreeClassifier",
-                  "GradientBoostingClassifier",
-                  "KNeighborsClassifier",
-                  "SVC",
-                  "LogisticRegression",
-                  "RandomForestClassifier",
-                  "DecisionTreeRegressor",
-                  "XGBRegressor",
-                  "SVR",
-                  "KNeighborsRegressor",
-                  "KernelRidge",
-                  "RandomForestRegressor"]
-},
-{
-    "algorithms": ["DecisionTreeClassifier",
-                  "GradientBoostingClassifier",
-                  "KNeighborsClassifier",
-                  "SVC",
-                  "LogisticRegression",
-                  "RandomForestClassifier",
-                  "DecisionTreeRegressor",
-                  "XGBRegressor",
-                  "SVR",
-                  "KNeighborsRegressor",
-                  "KernelRidge",
-                  "RandomForestRegressor"],
+    "algorithms": [
+      "DecisionTreeClassifier",
+      "GradientBoostingClassifier",
+      "KNeighborsClassifier",
+      "SVC",
+      "LogisticRegression",
+      "RandomForestClassifier",
+      "GaussianNB",
+      "XGBClassifier",
+      "MLPClassifier",
+      "DecisionTreeRegressor",
+      "XGBRegressor",
+      "SVR",
+      "KNeighborsRegressor",
+      "KernelRidge",
+      "RandomForestRegressor"
+    ]
+  },
+  {
+    "algorithms": [
+      "DecisionTreeClassifier",
+      "GradientBoostingClassifier",
+      "KNeighborsClassifier",
+      "SVC",
+      "LogisticRegression",
+      "RandomForestClassifier",
+      "GaussianNB",
+      "XGBClassifier",
+      "MLPClassifier",
+      "DecisionTreeRegressor",
+      "XGBRegressor",
+      "SVR",
+      "KNeighborsRegressor",
+      "KernelRidge",
+      "RandomForestRegressor"
+    ],
     "username": "pmlb",
     "firstname": "Pmlb",
     "lastname": "User"
-},
-{
+  },
+  {
     "username": "testuser",
     "firstname": "Test",
     "lastname": "User",
     "roles": ["admin", "beginner"],
-    "algorithms": ["DecisionTreeClassifier",
-                  "GradientBoostingClassifier",
-                  "KNeighborsClassifier",
-                  "SVC",
-                  "LogisticRegression",
-                  "RandomForestClassifier",
-                  "DecisionTreeRegressor",
-                  "XGBRegressor",
-                  "SVR",
-                  "KNeighborsRegressor",
-                  "KernelRidge",
-                  "RandomForestRegressor"]
-}
+    "algorithms": [
+      "DecisionTreeClassifier",
+      "GradientBoostingClassifier",
+      "KNeighborsClassifier",
+      "SVC",
+      "LogisticRegression",
+      "RandomForestClassifier",
+      "GaussianNB",
+      "XGBClassifier",
+      "MLPClassifier",
+      "DecisionTreeRegressor",
+      "XGBRegressor",
+      "SVR",
+      "KNeighborsRegressor",
+      "KernelRidge",
+      "RandomForestRegressor"
+    ]
+  }
 ]
