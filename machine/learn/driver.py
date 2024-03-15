@@ -92,15 +92,3 @@ if __name__ == "__main__":
     
     args, param_grid = parse_args()    
     main(args, param_grid)
-
-
-
-    
-
-    
-    # # args
-    # args= {'method': 'DecisionTreeClassifier', '_id': '631a1ca11b74ba0031813fbd', 'grid_search': False, 'criterion': 'gini', 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'min_weight_fraction_leaf': 0.0, 'max_features': None}
-    # # param_grid
-    # param_grid = {'n_estimators': [100], 'learning_rate': [0.01, 0.1, 1.0], 'max_depth': [1, 3, 5, 10], 'min_child_weight': [1, 3, 5, 10, 20], 'subsample': [0.5, 1.0]}
-    
-    # main(args, param_grid)
