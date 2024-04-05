@@ -68,3 +68,5 @@ package.json
 package-copy.json
 machine/code_runs/
 machine/test_trained_models/
+projects.sample.json
+users.sample.json

@@ -37,25 +37,7 @@
     },
     "category": "classification"
   },
-  {
-    "name": "GaussianNB",
-    "path": "sklearn.naive_bayes",
-    "categorical_encoding_strategy": "OneHotEncoder",
-    "description": "Gaussian Naive Bayes",
-    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html",
-    "schema": {
-      "var_smoothing": {
-        "description": "Portion of the largest variance of all features that is added to variances for calculation stability.",
-        "type": "float",
-        "default": 1e-9,
-        "ui": {
-          "style": "radio",
-          "choices": [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
-        }
-      }
-    },
-    "category": "classification"
-  },
+
   {
     "name": "MultinomialNB",
     "path": "sklearn.naive_bayes",
@@ -299,63 +281,7 @@
     },
     "category": "classification"
   },
-  {
-    "name": "XGBClassifier",
-    "path": "xgboost",
-    "categorical_encoding_strategy": "OrdinalEncoder",
-    "description": "eXtreme Gradient Boosting classifier for supervised learning tasks.",
-    "url": "https://xgboost.readthedocs.io/en/latest/tutorials/model.html",
-    "static_parameters": { "objective": "binary:logistic" },
-    "schema": {
-      "n_estimators": {
-        "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting, so a large number usually results in better performance.",
-        "type": "int",
-        "default": 100,
-        "ui": {
-          "style": "radio",
-          "choices": [100, 500],
-          "grid_search": [100]
-        }
-      },
-      "learning_rate": {
-        "description": "Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.",
-        "type": "float",
-        "default": 0.1,
-        "ui": {
-          "style": "radio",
-          "choices": [0.01, 0.1, 1]
-        }
-      },
-      "max_depth": {
-        "description": "Maximum tree depth for base learners.",
-        "type": "int",
-        "default": 3,
-        "ui": {
-          "style": "radio",
-          "choices": [1, 3, 5, 10]
-        }
-      },
-      "min_child_weight": {
-        "description": "Minimum sum of instance weight (hessian) needed in a child.",
-        "type": "int",
-        "default": 3,
-        "ui": {
-          "style": "radio",
-          "choices": [1, 3, 5, 10, 20]
-        }
-      },
-      "subsample": {
-        "description": "The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0, this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample < 1.0 leads to a reduction of variance and an increase in bias.",
-        "type": "float",
-        "default": 1,
-        "ui": {
-          "style": "radio",
-          "choices": [0.5, 1]
-        }
-      }
-    },
-    "category": "classification"
-  },
+
   {
     "name": "KNeighborsClassifier",
     "path": "sklearn.neighbors",
@@ -659,45 +585,7 @@
     },
     "category": "classification"
   },
-  {
-    "name": "MLPClassifier",
-    "path": "sklearn.neural_network",
-    "categorical_encoding_strategy": "OneHotEncoder",
-    "description": "Multi-layer Perceptron classifier.",
-    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html",
-    "schema": {
-      "activation": {
-        "description": "Activation function for the hidden layer.",
-        "type": "string",
-        "default": "relu",
-        "ui": {
-          "style": "radio",
-          "choices": ["Identity", "Logistic", "Tanh", "Relu"],
-          "values": ["identity", "logistic", "tanh", "relu"]
-        }
-      },
-      "solver": {
-        "description": "The solver for weight optimization.",
-        "type": "string",
-        "default": "adam",
-        "ui": {
-          "style": "radio",
-          "choices": ["Adam", "Lbfgs", "Sgd"],
-          "values": ["adam", "lbfgs", "sgd"]
-        }
-      },
-      "alpha": {
-        "description": "L2 penalty (regularization term) parameter.",
-        "type": "float",
-        "default": 0.0001,
-        "ui": {
-          "style": "radio",
-          "choices": [0.0001, 0.001, 0.01, 0.1, 1, 10]
-        }
-      }
-    },
-    "category": "classification"
-  },
+
   {
     "name": "SGDClassifier",
     "path": "sklearn.linear_model",

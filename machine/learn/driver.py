@@ -71,7 +71,6 @@ def main(args, param_grid={}):
     
     print("param_grid_gene")
     print(param_grid)
-    # svd 일때 param grid 차있나?
     
 
     generate_results(model=model,
