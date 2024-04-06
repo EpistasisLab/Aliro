@@ -587,55 +587,6 @@
   },
 
   {
-    "name": "SGDClassifier",
-    "path": "sklearn.linear_model",
-    "categorical_encoding_strategy": "OneHotEncoder",
-    "description": "Linear classifiers (SVM, logistic regression, a.o.) with SGD training.",
-    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html",
-    "schema": {
-      "loss": {
-        "description": "The loss function to be used. The possible values are ‘hinge’, ‘log’, ‘modified_huber’, ‘squared_hinge’, ‘perceptron’, or a regression loss: ‘squared_loss’, ‘huber’, ‘epsilon_insensitive’, or ‘squared_epsilon_insensitive’.",
-        "type": "string",
-        "default": "hinge",
-        "ui": {
-          "style": "radio",
-          "choices": [
-            "Hinge",
-            "Log",
-            "Modified Huber",
-            "Squared Hinge",
-            "Perceptron",
-            "Squared Loss",
-            "Huber",
-            "Epsilon Insensitive",
-            "Squared Epsilon Insensitive"
-          ],
-          "values": [
-            "hinge",
-            "log",
-            "modified_huber",
-            "squared_hinge",
-            "perceptron",
-            "squared_loss",
-            "huber",
-            "epsilon_insensitive",
-            "squared_epsilon_insensitive"
-          ]
-        }
-      },
-      "learning_rate": {
-        "description": "The learning rate schedule. The possible values are ‘constant’, ‘optimal’, ‘invscaling’, ‘adaptive’.",
-        "type": "string",
-        "default": "optimal",
-        "ui": {
-          "style": "radio",
-          "choices": ["Constant", "Optimal", "Invscaling", "Adaptive"],
-          "values": ["constant", "optimal", "invscaling", "adaptive"]
-        }
-      }
-    }
-  },
-  {
     "name": "DecisionTreeRegressor",
     "path": "sklearn.tree",
     "categorical_encoding_strategy": "OrdinalEncoder",
