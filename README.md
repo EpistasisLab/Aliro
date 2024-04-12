@@ -29,6 +29,34 @@ Browse the repo:
 Aliro is actively developed by the Center for AI Research and Education (CAIRE) in the [Department of Computational Biomedicine](https://www.cedars-sinai.edu/research/departments-institutes/computational-biomedicine.html) at [Cedars-Sinai Medical Center](https://www.cedars-sinai.org/) in Los Angeles, California, USA.  
 Contributors include Hyunjun Choi, Miguel Hernandez, Nick Matsumoto, Jay Moran, Paul Wang, and Jason Moore (PI).
 
+# Reproduce the ML Results on the QTc Project
+
+This guide provides detailed instructions for loading and executing the trained model from the pickle file obtained through the Aliro model download feature for the QTc project. Please follow the instructions carefully.
+
+## Initial Setup
+
+- **Install Aliro**: Begin by installing the Aliro software on your local machine.
+- **Download the Trained Model:**
+
+  - Please download the trained model pickle file from Aliro and create a new folder named `test_trained_models` within the machine directory.
+
+- **Store the Pickle File:**
+
+  - Place the downloaded pickle file inside the `test_trained_models` folder and a test set in the machine directory.
+
+- **Load and Test the Model:**
+  - Write a Python script within the machine directory to load the pickle file from the `test_trained_models` folder and the test set in the machine directory.
+
+## Working with Docker
+
+### Start Docker Container:
+
+- Use `docker ps -a` to list all containers.
+- Identify the container you need based on its ID.
+- Access the container by running `docker exec -it <container_id> /bin/bash`.
+- **Run the Python Script:**
+  - Execute the Python script within the Docker container to reproduce the model's performance.
+
 # Cite
 
 An up-to-date paper describing AI methodology is available in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btaa698) and [arxiv](http://arxiv.org/abs/1905.09205).
