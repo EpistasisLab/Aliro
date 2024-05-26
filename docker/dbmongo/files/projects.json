@@ -299,10 +299,10 @@
       "n_estimators": {
         "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
         "type": "int",
-        "default": 1,
+        "default": 100,
         "ui": {
           "style": "radio",
-          "choices": [1, 100, 500],
+          "choices": [100, 500],
           "grid_search": [100]
         }
       },
