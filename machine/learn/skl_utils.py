@@ -410,10 +410,6 @@ def generate_results(model, input_data,
                                 target, cv, return_times=True)
             model.fit(features, target)
 
-       
-        
-
-
         cv_scores = cross_validate(
             estimator=model,
             X=features,
