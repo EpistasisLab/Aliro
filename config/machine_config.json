@@ -1,26 +1,23 @@
-
-
-
 {
-  "algorithms": ["DecisionTreeClassifier",
-                "GradientBoostingClassifier",
-                "KNeighborsClassifier",
-                "SVC",
-                "LogisticRegression",
-                "RandomForestClassifier",
-                "DecisionTreeRegressor",
-                "XGBRegressor",
-                "SVR",
-                "KNeighborsRegressor",
-                "KernelRidge",
-                "RandomForestRegressor",
-                "AdaBoostClassifier"
-                ,"KMeans"
-                ,"GaussianNB"
-                ,"MultinomialNB"
-                ,"BernoulliNB"
-                ,"MLPClassifier"
-              ]
+  "algorithms": [
+    "DecisionTreeClassifier",
+    "GradientBoostingClassifier",
+    "KNeighborsClassifier",
+    "SVC",
+    "LogisticRegression",
+    "RandomForestClassifier",
+    "DecisionTreeRegressor",
+    "XGBClassifier",
+    "XGBRegressor",
+    "SVR",
+    "KNeighborsRegressor",
+    "KernelRidge",
+    "RandomForestRegressor",
+    "AdaBoostClassifier",
+    "KMeans",
+    "GaussianNB",
+    "MultinomialNB",
+    "BernoulliNB",
+    "MLPClassifier"
+  ]
 }
-
-

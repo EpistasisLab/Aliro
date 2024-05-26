@@ -109,6 +109,20 @@ classifier_config_dict = {
     },
 
 
+    'xgboost.XGBClassifier': {
+        'params': {
+            'n_estimators': [1,100, 500],
+            'learning_rate': [0.01, 0.1, 1],
+            'max_depth': [1, 3, 5, 10],
+            'min_child_weight': [1, 3, 5, 10, 20],
+            'subsample': [0.5, 1],
+        },
+        'static_parameters': {
+            'objective': "reg:squarederror"
+        }
+    },
+
+
 
 
 
