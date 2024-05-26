@@ -48,861 +48,978 @@ var db = require("./db").db;
 var users = require("./users");
 var socketServer = require("./socketServer").socketServer;
 var emitEvent = require("./socketServer").emitEvent;
-var generateFeaturesFromFileIdAsync = require("./pyutils").generateFeaturesFromFileIdAsync;
-var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileIdAsync;
+var generateFeaturesFromFileIdAsync =
+  require("./pyutils").generateFeaturesFromFileIdAsync;
+var validateDatafileByFileIdAsync =
+  require("./pyutils").validateDatafileByFileIdAsync;
 const assert = require("assert");
-const openaiRouter = require('./routes/openai');
-const chatapiRouter = require('./routes/chatapi');
-const execapiRouter = require('./routes/execapi');
-const { deleteFilesFromGridstore } = require('./labutils');
+const openaiRouter = require("./routes/openai");
+const chatapiRouter = require("./routes/chatapi");
+const execapiRouter = require("./routes/execapi");
+const { deleteFilesFromGridstore } = require("./labutils");
 
 /***************
-* Enums
-***************/
+ * Enums
+ ***************/
 const recommenderStatus = {
-    DISABLED: 'disabled',
-    INITIALIZING: 'initializing',
-    RUNNING: 'running',
+  DISABLED: "disabled",
+  INITIALIZING: "initializing",
+  RUNNING: "running",
 
-      // case insensitive method to get status value
-    getStatus(value){
-      if (!value) 
-          throw new Error(`Unknown AI status "${value}"` ) 
+  // case insensitive method to get status value
+  getStatus(value) {
+    if (!value) throw new Error(`Unknown AI status "${value}"`);
 
-      if(Object.keys(this).indexOf(value.toUpperCase()) >= 0 ) {
-        return this[value.toUpperCase()]
-      }
-      else 
-        throw new Error(`Unknown AI status "${value}"` )
-    }
-}
-
+    if (Object.keys(this).indexOf(value.toUpperCase()) >= 0) {
+      return this[value.toUpperCase()];
+    } else throw new Error(`Unknown AI status "${value}"`);
+  },
+};
 
 /******************
 App instantiation 
 ******************/
 // set app configuration
 var settings = {
-    "MAX_FILE_SIZE" : ("MAX_FILE_SIZE" in process.env) ? process.env["MAX_FILE_SIZE"] : (8 * 1000000)
-}
+  MAX_FILE_SIZE:
+    "MAX_FILE_SIZE" in process.env ? process.env["MAX_FILE_SIZE"] : 8 * 1000000,
+};
 
-console.log(`Settings: ${settings}`)
-
+console.log(`Settings: ${settings}`);
 
 // unregister any machine instances before starting the server
 // reset ai status of current datasets
-console.log("unregistering machines")
+console.log("unregistering machines");
 db.machines.remove({});
 
-console.log("resetting dataset ai status")
-db.datasets.updateMany(
-    {}, 
-    {"$unset" : {ai:""}}
-);
+console.log("resetting dataset ai status");
+db.datasets.updateMany({}, { $unset: { ai: "" } });
 
-console.log("cleaning up experiments")
-db.experiments.remove({ "_status": "running" })
+console.log("cleaning up experiments");
+db.experiments.remove({ _status: "running" });
 
-console.log("initializing ai recommender settings")
+console.log("initializing ai recommender settings");
 db.settings.update(
-    { type: "recommender"},
-    {
-        type: "recommender",
-        status: recommenderStatus.DISABLED
-    },
-    { upsert: true}
+  { type: "recommender" },
+  {
+    type: "recommender",
+    status: recommenderStatus.DISABLED,
+  },
+  { upsert: true }
 );
 
 var app = express();
-var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
+var jsonParser = bodyParser.json({ limit: "100mb" }); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 //app.set('superSecret',config.secret);
 app.use(compression()); // Compress all Express requests
 app.use(favicon(path.join(__dirname, "webapp/dist/favicon.ico"))); // Deal with favicon requests
-// app.use(favicon(path.join(__dirname, "webapp/dist/BrainCircuit.ico"))); // Deal with favicon 
-app.use(express.static(path.join(__dirname, "webapp/dist"), {index: false, maxAge: '1d'})); // Static directory
+// app.use(favicon(path.join(__dirname, "webapp/dist/BrainCircuit.ico"))); // Deal with favicon
+app.use(
+  express.static(path.join(__dirname, "webapp/dist"), {
+    index: false,
+    maxAge: "1d",
+  })
+); // Static directory
 app.use(morgan("tiny")); // Log requests
 // app.use(bodyParser.urlencoded({extended: false}));
 // app.use(bodyParser.json());
 
-app.use(bodyParser.json({limit: "50mb"}));
-app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 
-app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
-app.use(express.static(app.get('appPath')));
+app.set("appPath", path.join(path.normalize(__dirname), "webapp/dist"));
+app.use(express.static(app.get("appPath")));
 
-app.use('/openai/v1', openaiRouter);
-app.use('/chatapi/v1', chatapiRouter);
-app.use('/execapi/v1', execapiRouter);
+app.use("/openai/v1", openaiRouter);
+app.use("/chatapi/v1", chatapiRouter);
+app.use("/execapi/v1", execapiRouter);
 
 /* Lab API */
 
 // Registers webhooks
 app.post("/api/v1/webhooks", jsonParser, (req, res) => {
-    // Parse webhook request
-    var webhook = req.body;
-    var url = webhook.url;
-    var objects = webhook.objects;
-    var event = webhook.event;
-    var objId = webhook.object_id;
+  // Parse webhook request
+  var webhook = req.body;
+  var url = webhook.url;
+  var objects = webhook.objects;
+  var event = webhook.event;
+  var objId = webhook.object_id;
 
-    // Use John Gruber's URL regex
-    var urlRegEx = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)\S+(?:[^\s`!\[\]{};:'".,?«»“”‘’]))/ig;
-    // Validate
-    if (!url || !urlRegEx.test(url)) {
-        res.status(400);
-        return res.send({
-            error: "Invalid or empty URL"
-        });
-    } else if (objects !== "experiments") {
-        res.status(400);
-        return res.send({
-            error: "Object is not 'experiments'"
-        });
-    } else if (event !== "started" && event !== "finished") {
-        res.status(400);
-        return res.send({
-            error: "Event is not 'started' or 'finished'"
-        });
-    } else if (!objId) {
-        // TODO Check object exists
-        res.status(400);
-        return res.send({
-            error: "No object ID provided"
-        });
-    }
-
-    // Register with mediator
-    mediator.once(objects + ":" + objId + ":" + event, () => {
-        // Send webhook response
-        rp({
-                uri: webhook.url,
-                method: "POST",
-                json: webhook,
-                gzip: true
-            })
-            .catch(() => {}); // Ignore failures from missing webhooks
-    });
-    res.status(201);
+  // Use John Gruber's URL regex
+  var urlRegEx =
+    /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)\S+(?:[^\s`!\[\]{};:'".,?«»“”‘’]))/gi;
+  // Validate
+  if (!url || !urlRegEx.test(url)) {
+    res.status(400);
     return res.send({
-        status: "Registered",
-        options: webhook
+      error: "Invalid or empty URL",
     });
+  } else if (objects !== "experiments") {
+    res.status(400);
+    return res.send({
+      error: "Object is not 'experiments'",
+    });
+  } else if (event !== "started" && event !== "finished") {
+    res.status(400);
+    return res.send({
+      error: "Event is not 'started' or 'finished'",
+    });
+  } else if (!objId) {
+    // TODO Check object exists
+    res.status(400);
+    return res.send({
+      error: "No object ID provided",
+    });
+  }
+
+  // Register with mediator
+  mediator.once(objects + ":" + objId + ":" + event, () => {
+    // Send webhook response
+    rp({
+      uri: webhook.url,
+      method: "POST",
+      json: webhook,
+      gzip: true,
+    }).catch(() => {}); // Ignore failures from missing webhooks
+  });
+  res.status(201);
+  return res.send({
+    status: "Registered",
+    options: webhook,
+  });
 });
 
 // Downloads file
 app.get("/api/v1/files/:id", (req, res, next) => {
-    // Open file
-    var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r", {
-        promiseLibrary: Promise
-    });
-    gfs.open((err, gfs) => {
-        if (!err) {
-            // Set read head pointer to beginning of file
-            gfs.seek(0, () => {
-                // Read entire file
-                gfs.read()
-                    .then((file) => {
-                        res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
-                        res.setHeader("Content-Type", gfs.metadata.contentType); // MIME Type
-                        res.send(file); // Send file
-                    })
-                    .catch((err) => {
-                        next(err);
-                    });
-            });
-        } else {
-            console.log('error loading file');
-            console.log(req);
-            console.log(err);
-            res.send([]);
-        }
-    });
+  // Open file
+  var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r", {
+    promiseLibrary: Promise,
+  });
+  gfs.open((err, gfs) => {
+    if (!err) {
+      // Set read head pointer to beginning of file
+      gfs.seek(0, () => {
+        // Read entire file
+        gfs
+          .read()
+          .then((file) => {
+            res.setHeader(
+              "Content-Disposition",
+              "attachment; filename=" + gfs.filename
+            ); // Set as download
+            res.setHeader("Content-Type", gfs.metadata.contentType); // MIME Type
+            res.send(file); // Send file
+          })
+          .catch((err) => {
+            next(err);
+          });
+      });
+    } else {
+      console.log("error loading file");
+      console.log(req);
+      console.log(err);
+      res.send([]);
+    }
+  });
 });
 
 // Get file metafeatures
 app.get("/api/v1/files/:id/metafeatures", (req, res, next) => {
-    var metafeatures = db.datasets.findByIdAsync(req.params.id, {metafeatures: 1})
-    res.send(metafeatures)
+  var metafeatures = db.datasets.findByIdAsync(req.params.id, {
+    metafeatures: 1,
+  });
+  res.send(metafeatures);
 });
 
 // Get environmental vars
 app.get("/api/environment", (req, res, next) => {
-    var envVars = [
-        "BUILD_ENV",
-        "TAG",
-        "MAX_FILE_SIZE",
-        "AI_AUTOSTART",
-        "AI_RECOMMENDER",
-        "AI_VERBOSE",
-        "AI_PMLB_KNOWLEDGEBASE",
-        "AI_TERM_COND",
-        "AI_NUMRECOMMEND",
-        "AI_MAX_TIME",
-        "STARTUP_DATASET_PATH",
-        "EXP_TIMEOUT",
-        "DT_MAX_DEPTH"
-    ]
+  var envVars = [
+    "BUILD_ENV",
+    "TAG",
+    "MAX_FILE_SIZE",
+    "AI_AUTOSTART",
+    "AI_RECOMMENDER",
+    "AI_VERBOSE",
+    "AI_PMLB_KNOWLEDGEBASE",
+    "AI_TERM_COND",
+    "AI_NUMRECOMMEND",
+    "AI_MAX_TIME",
+    "STARTUP_DATASET_PATH",
+    "EXP_TIMEOUT",
+    "DT_MAX_DEPTH",
+  ];
 
-    var localVars = [
-        "MAX_FILE_SIZE"
-    ]
+  var localVars = ["MAX_FILE_SIZE"];
 
-    var payload = {}
+  var payload = {};
 
-    console.log(payload)
+  console.log(payload);
 
-    envVars.forEach(function(envVar) {
-      if (envVar in process.env) {
-          console.log(`env var: ${envVar}`)
-          console.log(`val: ${process.env[envVar]}`)
-          payload[envVar] = process.env[envVar]
-      }
-        else payload[envVar] = "-NOT SET-"
-    });
+  envVars.forEach(function (envVar) {
+    if (envVar in process.env) {
+      console.log(`env var: ${envVar}`);
+      console.log(`val: ${process.env[envVar]}`);
+      payload[envVar] = process.env[envVar];
+    } else payload[envVar] = "-NOT SET-";
+  });
 
-    localVars.forEach(function(localVar) {
-      if (localVar in settings) { 
-          console.log(`local var: ${localVar}`)
-          console.log(`val: ${settings[localVar]}`)
-          payload[localVar] = settings[localVar]
-      }
-        else payload[localVar] = "-NOT SET-"
-    });
+  localVars.forEach(function (localVar) {
+    if (localVar in settings) {
+      console.log(`local var: ${localVar}`);
+      console.log(`val: ${settings[localVar]}`);
+      payload[localVar] = settings[localVar];
+    } else payload[localVar] = "-NOT SET-";
+  });
 
-    res.send(payload);
+  res.send(payload);
 });
-
 
 // Get collection for all API db-based endpoints
 app.param("apipath", (req, res, next, apipath) => {
-    req.responder = require("./api/default").responder;
-    return next();
+  req.responder = require("./api/default").responder;
+  return next();
 });
 // Get collection for all API db-based endpoints
 app.param("collection", (req, res, next, collection) => {
-    req.collection = db.collection(collection);
-    return next();
+  req.collection = db.collection(collection);
+  return next();
 });
 // List projects and machines in api
 app.get("/api/v1/projects", (req, res, next) => {
-
-    var projP = db.projects.find({}, {}).sort({
-        name: 1
-    }).toArrayAsync(); // Get project names
-    Promise.all(projP)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            return next(err);
-        });
+  var projP = db.projects
+    .find({}, {})
+    .sort({
+      name: 1,
+    })
+    .toArrayAsync(); // Get project names
+  Promise.all(projP)
+    .then((results) => {
+      return res.send(results);
+    })
+    .catch((err) => {
+      return next(err);
+    });
 });
 // List projects and machines in api
 app.post("/api/v1/projects", (req, res, next) => {
-
-    var projP = db.projects.find({}, {
-        schema: 1
-    }).sort({
-        name: 1
-    }).toArrayAsync(); // Get project names
-    Promise.all(projP)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            return next(err);
-        });
-});
-
-
-
-/**
-* Add register a new dataset
-*
-* Example body:
-*    {
-*      _files:file binary,
-*      _metadata: [
-*        name: "datasetName",
-*        username: "testUser",
-*        prediction_type: "classification",
-*        dependent_col: "class",
-*        categorical_features : ["cat_feat_1", "cat_feat_2"],
-*        ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
-*      ]
-*    }
-* 
-*
-* @param _files - an array of dataset files
-* @param _metadata - json
-*    name - file name
-*    username - owner of the dataset
-*    prediction_type - "regression" or "classification"
-*    dependent_col - name of the target column
-*    categorical_features - list of categorical features
-*    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
-*
-*/
-app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
-    //console.log(`======app.put datasets ${req.get('Content-Type')}`)
-    //console.log(`app.put datasets ${req.body._metadata}`);
-
-    // Parse request
-    if (req.body._metadata === undefined) {
-        res.status(400);
-        return res.send({error: "Missing parameter _metadata"});
-    }
-
-    var metadata
-    try {
-        metadata = JSON.parse(req.body._metadata);
-    }
-    catch(e) {
-        res.status(400);
-        console.log(`Unable to parse _metadata: ${e.message}`)
-        return res.send({error:`Unable to parse _metadata: ${e.message}`})
-    }
-
-    // Validate
-    var possibleMetadataKeys = ['name', 'username', 'prediction_type', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
-    var possiblePredictionType = ['classification', 'regression']
-
-    if (!metadata) {
-        res.status(400);
-        return res.send({error: "Missing parameter _metadata"});
-    } if (!metadata.hasOwnProperty('dependent_col')) {
-        res.status(400);
-        return res.send({error: "Missing parameter _metadata.dependent_col"});
-    } if (!metadata.hasOwnProperty('name')) {
-        res.status(400);
-        return res.send({error: "Missing parameter _metadata.name"});
-    } if (!metadata.hasOwnProperty('username')) {
-        res.status(400);
-        return res.send({error: "Missing parameter _metadata.username"});
-    } if (metadata.hasOwnProperty('prediction_type') && !possiblePredictionType.includes(metadata['prediction_type'])) {
-        res.status(400);
-        return res.send({error: `invalid prediction_type: ${metadata['prediction_type']}`}) 
-    }
-
-    if (!req.hasOwnProperty('files')) {
-        res.status(400);
-        return res.send({error: "Missing parameter _files"});
-    } if (req.files.length != 1) {
-        res.status(400);
-        return res.send({error: `_files does not have length 1`});
-    } if (req.files[0].size == 0) {
-        res.status(400);
-        return res.send({error: `_files[0] has size 0`});
-    } 
-
-    var invalidKeys = Object.getOwnPropertyNames(metadata).filter(key => !(possibleMetadataKeys.includes(key)))
-    if (invalidKeys.length > 0) {
-        res.status(400);
-        return res.send({error: `invalid _metadata key: ${invalidKeys}`});
-    }
-
-
-    // process dataset
-    var dependent_col = metadata['dependent_col'];
-    var categorical_features = metadata['categorical_features'] 
-    var ordinal_features = metadata['ordinal_features']
-    var prediction_type = metadata['prediction_type'] || "classification"
-
-    stageDatasetFile(req.files[0])
-    .then((file_id) => {return registerDataset(file_id, prediction_type, dependent_col, categorical_features, ordinal_features, metadata)})
-    .then((dataset_id) => {
-        //Pass the new dataset id to event emitter
-        req.params = { ...req.params, dataset_id: dataset_id };
-        emitEvent('datasetAdded', req);
-        res.send({
-            message: "Files uploaded",
-            dataset_id: dataset_id
-        });
+  var projP = db.projects
+    .find(
+      {},
+      {
+        schema: 1,
+      }
+    )
+    .sort({
+      name: 1,
+    })
+    .toArrayAsync(); // Get project names
+  Promise.all(projP)
+    .then((results) => {
+      return res.send(results);
     })
     .catch((err) => {
-        console.log(`error: ${err}`)
-        res.status(400);
-        res.send({error:"Unable to upload file. " + err})
+      return next(err);
     });
-
 });
 
+/**
+ * Add register a new dataset
+ *
+ * Example body:
+ *    {
+ *      _files:file binary,
+ *      _metadata: [
+ *        name: "datasetName",
+ *        username: "testUser",
+ *        prediction_type: "classification",
+ *        dependent_col: "class",
+ *        categorical_features : ["cat_feat_1", "cat_feat_2"],
+ *        ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
+ *      ]
+ *    }
+ *
+ *
+ * @param _files - an array of dataset files
+ * @param _metadata - json
+ *    name - file name
+ *    username - owner of the dataset
+ *    prediction_type - "regression" or "classification"
+ *    dependent_col - name of the target column
+ *    categorical_features - list of categorical features
+ *    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
+ *
+ */
+app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
+  //console.log(`======app.put datasets ${req.get('Content-Type')}`)
+  //console.log(`app.put datasets ${req.body._metadata}`);
+
+  // Parse request
+  if (req.body._metadata === undefined) {
+    res.status(400);
+    return res.send({ error: "Missing parameter _metadata" });
+  }
+
+  var metadata;
+  try {
+    metadata = JSON.parse(req.body._metadata);
+  } catch (e) {
+    res.status(400);
+    console.log(`Unable to parse _metadata: ${e.message}`);
+    return res.send({ error: `Unable to parse _metadata: ${e.message}` });
+  }
+
+  // Validate
+  var possibleMetadataKeys = [
+    "name",
+    "username",
+    "prediction_type",
+    "dependent_col",
+    "categorical_features",
+    "ordinal_features",
+    "timestamp",
+  ];
+  var possiblePredictionType = ["classification", "regression"];
+
+  if (!metadata) {
+    res.status(400);
+    return res.send({ error: "Missing parameter _metadata" });
+  }
+  if (!metadata.hasOwnProperty("dependent_col")) {
+    res.status(400);
+    return res.send({ error: "Missing parameter _metadata.dependent_col" });
+  }
+  if (!metadata.hasOwnProperty("name")) {
+    res.status(400);
+    return res.send({ error: "Missing parameter _metadata.name" });
+  }
+  if (!metadata.hasOwnProperty("username")) {
+    res.status(400);
+    return res.send({ error: "Missing parameter _metadata.username" });
+  }
+  if (
+    metadata.hasOwnProperty("prediction_type") &&
+    !possiblePredictionType.includes(metadata["prediction_type"])
+  ) {
+    res.status(400);
+    return res.send({
+      error: `invalid prediction_type: ${metadata["prediction_type"]}`,
+    });
+  }
+
+  if (!req.hasOwnProperty("files")) {
+    res.status(400);
+    return res.send({ error: "Missing parameter _files" });
+  }
+  if (req.files.length != 1) {
+    res.status(400);
+    return res.send({ error: `_files does not have length 1` });
+  }
+  if (req.files[0].size == 0) {
+    res.status(400);
+    return res.send({ error: `_files[0] has size 0` });
+  }
+
+  var invalidKeys = Object.getOwnPropertyNames(metadata).filter(
+    (key) => !possibleMetadataKeys.includes(key)
+  );
+  if (invalidKeys.length > 0) {
+    res.status(400);
+    return res.send({ error: `invalid _metadata key: ${invalidKeys}` });
+  }
+
+  // process dataset
+  var dependent_col = metadata["dependent_col"];
+  var categorical_features = metadata["categorical_features"];
+  var ordinal_features = metadata["ordinal_features"];
+  var prediction_type = metadata["prediction_type"] || "classification";
+
+  stageDatasetFile(req.files[0])
+    .then((file_id) => {
+      return registerDataset(
+        file_id,
+        prediction_type,
+        dependent_col,
+        categorical_features,
+        ordinal_features,
+        metadata
+      );
+    })
+    .then((dataset_id) => {
+      //Pass the new dataset id to event emitter
+      req.params = { ...req.params, dataset_id: dataset_id };
+      emitEvent("datasetAdded", req);
+      res.send({
+        message: "Files uploaded",
+        dataset_id: dataset_id,
+      });
+    })
+    .catch((err) => {
+      console.log(`error: ${err}`);
+      res.status(400);
+      res.send({ error: "Unable to upload file. " + err });
+    });
+});
 
 app.get("/api/recommender", (req, res, next) => {
-    //req.collection.find({}).toArrayAsync()
-    db.settings.find({ type: "recommender"}).toArrayAsync()
-        .then((results) => {
-            console.log("results:")
-            console.log(results)
-            res.status(201);
-            res.send(results[0]);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  //req.collection.find({}).toArrayAsync()
+  db.settings
+    .find({ type: "recommender" })
+    .toArrayAsync()
+    .then((results) => {
+      console.log("results:");
+      console.log(results);
+      res.status(201);
+      res.send(results[0]);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // set recommender status
 app.post("/api/recommender/status", jsonParser, (req, res, next) => {
-
-    db.settings.updateAsync(
-        { type: "recommender"},
-        {$set: {
-            status: recommenderStatus.getStatus(req.body.status)
-        }}
+  db.settings
+    .updateAsync(
+      { type: "recommender" },
+      {
+        $set: {
+          status: recommenderStatus.getStatus(req.body.status),
+        },
+      }
     )
     .then((result) => {
-        emitEvent('recommenderStatusUpdated', req);
+      emitEvent("recommenderStatusUpdated", req);
 
-        res.send({
-            message: "Recommender status set to '" + recommenderStatus.getStatus(req.body.status) + "'"
-        });
+      res.send({
+        message:
+          "Recommender status set to '" +
+          recommenderStatus.getStatus(req.body.status) +
+          "'",
+      });
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-
 });
-
 
 //toggles ai for dataset
 app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
-    db.datasets.updateByIdAsync(req.params.id, {
-            $set: {
-                ai: req.body.ai
-            }
-        })
-        .then((result) => {
-            emitEvent('aiToggled', req);
+  db.datasets
+    .updateByIdAsync(req.params.id, {
+      $set: {
+        ai: req.body.ai,
+      },
+    })
+    .then((result) => {
+      emitEvent("aiToggled", req);
 
-            res.send({
-                message: "AI toggled for " + req.params.id
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+      res.send({
+        message: "AI toggled for " + req.params.id,
+      });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
 
 // register new machine
 app.post("/api/v1/machines", jsonParser, (req, res, next) => {
-    console.log("=====/api/v1/machines...")
-    //console.log(req)
-    //var machineuri = 'http://' + process.env.MACHINE_HOST + ':' + req.port;
-    //req.body.address = machineuri
-    //console.log(machineuri)
-    console.log(req.body)
-    db.machines.insertAsync(req.body, {})
-        .then((result) => {
-            res.status(201);
-            res.send(result.ops[0]);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  console.log("=====/api/v1/machines...");
+  //console.log(req)
+  //var machineuri = 'http://' + process.env.MACHINE_HOST + ':' + req.port;
+  //req.body.address = machineuri
+  //console.log(machineuri)
+  console.log(req.body);
+  db.machines
+    .insertAsync(req.body, {})
+    .then((result) => {
+      res.status(201);
+      res.send(result.ops[0]);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Return all entries
 app.get("/api/v1/:collection", (req, res, next) => {
-    req.collection.find({}).toArrayAsync()
-        .then((results) => {
-            res.send(results);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  req.collection
+    .find({})
+    .toArrayAsync()
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 // Return all entries
 app.get("/api/v1/:collection", (req, res, next) => {
-    req.collection.find({}).toArrayAsync()
-        .then((results) => {
-            res.send(results);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  req.collection
+    .find({})
+    .toArrayAsync()
+    .then((results) => {
+      res.send(results);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Create new entry
 app.post("/api/v1/:collection", jsonParser, (req, res, next) => {
-    req.collection.insertAsync(req.body, {})
-        .then((result) => {
-            res.status(201);
-            res.send(result.ops[0]);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  req.collection
+    .insertAsync(req.body, {})
+    .then((result) => {
+      res.status(201);
+      res.send(result.ops[0]);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
 
 // Return a batch
 app.get("/api/v1/batches/:id", (req, res, next) => {
-    db.batches.findByIdAsync(req.params.id)
-        .then((result) => {
-            if (result._experiments !== undefined) {
-                db.experiments.find({
-                        '_id': {
-                            $in: result._experiments
-                        }
-                    }).toArrayAsync()
-                    .then((exp) => {
-                        var num_finished = 0
-                        for (var i = 0; i < exp.length; i++) {
-                            if (exp[i]._status == 'success' && exp[i].best_fitness_score !== undefined) {
-
-                                num_finished += 1
-                            }
-                        }
-                        //write progress to the database
-                        result._progress = ((num_finished) / (result._num_experiments)) * 100 + '%';
-                        if (result._progress == '100%') {
-                            var finished_date = new Date();
-                            db.batches.updateByIdAsync(req.params.id, {
-                                    $set: {
-                                        _finished: finished_date,
-                                        _status: 'success',
-                                    }
-                                })
-                                .catch((err) => {
-                                    next(err);
-                                });
-                        }
-
-                        result._experiments = exp;
-                        res.send(result);
-                    })
-                    .catch((err) => {
-                        next(err);
-                    });
-            } else {
-                res.send(result);
+  db.batches
+    .findByIdAsync(req.params.id)
+    .then((result) => {
+      if (result._experiments !== undefined) {
+        db.experiments
+          .find({
+            _id: {
+              $in: result._experiments,
+            },
+          })
+          .toArrayAsync()
+          .then((exp) => {
+            var num_finished = 0;
+            for (var i = 0; i < exp.length; i++) {
+              if (
+                exp[i]._status == "success" &&
+                exp[i].best_fitness_score !== undefined
+              ) {
+                num_finished += 1;
+              }
             }
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
+            //write progress to the database
+            result._progress =
+              (num_finished / result._num_experiments) * 100 + "%";
+            if (result._progress == "100%") {
+              var finished_date = new Date();
+              db.batches
+                .updateByIdAsync(req.params.id, {
+                  $set: {
+                    _finished: finished_date,
+                    _status: "success",
+                  },
+                })
+                .catch((err) => {
+                  next(err);
+                });
+            }
 
+            result._experiments = exp;
+            res.send(result);
+          })
+          .catch((err) => {
+            next(err);
+          });
+      } else {
+        res.send(result);
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
 
 // Return single entry
 app.get("/api/v1/:collection/:id", (req, res, next) => {
-    req.collection.findByIdAsync(req.params.id)
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  req.collection
+    .findByIdAsync(req.params.id)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
-
 
 // Update existing entry
 app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
+  delete req.body._id; // Delete ID (will not update otherwise)
+  req.collection
+    .updateByIdAsync(req.params.id, {
+      $set: req.body,
+    })
+    .then((result) => {
+      if (req.params.collection === "experiments") {
+        if (req.body._scores) {
+          emitEvent("expUpdated", req);
+        } else if (req.body._status != "running") {
+          emitEvent("expUpdated", req);
+        }
+      }
 
-    delete req.body._id; // Delete ID (will not update otherwise)
-    req.collection.updateByIdAsync(req.params.id, {
-            $set: req.body
-        })
-        .then((result) => {
-            if (req.params.collection === 'experiments') {
-                if (req.body._scores) {
-                    emitEvent('expUpdated', req);
-                } else if (req.body._status != 'running') {
-                    emitEvent('expUpdated', req);
-                }
+      // Update returns the count of affected objects
+      res.send(
+        result === 1
+          ? {
+              msg: "success",
             }
-
-            // Update returns the count of affected objects
-            res.send((result === 1) ? {
-                msg: "success"
-            } : {
-                msg: "error"
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+          : {
+              msg: "error",
+            }
+      );
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
-app.delete('/api/v1/datasets/:id', async (req, res, next) => {
-    const result = {};
-    let files = [];
-    let query = '';
-    try {
-        const dataset_id = db.toObjectID(req.params.id);
-        let dataset = await db.datasets.findByIdAsync(dataset_id);
-        
-        if (dataset == null) {
-            return res.status(404).send({ message: 'dataset ' + req.params.id + ' not found'});
-        }
+app.delete("/api/v1/datasets/:id", async (req, res, next) => {
+  const result = {};
+  let files = [];
+  let query = "";
+  try {
+    const dataset_id = db.toObjectID(req.params.id);
+    let dataset = await db.datasets.findByIdAsync(dataset_id);
 
-        // if (dataset.ai && (dataset.ai.status == recommenderStatus.RUNNING || dataset.ai.status == recommenderStatus.INITIALIZING)) {
-        if (dataset.ai && ['on', 'requested'].some(status => dataset.ai.status === status)) {
-            console.log('cannot delete dataset, AI is enabled');
-            return res.status(409).send({message: 'cannot delete dataset, AI is enabled'});
-        }
-        
-        const dataset_file_id = db.toObjectID(dataset.files[0]._id);
-        files.push(...dataset.files);
-        
-        // experiments
-        query = { $or: [
-            {"_dataset_id": {"$eq": dataset_id}},
-            {"_dataset_file_id": {"$eq": dataset_file_id}},
-        ]}
-
-        let experiments = await db.experiments.find(query).toArrayAsync();
-        console.log(experiments);
-        let runningExp = experiments.find(exp => ['running', 'pending', 'suggested'].some(status => exp._status === status));
-
-        if (runningExp) {
-            console.log('cannot delete dataset, experiments running');
-            return res.status(409).send({message: 'cannot delete dataset, experiments running'});
-        }
-
-        let experimentIds = []; // maybe I don't need this one.
-        experiments.forEach(exp => {
-            experimentIds.push(exp._id);
-            files.push(...exp.files);
-        })
-        
-        // chats
-        query = { $or: [
-            {"_dataset_id": {"$eq": dataset_id}},
-            {"_experiment_id": {"$in": experimentIds}}
-        ]}
-        let chats = await db.chats.find(query).toArrayAsync();
-        let chatIds = [];
-        let chatlogIds = [];
-        chats.forEach(chat => {
-            chatIds.push(chat._id);
-            chatlogIds.push(...chat.chatlogs);
-        })
-        
-        // executions
-        query = { $or: [
-            {"_dataset_id": {"$eq": dataset_id}},
-            {"_dataset_file_id": {"$eq": dataset_file_id}},
-            {"_experiment_id": {"$in": experimentIds}}
-        ]}
-        let executions = await db.executions.find(query).toArrayAsync();
-        executions.forEach(exec => {
-            files.push(...exec.files);
-        })
-
-        // *** DELETE ***
-        result.datasetCount = await db.datasets.removeByIdAsync(dataset_id);
-        if (experiments.length > 0) {
-            result.experimentCount = await db.experiments.removeAsync({'_id': { '$in': experimentIds }});
-            console.log('experiment count');
-        }
-        if (chatIds.length > 0) {
-            result.chatlogCount = (await db.chatlogs.removeAsync({'_id': { '$in': chatlogIds }}));
-            console.log('chatlogs deleted');
-            result.chatCount = (await db.chats.removeAsync({'_id': { '$in': chatIds }}));
-            console.log('chats deleted');
-        }
-        result.fileCount = await deleteFilesFromGridstore(files);
-
-        // temp values
-        // result.datasets = dataset;
-        // result.experiments = experiments;
-        // result.chats = chats;
-        // result.executions = executions;
-        // result.files = files;
-
-        res.send(result);
-    } catch (err) {
-        next(err);
+    if (dataset == null) {
+      return res
+        .status(404)
+        .send({ message: "dataset " + req.params.id + " not found" });
     }
+
+    // if (dataset.ai && (dataset.ai.status == recommenderStatus.RUNNING || dataset.ai.status == recommenderStatus.INITIALIZING)) {
+    if (
+      dataset.ai &&
+      ["on", "requested"].some((status) => dataset.ai.status === status)
+    ) {
+      console.log("cannot delete dataset, AI is enabled");
+      return res
+        .status(409)
+        .send({ message: "cannot delete dataset, AI is enabled" });
+    }
+
+    const dataset_file_id = db.toObjectID(dataset.files[0]._id);
+    files.push(...dataset.files);
+
+    // experiments
+    query = {
+      $or: [
+        { _dataset_id: { $eq: dataset_id } },
+        { _dataset_file_id: { $eq: dataset_file_id } },
+      ],
+    };
+
+    let experiments = await db.experiments.find(query).toArrayAsync();
+    console.log(experiments);
+    let runningExp = experiments.find((exp) =>
+      ["running", "pending", "suggested"].some(
+        (status) => exp._status === status
+      )
+    );
+
+    if (runningExp) {
+      console.log("cannot delete dataset, experiments running");
+      return res
+        .status(409)
+        .send({ message: "cannot delete dataset, experiments running" });
+    }
+
+    let experimentIds = []; // maybe I don't need this one.
+    experiments.forEach((exp) => {
+      experimentIds.push(exp._id);
+      files.push(...exp.files);
+    });
+
+    // chats
+    query = {
+      $or: [
+        { _dataset_id: { $eq: dataset_id } },
+        { _experiment_id: { $in: experimentIds } },
+      ],
+    };
+    let chats = await db.chats.find(query).toArrayAsync();
+    let chatIds = [];
+    let chatlogIds = [];
+    chats.forEach((chat) => {
+      chatIds.push(chat._id);
+      chatlogIds.push(...chat.chatlogs);
+    });
+
+    // executions
+    query = {
+      $or: [
+        { _dataset_id: { $eq: dataset_id } },
+        { _dataset_file_id: { $eq: dataset_file_id } },
+        { _experiment_id: { $in: experimentIds } },
+      ],
+    };
+    let executions = await db.executions.find(query).toArrayAsync();
+    executions.forEach((exec) => {
+      files.push(...exec.files);
+    });
+
+    // *** DELETE ***
+    result.datasetCount = await db.datasets.removeByIdAsync(dataset_id);
+    if (experiments.length > 0) {
+      result.experimentCount = await db.experiments.removeAsync({
+        _id: { $in: experimentIds },
+      });
+      console.log("experiment count");
+    }
+    if (chatIds.length > 0) {
+      result.chatlogCount = await db.chatlogs.removeAsync({
+        _id: { $in: chatlogIds },
+      });
+      console.log("chatlogs deleted");
+      result.chatCount = await db.chats.removeAsync({ _id: { $in: chatIds } });
+      console.log("chats deleted");
+    }
+    result.fileCount = await deleteFilesFromGridstore(files);
+
+    // temp values
+    // result.datasets = dataset;
+    // result.experiments = experiments;
+    // result.chats = chats;
+    // result.executions = executions;
+    // result.files = files;
+
+    res.send(result);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Delete existing entry
 app.delete("/api/v1/:collection/:id", (req, res, next) => {
-    req.collection.removeByIdAsync(req.params.id)
-        .then((result) => {
-            // Remove returns the count of affected objects
-            res.send((result === 1) ? {
-                msg: "success"
-            } : {
-                msg: "error"
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+  req.collection
+    .removeByIdAsync(req.params.id)
+    .then((result) => {
+      // Remove returns the count of affected objects
+      res.send(
+        result === 1
+          ? {
+              msg: "success",
+            }
+          : {
+              msg: "error",
+            }
+      );
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
 
 // Experiment page
 app.get("/api/v1/experiments/:id", (req, res, next) => {
-    db.experiments.findByIdAsync(req.params.id)
-        .then((result) => {
-            var projP = db.projects.findByIdAsync(result._project_id, {
-                name: 1
-            }); // Find project name
-            var macP = db.machines.findByIdAsync(result._machine_id, {
-                hostname: 1,
-                address: 1
-            }); // Find machine hostname and address
-            Promise.all([projP, macP])
-                .then((results) => {
-                    res.return("experiment", {
-                        experiment: result,
-                        project: results[0],
-                        machine: results[1]
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
+  db.experiments
+    .findByIdAsync(req.params.id)
+    .then((result) => {
+      var projP = db.projects.findByIdAsync(result._project_id, {
+        name: 1,
+      }); // Find project name
+      var macP = db.machines.findByIdAsync(result._machine_id, {
+        hostname: 1,
+        address: 1,
+      }); // Find machine hostname and address
+      Promise.all([projP, macP])
+        .then((results) => {
+          res.return("experiment", {
+            experiment: result,
+            project: results[0],
+            machine: results[1],
+          });
         })
         .catch((err) => {
-            next(err);
+          next(err);
         });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 app.get("/api/v1/experiments/:id/model", (req, res, next) => {
-    let filePrefix = "model_"
-    db.experiments.findByIdAsync(req.params.id, {"files": 1})
-        .then((result) => {
-            if(result === null) {
-                res.status(400);
-                res.send({ error: "Experiment " + req.params.id + " does not exist"});
-                return;
-            }
-            for(let i=0; i<result.files.length; i++){
-                if(result.files[i].filename.includes(filePrefix)) {
-                    res.send(result.files[i])
-                    return;
-                }
-            }
-            res.status(400);
-            res.send({error: "'" + filePrefix + "' file for experiment " + req.params.id + " does not exist"});
-            return;
-        })
-        .catch((err) => {
-            next(err);
-        });
+  let filePrefix = "model_";
+  db.experiments
+    .findByIdAsync(req.params.id, { files: 1 })
+    .then((result) => {
+      if (result === null) {
+        res.status(400);
+        res.send({ error: "Experiment " + req.params.id + " does not exist" });
+        return;
+      }
+      for (let i = 0; i < result.files.length; i++) {
+        if (result.files[i].filename.includes(filePrefix)) {
+          res.send(result.files[i]);
+          return;
+        }
+      }
+      res.status(400);
+      res.send({
+        error:
+          "'" +
+          filePrefix +
+          "' file for experiment " +
+          req.params.id +
+          " does not exist",
+      });
+      return;
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 app.get("/api/v1/experiments/:id/script", (req, res, next) => {
-    let filePrefix = "scripts_"
-    db.experiments.findByIdAsync(req.params.id, {"files": 1})
-        .then((result) => {
-            if(result === null) {
-                res.status(400);
-                res.send({ error: "Experiment " + req.params.id + " does not exist"});
-                return;
-            }
-            for(let i=0; i<result.files.length; i++){
-                if(result.files[i].filename.includes(filePrefix)) {
-                    res.send(result.files[i])
-                    return;
-                }
-            }
-            res.status(400);
-            res.send({error: "'" + filePrefix + "' file for experiment " + req.params.id + " does not exist"});
-            return;
-        })
-        .catch((err) => {
-            next(err);
-        });
+  let filePrefix = "scripts_";
+  db.experiments
+    .findByIdAsync(req.params.id, { files: 1 })
+    .then((result) => {
+      if (result === null) {
+        res.status(400);
+        res.send({ error: "Experiment " + req.params.id + " does not exist" });
+        return;
+      }
+      for (let i = 0; i < result.files.length; i++) {
+        if (result.files[i].filename.includes(filePrefix)) {
+          res.send(result.files[i]);
+          return;
+        }
+      }
+      res.status(400);
+      res.send({
+        error:
+          "'" +
+          filePrefix +
+          "' file for experiment " +
+          req.params.id +
+          " does not exist",
+      });
+      return;
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
 
 // Return all experiments for a project
 app.get("/api/v1/projects/:id/experiments", (req, res, next) => {
-    db.experiments.find({
-            _project_id: db.toObjectID(req.params.id)
-        }).toArrayAsync() // Get experiments for project
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  db.experiments
+    .find({
+      _project_id: db.toObjectID(req.params.id),
+    })
+    .toArrayAsync() // Get experiments for project
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Delete all experiments for a project
 app.delete("/api/v1/projects/:id/experiments", (req, res, next) => {
-    db.experiments.removeAsync({
-            _project_id: db.toObjectID(req.params.id)
-        }) // Get experiments for project
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  db.experiments
+    .removeAsync({
+      _project_id: db.toObjectID(req.params.id),
+    }) // Get experiments for project
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Gets the status of an experiment
 app.get("/api/v1/experiments/:id/status", (req, res, next) => {
-    db.experiments.findByIdAsync(req.params.id, {
-            _status: 1
-        })
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  db.experiments
+    .findByIdAsync(req.params.id, {
+      _status: 1,
+    })
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // TODO Consider renaming API endpoint
 // Constructs a project from an uploaded .json file
-app.post("/api/v1/projects/schema", upload.single("schema"), (req, res, next) => {
+app.post(
+  "/api/v1/projects/schema",
+  upload.single("schema"),
+  (req, res, next) => {
     // Extract file name
     var name = req.file.originalname.replace(".json", "");
     // Extract .json as object
     var schema = JSON.parse(req.file.buffer.toString());
     // Set category as empty
-    var category = 'ML';
+    var category = "ML";
 
     // Store
-    db.projects.insertAsync({
-            name: name,
-            schema: schema,
-            category: category
-        }, {})
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
+    db.projects
+      .insertAsync(
+        {
+          name: name,
+          schema: schema,
+          category: category,
+        },
+        {}
+      )
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+);
 
 // Adds a category for an existing project
 app.put("/api/v1/projects/:id/category", jsonParser, (req, res, next) => {
-    db.projects.updateByIdAsync(req.params.id, {
-            $set: {
-                category: req.body.category
+  db.projects
+    .updateByIdAsync(req.params.id, {
+      $set: {
+        category: req.body.category,
+      },
+    })
+    .then((result) => {
+      res.send(
+        result.ok === 1
+          ? {
+              msg: "success",
             }
-        })
-        .then((result) => {
-            res.send((result.ok === 1) ? {
-                msg: "success"
-            } : {
-                msg: "error"
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+          : {
+              msg: "error",
+            }
+      );
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 var optionChecker = (schema, obj) => {
-    //console.log('schema');
-    //console.log(schema);
-    //console.log('obj');
-    //console.log(obj);
-    /*for (var prop in schema) {
+  //console.log('schema');
+  //console.log(schema);
+  //console.log('obj');
+  //console.log(obj);
+  /*for (var prop in schema) {
       var schemaField = schema[prop];
       var val = obj[prop];
       // Check field exists
@@ -952,856 +1069,957 @@ var optionChecker = (schema, obj) => {
             }
     );
     }*/
-    return {
-        success: "Options validated"
-    };
+  return {
+    success: "Options validated",
+  };
 };
-var retPrevExp = function(projId, options, datasetId) {
-    return db.experiments.find({
-        _dataset_id: db.toObjectID(datasetId),
-        _project_id: db.toObjectID(projId),
-        _options: options,
-        _status: "success"
-    }).toArrayAsync(); // Get project names
-}
+var retPrevExp = function (projId, options, datasetId) {
+  return db.experiments
+    .find({
+      _dataset_id: db.toObjectID(datasetId),
+      _project_id: db.toObjectID(projId),
+      _options: options,
+      _status: "success",
+    })
+    .toArrayAsync(); // Get project names
+};
 
 var submitJob = (projId, options, files, datasetId, username) => {
-    //console.log("submitJob (", projId, options, files, datasetId, username, ")");
+  //console.log("submitJob (", projId, options, files, datasetId, username, ")");
 
-    //check for duplicate experiments
-    return new Promise((resolve, reject) => {
-        if (!datasetId || datasetId == undefined || datasetId == "") {
-            reject({
-                error: "Experiment failed to run: datasetId not defined"
-            });
-            return;
+  //check for duplicate experiments
+  return new Promise((resolve, reject) => {
+    if (!datasetId || datasetId == undefined || datasetId == "") {
+      reject({
+        error: "Experiment failed to run: datasetId not defined",
+      });
+      return;
+    }
+
+    db.datasets
+      .findByIdAsync(datasetId, {
+        files: 1,
+      })
+      .then((dataset) => {
+        if (
+          dataset["files"] === undefined ||
+          dataset["files"][0]["prediction_type"] === undefined
+        ) {
+          reject({
+            error: `Experiment failed to run: prediction_type not defined for dataset ${datasetId}`,
+          });
+          return;
         }
 
-        db.datasets.findByIdAsync(datasetId, {
-            files: 1
-        })
-        .then((dataset) => {
-            if ((dataset['files'] === undefined) || (dataset['files'][0]['prediction_type'] === undefined)) {
-                reject({
-                    error: `Experiment failed to run: prediction_type not defined for dataset ${datasetId}`
-                });
-                return;
+        var predictionType = dataset["files"][0]["prediction_type"];
+        console.log(`found dataset prediction type ${predictionType}`);
+
+        // find machines that could potentally handle the project
+        db.machines
+          .find(
+            {
+              //_project_id: db.toObjectID(projId)
+            },
+            {
+              address: 1,
+            }
+          )
+          .toArrayAsync() // Get machine hostnames
+          .then((machines) => {
+            console.log("===machines: ", machines);
+            console.log("===machines.projects: ", machines.projects);
+
+            console.log("===machines.length: ", machines.length);
+
+            if (machines.length == 0) {
+              reject({
+                error:
+                  "Experiment failed to run: project '" +
+                  projId +
+                  "' not suppored by any machine.",
+              });
+              return;
             }
 
-            var predictionType = dataset['files'][0]['prediction_type']
-            console.log(`found dataset prediction type ${predictionType}`)
+            // Check machine capacities
+            var macsP = Array(machines.length);
+            for (var i = 0; i < machines.length; i++) {
+              macsP[i] = rp({
+                uri: machines[i].address + "/projects/" + projId + "/capacity",
+                method: "GET",
+                data: null,
+              });
+            }
 
-            // find machines that could potentally handle the project
-            db.machines.find({
-                //_project_id: db.toObjectID(projId)
-                }, {
-                    address: 1
-                }).toArrayAsync() // Get machine hostnames
-                .then((machines) => {
-                    //console.log("===machines: ", machines)
-                    //console.log("===machines.projects: ", machines.projects)
+            console.log("===macsP: ", macsP);
 
-                    if (machines.length == 0) {
-                        reject({
-                            error: "Experiment failed to run: project '" + projId + "' not suppored by any machine."
-                        });
-                        return;
+            // Loop over reponses
+            Promise.any(macsP)
+              // First machine with capacity, so use
+              .then((availableMac) => {
+                availableMac = JSON.parse(availableMac);
+
+                console.log("===availableMac: ", availableMac);
+
+                // Create experiment
+                db.experiments
+                  .insertAsync(
+                    {
+                      _options: options,
+                      _dataset_id: db.toObjectID(datasetId),
+                      _project_id: db.toObjectID(projId),
+                      _machine_id: db.toObjectID(availableMac._id),
+                      _prediction_type: predictionType,
+                      username: username,
+                      files: [],
+                      _status: "running",
+                    },
+                    {}
+                  )
+                  .then((exp) => {
+                    options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+
+                    if (datasetId == "") {
+                      var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
+                    } else {
+                      var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
                     }
-
-                    // Check machine capacities
-                    var macsP = Array(machines.length);
-                    for (var i = 0; i < machines.length; i++) {
-                        macsP[i] = rp({
-                            uri: machines[i].address + "/projects/" + projId + "/capacity",
-                            method: "GET",
-                            data: null
-                        });
-                    }
-
-
-                    // Loop over reponses
-                    Promise.any(macsP)
-                        // First machine with capacity, so use
-                        .then((availableMac) => {
-                            availableMac = JSON.parse(availableMac);
-
-                            // Create experiment
-                            db.experiments.insertAsync({
-                                    _options: options,
-                                    _dataset_id: db.toObjectID(datasetId),
-                                    _project_id: db.toObjectID(projId),
-                                    _machine_id: db.toObjectID(availableMac._id),
-                                    _prediction_type: predictionType,
-                                    username: username,
-                                    files: [],
-                                    _status: "running"
-                                }, {})
-                                .then((exp) => {
-                                    options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-
-                                    if (datasetId == "") {
-                                        var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
-                                    } else {
-                                        var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
-                                    }
-                                    // Wait for file upload to complete
-                                    Promise.all(filesP)
-                                        .then(() => {
-                                            // Send project
-                                            rp({
-                                                    uri: availableMac.address + "/projects/" + projId,
-                                                    method: "POST",
-                                                    json: options,
-                                                    gzip: true
-                                                })
-                                                .then((body) => {
-                                                    resolve(body);
-                                                })
-                                                .catch((err) => {
-                                                    //console.log("=======\n=======\n=======\n=======\n=======\n=======\n======")
-                                                    console.log(`Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`)
-                                                    db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-                                                    reject({
-                                                        error: `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`
-                                                    });
-                                                });
-                                        })
-                                        .catch((err) => {
-                                            reject(err);
-                                        });
-                                })
-                                .catch((err) => {
-                                    reject(err);
-                                });
+                    // Wait for file upload to complete
+                    Promise.all(filesP)
+                      .then(() => {
+                        // Send project
+                        rp({
+                          uri: availableMac.address + "/projects/" + projId,
+                          method: "POST",
+                          json: options,
+                          gzip: true,
                         })
-                        // No machines responded, therefore fail
-                        .catch(() => {
+                          .then((body) => {
+                            resolve(body);
+                          })
+                          .catch((err) => {
+                            //console.log("=======\n=======\n=======\n=======\n=======\n=======\n======")
+                            console.log(
+                              `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`
+                            );
+                            db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
                             reject({
-                                error: "No machine capacity available"
+                              error: `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`,
                             });
-                        });
-                })
-                // Could not retireve dataset
-                .catch(() => {
-                    reject({
-                        error: `Unable to find dataset with db id ${datasetId}`
-                    });
+                          });
+                      })
+                      .catch((err) => {
+                        reject(err);
+                      });
+                  })
+                  .catch((err) => {
+                    reject(err);
+                  });
+              })
+              // No machines responded, therefore fail
+              .catch(() => {
+                reject({
+                  error: "No machine capacity available",
                 });
-            })
-            .catch((err) => {
-                reject(err);
+              });
+          })
+          // Could not retireve dataset
+          .catch(() => {
+            reject({
+              error: `Unable to find dataset with db id ${datasetId}`,
             });
-    });
-    //};
+          });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+  //};
 };
 
 // Constructs an experiment
-app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), (req, res, next) => {
+app.post(
+  "/api/v1/projects/:id/experiment",
+  jsonParser,
+  upload.array("_files"),
+  (req, res, next) => {
     var projId = req.params.id;
     var dataset;
     var ai_score;
 
-    users.returnUserData(req)
-        .then((user) => {
-            var username = user['username'];
-            db.projects.findByIdAsync(projId, {
-                    schema: 1
-                })
-                .then((project) => {
-                    if (project === null) {
-                        res.status(400);
-                        console.log("400 ERROR: Project ID " + projId + " does not exist")
-                        res.send({
-                            error: "Project ID " + projId + " does not exist"
-                        });
-                    } else {
-                        var obj = Object.assign(req.query, req.body);
+    users
+      .returnUserData(req)
+      .then((user) => {
+        var username = user["username"];
+        db.projects
+          .findByIdAsync(projId, {
+            schema: 1,
+          })
+          .then((project) => {
+            if (project === null) {
+              res.status(400);
+              console.log(
+                "400 ERROR: Project ID " + projId + " does not exist"
+              );
+              res.send({
+                error: "Project ID " + projId + " does not exist",
+              });
+            } else {
+              var obj = Object.assign(req.query, req.body);
 
-                        if (obj['parameters']) {
-                            old_obj = obj;
-                            obj = new Object(obj['parameters']);
-                            obj['dataset'] = old_obj['dataset_id'];
-                            ai_score = old_obj['ai_score'];
-                            dataset = old_obj['dataset_id']
-                            username = old_obj['username'];
-                        }
-                        if ("dataset" in obj) {
-                            dataset = obj['dataset'];
-                            delete obj['dataset'];
-                        }
-                        var files = req.files;
+              if (obj["parameters"]) {
+                old_obj = obj;
+                obj = new Object(obj["parameters"]);
+                obj["dataset"] = old_obj["dataset_id"];
+                ai_score = old_obj["ai_score"];
+                dataset = old_obj["dataset_id"];
+                username = old_obj["username"];
+              }
+              if ("dataset" in obj) {
+                dataset = obj["dataset"];
+                delete obj["dataset"];
+              }
+              var files = req.files;
 
-                        if (dataset === undefined) {
-                            res.status(500);
-                            res.send({
-                                error: "Parameter body.'dataset' or param.'dataset_id' must be defined"
-                            });
-                        }
-
-                        // Validate
-                        var validation = optionChecker(project.schema, obj, dataset);
-                        if (validation.error) {
-                            res.status(400);
-                            console.log("400 Validation error: " + validation)
-                            res.send(validation);
-                        } else {
-                            //console.log(projId, obj, files, dataset, username);
-                            submitJob(projId, obj, files, dataset, username)
-                                .then((resp) => {
-                                    res.status(201);
-                                    res.send(resp);
-                                })
-                                .catch((err) => {
-                                    // TODO Check comprehensiveness of error catching
-                                    if (err.error === "No machine capacity available") {
-                                        res.status(503);
-                                        res.statusMessage = "All experiment nodes busy."
-                                        res.send(err);
-                                    } else if ((err.error !== undefined) && err.error.startsWith("Experiment failed to run")) {
-                                        res.status(500);
-                                        res.send(err);
-                                    }
-                                     else {
-                                        //next(err);
-                                        res.status(500);
-                                        res.send({
-                                            error: "Experiment failed to run: unknown error from submitJob()"
-                                        });
-                                    }
-                                });
-
-                                        
-                        }
-                    }
-                })
-                .catch((err) => {
-                    next(err);
+              if (dataset === undefined) {
+                res.status(500);
+                res.send({
+                  error:
+                    "Parameter body.'dataset' or param.'dataset_id' must be defined",
                 });
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
+              }
 
+              // Validate
+              var validation = optionChecker(project.schema, obj, dataset);
+              if (validation.error) {
+                res.status(400);
+                console.log("400 Validation error: " + validation);
+                res.send(validation);
+              } else {
+                //console.log(projId, obj, files, dataset, username);
+                submitJob(projId, obj, files, dataset, username)
+                  .then((resp) => {
+                    res.status(201);
+                    res.send(resp);
+                  })
+                  .catch((err) => {
+                    // TODO Check comprehensiveness of error catching
+                    if (err.error === "No machine capacity available") {
+                      res.status(503);
+                      res.statusMessage = "All experiment nodes busy.";
+                      res.send(err);
+                    } else if (
+                      err.error !== undefined &&
+                      err.error.startsWith("Experiment failed to run")
+                    ) {
+                      res.status(500);
+                      res.send(err);
+                    } else {
+                      //next(err);
+                      res.status(500);
+                      res.send({
+                        error:
+                          "Experiment failed to run: unknown error from submitJob()",
+                      });
+                    }
+                  });
+              }
+            }
+          })
+          .catch((err) => {
+            next(err);
+          });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+);
 
 // Constructs an experiment
-app.post("/api/v1/execPython",  (req, res, next) => {
-    var projId = req.params.id;
-    var dataset;
-    var ai_score;
+app.post("/api/v1/execPython", (req, res, next) => {
+  var projId = req.params.id;
+  var dataset;
+  var ai_score;
 
-    users.returnUserData(req)
-        .then((user) => {
-            var username = user['username'];
-            db.projects.findByIdAsync(projId, {
-                    schema: 1
-                })
-                .then((project) => {
-                    if (project === null) {
-                        res.status(400);
-                        console.log("400 ERROR: Project ID " + projId + " does not exist")
-                        res.send({
-                            error: "Project ID " + projId + " does not exist"
-                        });
-                    } else {
-                        var obj = Object.assign(req.query, req.body);
+  users
+    .returnUserData(req)
+    .then((user) => {
+      var username = user["username"];
+      db.projects
+        .findByIdAsync(projId, {
+          schema: 1,
+        })
+        .then((project) => {
+          if (project === null) {
+            res.status(400);
+            console.log("400 ERROR: Project ID " + projId + " does not exist");
+            res.send({
+              error: "Project ID " + projId + " does not exist",
+            });
+          } else {
+            var obj = Object.assign(req.query, req.body);
 
-                        if (obj['parameters']) {
-                            old_obj = obj;
-                            obj = new Object(obj['parameters']);
-                            obj['dataset'] = old_obj['dataset_id'];
-                            ai_score = old_obj['ai_score'];
-                            dataset = old_obj['dataset_id']
-                            username = old_obj['username'];
-                        }
-                        if ("dataset" in obj) {
-                            dataset = obj['dataset'];
-                            delete obj['dataset'];
-                        }
-                        var files = req.files;
-                        submitPythonJob(projId, obj, files, dataset, username)
-                        .then((resp) => {
-                            res.status(201);
-                            res.send(resp);
-                        })
-                        .catch((err) => {
-                            // TODO Check comprehensiveness of error catching
-                            if (err.error === "No machine capacity available") {
-                                res.status(503);
-                                res.statusMessage = "All experiment nodes busy."
-                                res.send(err);
-                            } else if ((err.error !== undefined) && err.error.startsWith("Experiment failed to run")) {
-                                res.status(500);
-                                res.send(err);
-                            }
-                             else {
-                                //next(err);
-                                res.status(500);
-                                res.send({
-                                    error: "Experiment failed to run: unknown error from submitJob()"
-                                });
-                            }
-                        });
-
-                    }
-                })
-                .catch((err) => {
-                    next(err);
-                });
+            if (obj["parameters"]) {
+              old_obj = obj;
+              obj = new Object(obj["parameters"]);
+              obj["dataset"] = old_obj["dataset_id"];
+              ai_score = old_obj["ai_score"];
+              dataset = old_obj["dataset_id"];
+              username = old_obj["username"];
+            }
+            if ("dataset" in obj) {
+              dataset = obj["dataset"];
+              delete obj["dataset"];
+            }
+            var files = req.files;
+            submitPythonJob(projId, obj, files, dataset, username)
+              .then((resp) => {
+                res.status(201);
+                res.send(resp);
+              })
+              .catch((err) => {
+                // TODO Check comprehensiveness of error catching
+                if (err.error === "No machine capacity available") {
+                  res.status(503);
+                  res.statusMessage = "All experiment nodes busy.";
+                  res.send(err);
+                } else if (
+                  err.error !== undefined &&
+                  err.error.startsWith("Experiment failed to run")
+                ) {
+                  res.status(500);
+                  res.send(err);
+                } else {
+                  //next(err);
+                  res.status(500);
+                  res.send({
+                    error:
+                      "Experiment failed to run: unknown error from submitJob()",
+                  });
+                }
+              });
+          }
         })
         .catch((err) => {
-            next(err);
+          next(err);
         });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Submit job with retry
-var submitJobRetry = function(projId, options, batch_id, retryT) {
-    submitJob(projId, options)
-        .then((foo) => {
-            // Update batch with experiment id
-            experiment_id = foo._id.toString();
-            db.batches.updateByIdAsync(batch_id, {
-                    $push: {
-                        _experiments: db.toObjectID(experiment_id)
-                    }
-                })
-                .then((result) => {
-                    // Update returns the count of affected objects
-                    res.send((result === 1) ? {
-                        msg: "success"
-                    } : {
-                        msg: "error"
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
+var submitJobRetry = function (projId, options, batch_id, retryT) {
+  submitJob(projId, options)
+    .then((foo) => {
+      // Update batch with experiment id
+      experiment_id = foo._id.toString();
+      db.batches
+        .updateByIdAsync(batch_id, {
+          $push: {
+            _experiments: db.toObjectID(experiment_id),
+          },
         })
-        .catch(() => {
-            // Retry in a random interval
-            setTimeout(() => {
-                submitJobRetry(projId, options, batch_id, retryT);
-            }, retryT * Math.random());
+        .then((result) => {
+          // Update returns the count of affected objects
+          res.send(
+            result === 1
+              ? {
+                  msg: "success",
+                }
+              : {
+                  msg: "error",
+                }
+          );
+        })
+        .catch((err) => {
+          next(err);
         });
+    })
+    .catch(() => {
+      // Retry in a random interval
+      setTimeout(() => {
+        submitJobRetry(projId, options, batch_id, retryT);
+      }, retryT * Math.random());
+    });
 };
 
 // Constructs a batch job from a list of options
 app.post("/api/v1/projects/:id/batch", jsonParser, (req, res, next) => {
-    var num_experiments = req.body.length;
-    var projId = req.params.id;
-    var retryTimeout = parseInt(req.query.retry);
-    var dataset;
-    // Set default as 5 seconds
-    if (isNaN(retryTimeout) || retryTimeout <= 0) {
-        retryTimeout = 5;
-    }
-    // Check project actually exists
-    db.projects.findByIdAsync(projId, {
-            schema: 1
-        })
-        .then((project) => {
-            if (project === null) {
-                res.status(400);
-                res.send({
-                    error: "Project ID " + projId + " does not exist"
-                });
-            } else {
-                var expList = req.body;
-                // Validate
-                var validationList = [];
-                for (var i = 0; i < expList.length; i++) {
-                    var validation = optionChecker(project.schema, expList[i], dataset);
-                    if (validation.error) {
-                        validationList.push(validation);
-                    }
-                }
-                if (validationList.length > 0) {
-                    res.status(400);
-                    res.send(validationList[0]); // Send first validation error       
-                } else {
-                    // Create batch
-                    db.batches.insertAsync({
-                            _project_id: db.toObjectID(projId),
-                            _status: "running",
-                            _num_experiments: num_experiments,
-                            _started: new Date()
-                        }, {})
-                        .then((result) => {
-                            batch_id = result.ops[0]._id.toString();
-                            for (var j = 0; j < expList.length; j++) {
-                                submitJobRetry(projId, expList[j], batch_id, retryTimeout);
-                            }
-                            res.send({
-                                status: "Started",
-                                _id: batch_id
-                            });
-                            res.send(result);
-                        })
-                        .catch((err) => {
-                            next(err);
-                        });
-                    // Loop over jobs
-                }
-            }
-        })
-        .catch((err) => {
-            next(err);
+  var num_experiments = req.body.length;
+  var projId = req.params.id;
+  var retryTimeout = parseInt(req.query.retry);
+  var dataset;
+  // Set default as 5 seconds
+  if (isNaN(retryTimeout) || retryTimeout <= 0) {
+    retryTimeout = 5;
+  }
+  // Check project actually exists
+  db.projects
+    .findByIdAsync(projId, {
+      schema: 1,
+    })
+    .then((project) => {
+      if (project === null) {
+        res.status(400);
+        res.send({
+          error: "Project ID " + projId + " does not exist",
         });
+      } else {
+        var expList = req.body;
+        // Validate
+        var validationList = [];
+        for (var i = 0; i < expList.length; i++) {
+          var validation = optionChecker(project.schema, expList[i], dataset);
+          if (validation.error) {
+            validationList.push(validation);
+          }
+        }
+        if (validationList.length > 0) {
+          res.status(400);
+          res.send(validationList[0]); // Send first validation error
+        } else {
+          // Create batch
+          db.batches
+            .insertAsync(
+              {
+                _project_id: db.toObjectID(projId),
+                _status: "running",
+                _num_experiments: num_experiments,
+                _started: new Date(),
+              },
+              {}
+            )
+            .then((result) => {
+              batch_id = result.ops[0]._id.toString();
+              for (var j = 0; j < expList.length; j++) {
+                submitJobRetry(projId, expList[j], batch_id, retryTimeout);
+              }
+              res.send({
+                status: "Started",
+                _id: batch_id,
+              });
+              res.send(result);
+            })
+            .catch((err) => {
+              next(err);
+            });
+          // Loop over jobs
+        }
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Adds started time to experiment
 app.put("/api/v1/experiments/:id/started", (req, res, next) => {
-    mediator.emit("experiments:" + req.params.id + ":started"); // Emit event
+  mediator.emit("experiments:" + req.params.id + ":started"); // Emit event
 
-    db.experiments.updateByIdAsync(req.params.id, {
-            $set: {
-                _started: new Date()
+  db.experiments
+    .updateByIdAsync(req.params.id, {
+      $set: {
+        _started: new Date(),
+      },
+    })
+    .then((result) => {
+      emitEvent("expStarted", req);
+
+      // Update returns the count of affected objects
+      res.send(
+        result === 1
+          ? {
+              msg: "success",
             }
-        })
-        .then((result) => {
-            emitEvent('expStarted', req);
-
-            // Update returns the count of affected objects
-            res.send((result === 1) ? {
-                msg: "success"
-            } : {
-                msg: "error"
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+          : {
+              msg: "error",
+            }
+      );
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Adds finished time to experiment
 app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
-    mediator.emit("experiments:" + req.params.id + ":finished"); // Emit event
+  mediator.emit("experiments:" + req.params.id + ":finished"); // Emit event
 
-    db.experiments.updateByIdAsync(req.params.id, {
-            $set: {
-                _finished: new Date()
+  db.experiments
+    .updateByIdAsync(req.params.id, {
+      $set: {
+        _finished: new Date(),
+      },
+    })
+    .then((result) => {
+      // Update returns the count of affected objects
+      res.send(
+        result === 1
+          ? {
+              msg: "success",
             }
-        })
-        .then((result) => {
-            // Update returns the count of affected objects
-            res.send((result === 1) ? {
-                msg: "success"
-            } : {
-                msg: "error"
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+          : {
+              msg: "error",
+            }
+      );
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
-var processExperimentFiles = function(experiment, files) {
-    var filesP = [];
-    if (files !== undefined) {
-        filesP = Array(files.length);
+var processExperimentFiles = function (experiment, files) {
+  var filesP = [];
+  if (files !== undefined) {
+    filesP = Array(files.length);
 
-        var _saveGFSFile = function(fileId, fileObj, replace) {
-            // Open new file
-            var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {
-                metadata: {
-                    contentType: fileObj.mimetype
-                },
-                promiseLibrary: Promise
-            });
-            gfs.open((err, gfs) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    // Write from buffer and flush to db
-                    gfs.write(fileObj.buffer, true)
-                        .then((gfs) => {
-                            if (!replace) {
-                                // Save file reference
-                                filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
-                                    $push: {
-                                        files: {
-                                            _id: gfs.fileId,
-                                            filename: gfs.filename,
-                                            mimetype: gfs.metadata.contentType,
-                                            timestamp: Date.now()
-                                        }
-                                    }
-                                });
-                            }
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                        });
-                }
-            });
-        };
-
-        var saveGFSFile = function(fileObj) {
-            // Check if file needs to be replaced
-            var oldFile = _.find(experiment.files, {
-                filename: fileObj.originalname
-            });
-            if (oldFile) {
-                // Delete old file
-                var gfs = new db.GridStore(db, oldFile._id, "w", {
-                    promiseLibrary: Promise
+    var _saveGFSFile = function (fileId, fileObj, replace) {
+      // Open new file
+      var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {
+        metadata: {
+          contentType: fileObj.mimetype,
+        },
+        promiseLibrary: Promise,
+      });
+      gfs.open((err, gfs) => {
+        if (err) {
+          console.log(err);
+        } else {
+          // Write from buffer and flush to db
+          gfs
+            .write(fileObj.buffer, true)
+            .then((gfs) => {
+              if (!replace) {
+                // Save file reference
+                filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
+                  $push: {
+                    files: {
+                      _id: gfs.fileId,
+                      filename: gfs.filename,
+                      mimetype: gfs.metadata.contentType,
+                      timestamp: Date.now(),
+                    },
+                  },
                 });
-                gfs.unlinkAsync()
-                    .then(() => {
-                        _saveGFSFile(oldFile._id, fileObj, true);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            } else {
-                // Save new file with new ID
-                _saveGFSFile(new db.ObjectID(), fileObj, false);
-            }
-        };
-
-        for (var i = 0; i < files.length; i++) {
-            saveGFSFile(files[i]); // Save file in function closure
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         }
-    }
+      });
+    };
 
-    return filesP;
+    var saveGFSFile = function (fileObj) {
+      // Check if file needs to be replaced
+      var oldFile = _.find(experiment.files, {
+        filename: fileObj.originalname,
+      });
+      if (oldFile) {
+        // Delete old file
+        var gfs = new db.GridStore(db, oldFile._id, "w", {
+          promiseLibrary: Promise,
+        });
+        gfs
+          .unlinkAsync()
+          .then(() => {
+            _saveGFSFile(oldFile._id, fileObj, true);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        // Save new file with new ID
+        _saveGFSFile(new db.ObjectID(), fileObj, false);
+      }
+    };
+
+    for (var i = 0; i < files.length; i++) {
+      saveGFSFile(files[i]); // Save file in function closure
+    }
+  }
+
+  return filesP;
 };
 // sorts an array of objects according to one field
 // call like this: sortObjArray(myArray, "name" );
 // it will modify the input array
-sortObjArray = function(arr, field) {
-    //console.log(arr['timestamp']);
-    return arr.sort(
-        function compare(a, b) {
-            if (a[field] > b[field])
-                return -1;
-            if (a[field] < b[field])
-                return 1;
-            return 0;
-        }
-    );
-}
+sortObjArray = function (arr, field) {
+  //console.log(arr['timestamp']);
+  return arr.sort(function compare(a, b) {
+    if (a[field] > b[field]) return -1;
+    if (a[field] < b[field]) return 1;
+    return 0;
+  });
+};
 
 // call like this: uniqueDishes = removeDuplicatesFromObjArray(dishes, "dishName");
 // it will NOT modify the input array
 // input array MUST be sorted by the same field (asc or desc doesn't matter)
-removeDuplicatesFromObjArray = function(arr, field) {
-    var u = [];
-    arr.reduce(function(a, b) {
-        if (a[field] !== b[field]) u.push(b);
-        return b;
-    }, []);
-    return u;
-}
-
-
-//associate files from a  dataset with an experiment
-var linkDataset = function(experiment, datasetId) {
-    var filesP = [];
-    db.datasets.findByIdAsync(datasetId, {
-            files: 1
-        })
-        .then((dataset) => {
-            if (dataset && (dataset['files'] !== undefined)) {
-            //if (dataset['files'] !== undefined) {
-                untrimmed = dataset['files'];
-                //sort and trim to get latest unique files
-                sorted = sortObjArray(sortObjArray(untrimmed, 'filename'), 'timestamp');
-                files = removeDuplicatesFromObjArray(sorted, 'filename');
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    if (file['mimetype'] && file['mimetype'] == "text/csv") {
-                        //console.log(file['mimetype']);
-                        filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
-                            $push: {
-                                files: file
-                            }
-                        });
-                    }
-                };
-            }
-        })
-    return filesP;
+removeDuplicatesFromObjArray = function (arr, field) {
+  var u = [];
+  arr.reduce(function (a, b) {
+    if (a[field] !== b[field]) u.push(b);
+    return b;
+  }, []);
+  return u;
 };
 
-
-/**
-* Load a dataset into the filestore
-*
-* @ param fileObj
-* 
-* @return Promise that returns the fileId
-*
-*/
-var stageDatasetFile = function(fileObj) {
-    console.log(`stageDatasetFile: ${fileObj.originalname}`)
-
-    var fileId
-    // validate the file meets size requirements
-    return validateStagingFile(fileObj)
-    // open the gridStore
-    .then((result) => {
-        return new Promise((resolve, reject) => { 
-            fileId = new db.ObjectID()
-
-            var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
-                metadata: {
-                    contentType: fileObj.mimetype
-                },
-                promiseLibrary: Promise
+//associate files from a  dataset with an experiment
+var linkDataset = function (experiment, datasetId) {
+  var filesP = [];
+  db.datasets
+    .findByIdAsync(datasetId, {
+      files: 1,
+    })
+    .then((dataset) => {
+      if (dataset && dataset["files"] !== undefined) {
+        //if (dataset['files'] !== undefined) {
+        untrimmed = dataset["files"];
+        //sort and trim to get latest unique files
+        sorted = sortObjArray(sortObjArray(untrimmed, "filename"), "timestamp");
+        files = removeDuplicatesFromObjArray(sorted, "filename");
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          if (file["mimetype"] && file["mimetype"] == "text/csv") {
+            //console.log(file['mimetype']);
+            filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
+              $push: {
+                files: file,
+              },
             });
+          }
+        }
+      }
+    });
+  return filesP;
+};
 
-            resolve(gridStore)
-        })
-    })
-    // write and save the file
-    .then((gridStore) => {
-        return gridStore.openAsync()
-    })
-    .then((gridStore) => {
-        return gridStore.write(fileObj.buffer, true)
-    })
+/**
+ * Load a dataset into the filestore
+ *
+ * @ param fileObj
+ *
+ * @return Promise that returns the fileId
+ *
+ */
+var stageDatasetFile = function (fileObj) {
+  console.log(`stageDatasetFile: ${fileObj.originalname}`);
+
+  var fileId;
+  // validate the file meets size requirements
+  return (
+    validateStagingFile(fileObj)
+      // open the gridStore
+      .then((result) => {
+        return new Promise((resolve, reject) => {
+          fileId = new db.ObjectID();
+
+          var gridStore = new db.GridStore(
+            db,
+            fileId,
+            fileObj.originalname,
+            "w",
+            {
+              metadata: {
+                contentType: fileObj.mimetype,
+              },
+              promiseLibrary: Promise,
+            }
+          );
+
+          resolve(gridStore);
+        });
+      })
+      // write and save the file
+      .then((gridStore) => {
+        return gridStore.openAsync();
+      })
+      .then((gridStore) => {
+        return gridStore.write(fileObj.buffer, true);
+      })
+      .then((result) => {
+        return fileId;
+      })
+      .catch((err) => {
+        console.log(`error in stageDatasetFile: ${err}`);
+        throw err;
+      })
+  );
+};
+
+/**
+ * Verify that the size/num features/num rows is within acceptable parameters
+ *
+ */
+var validateStagingFile = function (fileObj) {
+  return new Promise((resolve, reject) => {
+    console.log(`fileSize: ${fileObj.size}`);
+    if (fileObj.size > settings["MAX_FILE_SIZE"])
+      throw new Error(
+        `Staging file validation failed, file size is ${fileObj.size} which exceeds ${settings["MAX_FILE_SIZE"]}.`
+      );
+    resolve(true);
+  });
+};
+
+/**
+ * Verify that the metadata for a file to be registered.
+ *
+ * @Promise that returns a bool
+ */
+var validateDatasetMetadata = function (metadata) {
+  // verify that username is one of the existing users
+  // verify that the dataset name is not already registered in the database
+
+  return new Promise((resolve, reject) => {
+    if (metadata.username != "testuser")
+      throw new Error(
+        `Metadata validation failed, username '${metadata.username}' does not exist.`
+      );
+    resolve(true);
+  })
     .then((result) => {
-        return fileId
+      return db.datasets.countAsync({ name: metadata.name });
     })
-    .catch((err) => {
-        console.log(`error in stageDatasetFile: ${err}`)
-        throw err
-    })
-}
-
-
-
-/**
-* Verify that the size/num features/num rows is within acceptable parameters
-*
-*/
-var validateStagingFile = function(fileObj) {
-   
-    return new Promise((resolve, reject) => { 
-        console.log(`fileSize: ${fileObj.size}`)
-        if (fileObj.size > settings['MAX_FILE_SIZE'])
-            throw new Error(`Staging file validation failed, file size is ${fileObj.size} which exceeds ${settings['MAX_FILE_SIZE']}.`)
-        resolve(true)
-    })
-}
-
-
-/**
-* Verify that the metadata for a file to be registered.
-*
-* @Promise that returns a bool
-*/
-var validateDatasetMetadata = function(metadata) {
-    // verify that username is one of the existing users
-    // verify that the dataset name is not already registered in the database
-
-    return new Promise((resolve, reject) => { 
-        if (metadata.username != "testuser")
-            throw new Error(`Metadata validation failed, username '${metadata.username}' does not exist.`)
-        resolve(true)
-    }).then((result) => {
-        return db.datasets.countAsync({name: metadata.name})
-    }).then((count) => {
-        if (count != 0)
-            throw new Error(`Metadata validation failed, dataset with name '${metadata.name}' has already been registered, count: ${count}.`)
-        return true
-    })
-
-
-}
-
-
-/**
-* Verify that the metafeatures for a file to be registered.
-*
-* @Promise that returns a bool
-*/
-var validateDatasetMetafeatures = function(metafeatures) {
-    // verify a dataset with the same data and metadata has not been uploaded
-    return db.datasets.countAsync({ "metafeatures._id": metafeatures._id})
     .then((count) => {
-        if (count != 0)
-            throw new Error(`metafeatures validation failed, dataset with metafeature signature '${metafeatures._id}' has already been registered, count: ${count}.`)
-        return metafeatures
-    })
-}
-
-
+      if (count != 0)
+        throw new Error(
+          `Metadata validation failed, dataset with name '${metadata.name}' has already been registered, count: ${count}.`
+        );
+      return true;
+    });
+};
 
 /**
-* Register a file in the filestore as a dataset.
-* Creates a dataset entry, generate a dataset profile for the datafile
-*
-* @return Promise that returns the datasetId
-*
-*/
-var registerDataset = function(fileId, prediction_type, dependent_col, categorical_features, ordinal_features, metadata) {
-    console.log(`registerDataset: ${fileId}`)
+ * Verify that the metafeatures for a file to be registered.
+ *
+ * @Promise that returns a bool
+ */
+var validateDatasetMetafeatures = function (metafeatures) {
+  // verify a dataset with the same data and metadata has not been uploaded
+  return db.datasets
+    .countAsync({ "metafeatures._id": metafeatures._id })
+    .then((count) => {
+      if (count != 0)
+        throw new Error(
+          `metafeatures validation failed, dataset with metafeature signature '${metafeatures._id}' has already been registered, count: ${count}.`
+        );
+      return metafeatures;
+    });
+};
 
-    assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)
+/**
+ * Register a file in the filestore as a dataset.
+ * Creates a dataset entry, generate a dataset profile for the datafile
+ *
+ * @return Promise that returns the datasetId
+ *
+ */
+var registerDataset = function (
+  fileId,
+  prediction_type,
+  dependent_col,
+  categorical_features,
+  ordinal_features,
+  metadata
+) {
+  console.log(`registerDataset: ${fileId}`);
 
-    var dataset_id 
+  assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`);
 
-    // generate dataset profile
-    return validateDatasetMetadata(metadata)
-    .then((result) => {return validateDatafileByFileIdAsync(fileId, prediction_type, dependent_col, categorical_features, ordinal_features)})
-    .then((result) => {return generateFeaturesFromFileIdAsync(fileId, prediction_type, dependent_col)})
-    .then((metafeatures) => {return validateDatasetMetafeatures(metafeatures)})
-    
-    // create a new datasets instance and with the dataset metafeatures
-    .then((metafeatures) => {
-        return db.datasets.insertAsync({
+  var dataset_id;
+
+  // generate dataset profile
+  return (
+    validateDatasetMetadata(metadata)
+      .then((result) => {
+        return validateDatafileByFileIdAsync(
+          fileId,
+          prediction_type,
+          dependent_col,
+          categorical_features,
+          ordinal_features
+        );
+      })
+      .then((result) => {
+        return generateFeaturesFromFileIdAsync(
+          fileId,
+          prediction_type,
+          dependent_col
+        );
+      })
+      .then((metafeatures) => {
+        return validateDatasetMetafeatures(metafeatures);
+      })
+
+      // create a new datasets instance and with the dataset metafeatures
+      .then((metafeatures) => {
+        return db.datasets.insertAsync(
+          {
             name: metadata.name,
             username: metadata.username,
             metafeatures: metafeatures,
-            files: []
-        }, {})
-    })
-    .then((result) => { // open the file in the filestore
-        dataset_id = result.ops[0]._id.toString()
-        return new Promise((resolve, reject) => { 
-            var gridStore = new db.GridStore(db, fileId, "r", {
-                promiseLibrary: Promise
-            });
+            files: [],
+          },
+          {}
+        );
+      })
+      .then((result) => {
+        // open the file in the filestore
+        dataset_id = result.ops[0]._id.toString();
+        return new Promise((resolve, reject) => {
+          var gridStore = new db.GridStore(db, fileId, "r", {
+            promiseLibrary: Promise,
+          });
 
-            gridStore.open((err, gridStore) => {
-                if (err) {
-                    console.log(err);
-                    throw err
-                } 
-                resolve(gridStore)
-            })
-        })
-    })
-    // add file data to the dataset instance
-    .then((gridStore) => {
-        return db.datasets.updateByIdAsync(dataset_id, {
-            $push: {
-                files: {
-                    _id: gridStore.fileId,
-                    filename: gridStore.filename,
-                    mimetype: gridStore.metadata.contentType,
-                    prediction_type: prediction_type,
-                    dependent_col: dependent_col,
-                    categorical_features: categorical_features,
-                    ordinal_features: ordinal_features,
-                    timestamp: Date.now()
-                }
+          gridStore.open((err, gridStore) => {
+            if (err) {
+              console.log(err);
+              throw err;
             }
-        })
-    })
-    .then((res) => { return dataset_id })
-    .catch((err) => {
-        console.log(`error in registerDataset: ${err}`)
-        throw err
-    })
+            resolve(gridStore);
+          });
+        });
+      })
+      // add file data to the dataset instance
+      .then((gridStore) => {
+        return db.datasets.updateByIdAsync(dataset_id, {
+          $push: {
+            files: {
+              _id: gridStore.fileId,
+              filename: gridStore.filename,
+              mimetype: gridStore.metadata.contentType,
+              prediction_type: prediction_type,
+              dependent_col: dependent_col,
+              categorical_features: categorical_features,
+              ordinal_features: ordinal_features,
+              timestamp: Date.now(),
+            },
+          },
+        });
+      })
+      .then((res) => {
+        return dataset_id;
+      })
+      .catch((err) => {
+        console.log(`error in registerDataset: ${err}`);
+        throw err;
+      })
+  );
 };
 
-
-
 // Processess files for an experiment
-app.put("/api/v1/experiments/:id/files", upload.array("files"), (req, res, next) => {
+app.put(
+  "/api/v1/experiments/:id/files",
+  upload.array("files"),
+  (req, res, next) => {
     // Retrieve list of files for experiment
-    db.experiments.findByIdAsync(req.params.id, {
-            files: 1
-        })
-        .then((experiment) => {
+    db.experiments
+      .findByIdAsync(req.params.id, {
+        files: 1,
+      })
+      .then((experiment) => {
+        // Process files
+        var filesP = processExperimentFiles(experiment, req.files);
 
-            // Process files
-            var filesP = processExperimentFiles(experiment, req.files);
-
-            // Check file promises
-            Promise.all(filesP)
-                .then(() => {
-                    res.send({
-                        message: "Files uploaded"
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
-        })
-        .catch((err) => {
-            console.log(err);
+        // Check file promises
+        Promise.all(filesP)
+          .then(() => {
+            res.send({
+              message: "Files uploaded",
+            });
+          })
+          .catch((err) => {
             next(err);
-        });
-});
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        next(err);
+      });
+  }
+);
 
 // Delete all files for an experiment
 app.delete("/api/v1/experiments/:id/files", (req, res, next) => {
-    db.experiments.findByIdAsync(req.params.id, {
-            files: 1
-        })
-        .then((experiment) => {
-            var filesP = Array(experiment.files.length);
+  db.experiments
+    .findByIdAsync(req.params.id, {
+      files: 1,
+    })
+    .then((experiment) => {
+      var filesP = Array(experiment.files.length);
 
-            for (var i = 0; i < experiment.files.length; i++) {
-                var gfs = new db.GridStore(db, experiment.files[i]._id, "w", {
-                    promiseLibrary: Promise
-                });
-                filesP[i] = gfs.unlinkAsync();
-            }
+      for (var i = 0; i < experiment.files.length; i++) {
+        var gfs = new db.GridStore(db, experiment.files[i]._id, "w", {
+          promiseLibrary: Promise,
+        });
+        filesP[i] = gfs.unlinkAsync();
+      }
 
-            // Check file promises
-            Promise.all(filesP)
-                .then(() => {
-                    res.send({
-                        message: "Files deleted"
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                    next(err);
-                });
+      // Check file promises
+      Promise.all(filesP)
+        .then(() => {
+          res.send({
+            message: "Files deleted",
+          });
         })
         .catch((err) => {
-            console.log(err);
-            next(err);
+          console.log(err);
+          next(err);
         });
+    })
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
 });
 
 // Delete all files for a project
 app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
-    db.experiments.find({
-            _project_id: db.toObjectID(req.params.id)
-        }).toArrayAsync() // Get experiments for project
-        .then((experiments) => {
-            var numFiles = 0;
-            for (var i = 0; i < experiments.length; i++) {
-                numFiles += experiments[i].files.length;
-            }
-            var filesP = Array(numFiles);
+  db.experiments
+    .find({
+      _project_id: db.toObjectID(req.params.id),
+    })
+    .toArrayAsync() // Get experiments for project
+    .then((experiments) => {
+      var numFiles = 0;
+      for (var i = 0; i < experiments.length; i++) {
+        numFiles += experiments[i].files.length;
+      }
+      var filesP = Array(numFiles);
 
-            // Loop over experiments
-            var fileIndex = 0;
-            for (var j = 0; j < experiments.length; j++) {
-                var experiment = experiments[j];
-                // Loop over files
-                for (var k = 0; k < experiment.files.length; k++) {
-                    var gfs = new db.GridStore(db, experiment.files[k]._id, "w", {
-                        promiseLibrary: Promise
-                    });
-                    filesP[fileIndex++] = gfs.unlinkAsync();
-                }
-            }
+      // Loop over experiments
+      var fileIndex = 0;
+      for (var j = 0; j < experiments.length; j++) {
+        var experiment = experiments[j];
+        // Loop over files
+        for (var k = 0; k < experiment.files.length; k++) {
+          var gfs = new db.GridStore(db, experiment.files[k]._id, "w", {
+            promiseLibrary: Promise,
+          });
+          filesP[fileIndex++] = gfs.unlinkAsync();
+        }
+      }
 
-            // Check file promises
-            Promise.all(filesP)
-                .then(() => {
-                    res.send({
-                        message: "Files deleted"
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
+      // Check file promises
+      Promise.all(filesP)
+        .then(() => {
+          res.send({
+            message: "Files deleted",
+          });
         })
         .catch((err) => {
-            next(err);
+          next(err);
         });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
 
 /*
 // Registers machine projects
@@ -1830,70 +2048,79 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 */
 // Registers machine projects
 app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
-
-
-    var projP = db.projects.find({}, {
+  var projP = db.projects
+    .find(
+      {},
+      {
         name: 1,
-        category: 1
-    }).sort({
-        name: 1
-    }).toArrayAsync(); // Get project names
+        category: 1,
+      }
+    )
+    .sort({
+      name: 1,
+    })
+    .toArrayAsync(); // Get project names
 
-    var macP = db.machines.findByIdAsync(req.params.id);
+  var macP = db.machines.findByIdAsync(req.params.id);
 
-   Promise.all([macP, projP])
+  Promise.all([macP, projP])
+    .then((result) => {
+      var machines = result[0];
+      var project_records = result[1];
+      var project_caps = req.body.projects;
+      var projects = {};
+
+      //console.log("project_records", project_records)
+      //console.log("project_caps", project_caps)
+
+      for (var i in project_records) {
+        var project_record = project_records[i];
+        //console.log(project_record);
+        for (var j in project_caps) {
+          var project_cap = project_caps[j];
+          if (project_record["name"] == project_cap["name"]) {
+            projects[project_record["_id"]] = project_cap;
+          }
+          //console.log(project_cap);
+        }
+      }
+
+      console.log("Registering projects:", projects);
+
+      // Fail if machine does not exist
+      if (machines === null) {
+        res.status(404);
+        return res.send({
+          error: "Machine ID " + req.params.id + " does not exist",
+        });
+      }
+      // Register projects otherwise
+      db.machines
+        .updateByIdAsync(req.params.id, {
+          $set: {
+            projects,
+          },
+        })
         .then((result) => {
-        var machines = result[0];
-        var project_records = result[1];
-        var project_caps = req.body.projects
-        var projects = {};
-
-        //console.log("project_records", project_records)
-        //console.log("project_caps", project_caps)
-
-        for (var i in project_records) {
-            var project_record = project_records[i];
-            //console.log(project_record);
-            for (var j in project_caps) {
-                var project_cap = project_caps[j];
-                if(project_record['name'] == project_cap['name']) {
-                    projects[project_record['_id']] = project_cap;
+          // Update returns the count of affected objects
+          res.send(
+            result.n === 1
+              ? {
+                  msg: "success",
+                  projects: projects,
                 }
-                //console.log(project_cap);
-            };
-        }
-
-        console.log("Registering projects:", projects)
-
-        // Fail if machine does not exist
-        if (machines === null) {
-            res.status(404);
-            return res.send({
-                error: "Machine ID " + req.params.id + " does not exist"
-            });
-        }
-        // Register projects otherwise
-        db.machines.updateByIdAsync(req.params.id, {
-                $set: {
-                    projects
+              : {
+                  msg: "error",
                 }
-            })
-            .then((result) => {
-                // Update returns the count of affected objects
-                res.send((result.n === 1) ? {
-                    msg: "success",
-                    projects: projects,
-                } : {
-                    msg: "error"
-                });
-            })
-            .catch((err) => {
-                next(err);
-            });
+          );
+        })
+        .catch((err) => {
+          next(err);
+        });
     })
     .catch((err) => {
-        console.log(err);
-        next(err);
+      console.log(err);
+      next(err);
     });
 });
 
@@ -1906,242 +2133,276 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
 // List projects and machines on homepage
 app.get("/oldui", (req, res, next) => {
-    var category = req.query.cat;
+  var category = req.query.cat;
 
-    if (!category) {
-        return res.render("base-index");
-    }
+  if (!category) {
+    return res.render("base-index");
+  }
 
-    var projP = db.projects.find({
-        category: category.toUpperCase()
-    }, {
-        name: 1
-    }).sort({
-        name: 1
-    }).toArrayAsync(); // Get project names
-    var macP = db.machines.find({}, {
+  var projP = db.projects
+    .find(
+      {
+        category: category.toUpperCase(),
+      },
+      {
+        name: 1,
+      }
+    )
+    .sort({
+      name: 1,
+    })
+    .toArrayAsync(); // Get project names
+  var macP = db.machines
+    .find(
+      {},
+      {
         address: 1,
-        hostname: 1
-    }).sort({
-        hostname: 1
-    }).toArrayAsync(); // Get machine addresses and hostnames
-    Promise.all([projP, macP])
-        .then((results) => {
-            return res.render("index", {
-                projects: results[0],
-                machines: results[1]
-            });
-        })
-        .catch((err) => {
-            return next(err);
-        });
-
-
-
+        hostname: 1,
+      }
+    )
+    .sort({
+      hostname: 1,
+    })
+    .toArrayAsync(); // Get machine addresses and hostnames
+  Promise.all([projP, macP])
+    .then((results) => {
+      return res.render("index", {
+        projects: results[0],
+        machines: results[1],
+      });
+    })
+    .catch((err) => {
+      return next(err);
+    });
 });
 
 // List projects and machines on admin page
 app.get("/admin", (req, res, next) => {
-    var projP = db.projects.find({}, {
+  var projP = db.projects
+    .find(
+      {},
+      {
         name: 1,
-        category: 1
-    }).sort({
-        name: 1
-    }).toArrayAsync(); // Get project names
-    var macP = db.machines.find({}, {
+        category: 1,
+      }
+    )
+    .sort({
+      name: 1,
+    })
+    .toArrayAsync(); // Get project names
+  var macP = db.machines
+    .find(
+      {},
+      {
         address: 1,
-        hostname: 1
-    }).sort({
-        hostname: 1
-    }).toArrayAsync(); // Get machine addresses and hostnames
-    Promise.all([projP, macP])
-        .then((results) => {
-            return res.render("admin", {
-                projects: results[0],
-                machines: results[1]
-            });
-        })
-        .catch((err) => {
-            return next(err);
-        });
+        hostname: 1,
+      }
+    )
+    .sort({
+      hostname: 1,
+    })
+    .toArrayAsync(); // Get machine addresses and hostnames
+  Promise.all([projP, macP])
+    .then((results) => {
+      return res.render("admin", {
+        projects: results[0],
+        machines: results[1],
+      });
+    })
+    .catch((err) => {
+      return next(err);
+    });
 });
 
 // Project page (new experiment)
 app.get("/projects/:id", (req, res, next) => {
-    db.projects.findByIdAsync(req.params.id)
-        .then((result) => {
-            res.render("project", {
-                project: result
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+  db.projects
+    .findByIdAsync(req.params.id)
+    .then((result) => {
+      res.render("project", {
+        project: result,
+      });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Project page (optimisation)
 app.get("/projects/:id/optimisation", (req, res, next) => {
-    db.projects.findByIdAsync(req.params.id)
-        .then((result) => {
-            res.render("optimisation", {
-                project: result
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+  db.projects
+    .findByIdAsync(req.params.id)
+    .then((result) => {
+      res.render("optimisation", {
+        project: result,
+      });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Project page (experiments)
 app.get("/projects/:id/experiments", (req, res, next) => {
-    var projP = db.projects.findByIdAsync(req.params.id);
-    var expP = db.experiments.find({
-        _project_id: db.toObjectID(req.params.id)
-    }, {
+  var projP = db.projects.findByIdAsync(req.params.id);
+  var expP = db.experiments
+    .find(
+      {
+        _project_id: db.toObjectID(req.params.id),
+      },
+      {
         _scores: 1,
         _status: 1,
         _options: 1,
         _started: 1,
         _finished: 1,
-        _notes: 1
-    }).toArrayAsync();
-    Promise.all([projP, expP])
-        .then((results) => {
-            res.render("experiments", {
-                project: results[0],
-                experiments: results[1]
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
+        _notes: 1,
+      }
+    )
+    .toArrayAsync();
+  Promise.all([projP, expP])
+    .then((results) => {
+      res.render("experiments", {
+        project: results[0],
+        experiments: results[1],
+      });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Machine page
 app.get("/machines/:id", (req, res, next) => {
-    db.machines.findByIdAsync(req.params.id)
-        .then((mac) => {
-            var projKeys = _.keys(mac.projects); // Extract project IDs
-            projKeys = _.map(projKeys, db.toObjectID); // Map to MongoDB IDs
-            db.projects.find({
-                    _id: {
-                        $in: projKeys
-                    }
-                }, {
-                    name: 1
-                }).sort({
-                    name: 1
-                }).toArrayAsync()
-                .then((projects) => {
-                    // Return only projects existing in FGLab
-                    res.render("machine", {
-                        machine: mac,
-                        projects: projects
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
+  db.machines
+    .findByIdAsync(req.params.id)
+    .then((mac) => {
+      var projKeys = _.keys(mac.projects); // Extract project IDs
+      projKeys = _.map(projKeys, db.toObjectID); // Map to MongoDB IDs
+      db.projects
+        .find(
+          {
+            _id: {
+              $in: projKeys,
+            },
+          },
+          {
+            name: 1,
+          }
+        )
+        .sort({
+          name: 1,
+        })
+        .toArrayAsync()
+        .then((projects) => {
+          // Return only projects existing in FGLab
+          res.render("machine", {
+            machine: mac,
+            projects: projects,
+          });
         })
         .catch((err) => {
-            next(err);
+          next(err);
         });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
 
 // Experiment page
 app.get("/experiments/:id", (req, res, next) => {
-    db.experiments.findByIdAsync(req.params.id)
-        .then((result) => {
-            var projP = db.projects.findByIdAsync(result._project_id, {
-                name: 1
-            }); // Find project name
-            var macP = db.machines.findByIdAsync(result._machine_id, {
-                hostname: 1,
-                address: 1
-            }); // Find machine hostname and address
-            Promise.all([projP, macP])
-                .then((results) => {
-                    res.render("experiment", {
-                        experiment: result,
-                        project: results[0],
-                        machine: results[1]
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
+  db.experiments
+    .findByIdAsync(req.params.id)
+    .then((result) => {
+      var projP = db.projects.findByIdAsync(result._project_id, {
+        name: 1,
+      }); // Find project name
+      var macP = db.machines.findByIdAsync(result._machine_id, {
+        hostname: 1,
+        address: 1,
+      }); // Find machine hostname and address
+      Promise.all([projP, macP])
+        .then((results) => {
+          res.render("experiment", {
+            experiment: result,
+            project: results[0],
+            machine: results[1],
+          });
         })
         .catch((err) => {
-            next(err);
+          next(err);
         });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
 
 // Experiment page
 app.get("/batches/:id", (req, res, next) => {
-    db.batches.findByIdAsync(req.params.id)
-        .then((result) => {
-            var projP = db.projects.findByIdAsync(result._project_id, {
-                name: 1
-            }); // Find project name
-            var macP = db.machines.findByIdAsync(result._machine_id, {
-                hostname: 1,
-                address: 1
-            }); // Find machine hostname and address
-            Promise.all([projP, macP])
-                .then((results) => {
-                    res.render("experiment", {
-                        experiment: result,
-                        project: results[0],
-                        machine: results[1]
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
+  db.batches
+    .findByIdAsync(req.params.id)
+    .then((result) => {
+      var projP = db.projects.findByIdAsync(result._project_id, {
+        name: 1,
+      }); // Find project name
+      var macP = db.machines.findByIdAsync(result._machine_id, {
+        hostname: 1,
+        address: 1,
+      }); // Find machine hostname and address
+      Promise.all([projP, macP])
+        .then((results) => {
+          res.render("experiment", {
+            experiment: result,
+            project: results[0],
+            machine: results[1],
+          });
         })
         .catch((err) => {
-            next(err);
+          next(err);
         });
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 app.all("/api/:apipath/:id", jsonParser, (req, res, next) => {
-    users.returnUserData(req)
-        .then((user) => {
-            req.params.user = user;
-            req.responder(req, res)
-        })
-        .catch((err) => {
-            next(err);
-        });
+  users
+    .returnUserData(req)
+    .then((user) => {
+      req.params.user = user;
+      req.responder(req, res);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 //use api handler
 app.all("/api/:apipath", jsonParser, (req, res, next) => {
-    users.returnUserData(req)
-        .then((user) => {
-            req.params.user = user;
-            req.responder(req, res);
-        })
-        .catch((err) => {
-            next(err);
-        });
+  users
+    .returnUserData(req)
+    .then((user) => {
+      req.params.user = user;
+      req.responder(req, res);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
-
-
-
 
 /* Errors */
 // Error handler
 app.use((err, req, res, next) => {
-    if (res.headersSent) {
-        return next(err); // Delegate to Express' default error handling
-    }
-    console.log("Unhandled error from request " + req + ": ")
-    console.log("Error: " + err)
-    res.status(500);
-    res.send("Error: " + err);
+  if (res.headersSent) {
+    return next(err); // Delegate to Express' default error handling
+  }
+  console.log("Unhandled error from request " + req + ": ");
+  console.log("Error: " + err);
+  res.status(500);
+  res.send("Error: " + err);
 });
 
 /* HTTP server */
@@ -2149,13 +2410,13 @@ var server = http.createServer(app); // Create HTTP server
 
 socketServer(server);
 if (!process.env.LAB_PORT) {
-    console.log("Error: No port specified");
-    process.exit(1);
+  console.log("Error: No port specified");
+  process.exit(1);
 } else {
-    // Listen for connections
-    server.listen(process.env.LAB_PORT, () => {
-        console.log("Server listening on port " + process.env.LAB_PORT);
-    });
+  // Listen for connections
+  server.listen(process.env.LAB_PORT, () => {
+    console.log("Server listening on port " + process.env.LAB_PORT);
+  });
 }
 
 /* WebSocket server */
