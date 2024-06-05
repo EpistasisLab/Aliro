@@ -1,5 +1,5 @@
 # Stage 1: Build stage with all necessary files
-FROM mongo:4.4.18 AS builder
+FROM ubuntu:focal AS builder
 
 WORKDIR /opt/
 
