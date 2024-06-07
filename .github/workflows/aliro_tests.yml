@@ -62,6 +62,7 @@ jobs:
         with:
           parallel: true
           flag-name: Unit Test for webapp
+          debug: true
 
   build_pypkg:
     name: Unit Tests for scikit-learn API
@@ -90,6 +91,7 @@ jobs:
         with:
           parallel: true
           flag-name: Unit Test for scikit-learn api
+          debug: true
 
   coveralls_finish:
     name: Publish Coveralls
