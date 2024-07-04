@@ -302,7 +302,7 @@
         "default": 100,
         "ui": {
           "style": "radio",
-          "choices": [100, 500],
+          "choices": [1, 100, 500],
           "grid_search": [100]
         }
       },
