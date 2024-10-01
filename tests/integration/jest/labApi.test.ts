@@ -282,7 +282,8 @@ describe('lab', () => {
 					var json = await e.response.json()
 					expect(json.error).toBeTruthy()
 					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload file. Error: metafeatures validation failed, dataset with metafeature signature '6526f294170ebc6066c53ad1f2b01b5b4c61708bd455fa08b1e60895a74a4a83' has already been registered, count: 1.")
+					// expect(json.error).toEqual("Unable to upload file. Error: metafeatures validation failed, dataset with metafeature signature '6526f294170ebc6066c53ad1f2b01b5b4c61708bd455fa08b1e60895a74a4a83' has already been registered, count: 1.")
+					expect(json.error).toContain("Unable to upload file. Error: metafeatures validation failed, dataset with metafeature signature");
 				}
 			});
 

@@ -352,7 +352,9 @@ api_preferences_data = [
                     "criterion": {
                         "description": "The function to measure the quality of a split. ",
                         "type": "string",
-                        "default": "mse",
+                        # "default": "mse",
+                        # Jay M.: names changed after scikit-learn 1.0
+                        "default": "squared_error",
                         "ui": {
                             "style": "radio",
                             "choices": [

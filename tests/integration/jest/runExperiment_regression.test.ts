@@ -26,7 +26,9 @@ describe('run regression experiment', () => {
 
 		let algoName = 'DecisionTreeRegressor'
 		let algoParms = {
-			"criterion": "mse",
+			// "criterion": "mse",
+			// Jay M.: names changed after scikit-learn 1.0
+			"criterion": "squared_error",
 			"max_depth": 3,
 			"min_samples_split": 2,
 			"min_samples_leaf": 1,

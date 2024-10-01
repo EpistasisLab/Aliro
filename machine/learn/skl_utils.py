@@ -1062,7 +1062,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     -------
     None
     """
-    from scipy import interp
+    # from scipy import interp
     from scipy.stats import sem, t
     cv = StratifiedKFold(n_splits=10)
     # Temporary fix to handle NaN values
@@ -1092,7 +1092,9 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         fpr = np.nan_to_num(fpr)
         tpr = np.nan_to_num(tpr)
 
-        tprs.append(interp(mean_fpr, fpr, tpr))
+        # tprs.append(interp(mean_fpr, fpr, tpr))
+        # Jay M. scipy interp is deprecated
+        tprs.append(np.interp(mean_fpr, fpr, tpr))
 
         tprs[-1][0] = 0.0
         roc_auc = auc(fpr, tpr)

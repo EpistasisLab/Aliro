@@ -31,7 +31,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 regressor_config_dict = {
     'sklearn.tree.DecisionTreeRegressor': {
         'params': {
-            'criterion': ["mse", "mae"],
+            # 'criterion': ["mse", "mae"],
+            # Jay M.: names changed after scikit-learn 1.0
+            'criterion': ["squared_error", "absolute_error"],
             'max_depth': [3, 5, 10],
             'min_samples_split': [2, 5, 10, 20],
             'min_samples_leaf': [1, 5, 10, 20],
@@ -43,7 +45,9 @@ regressor_config_dict = {
     'sklearn.ensemble.RandomForestRegressor': {
         'params': {
             'n_estimators': [100, 500],
-            'criterion': ["mse", "mae"],
+            # 'criterion': ["mse", "mae"],
+            # Jay M.: names changed after scikit-learn 1.0
+            'criterion': ["squared_error", "absolute_error"],
             'max_features': ["sqrt", "log2"],
             'min_samples_split': [2, 5, 10, 20],
             'min_samples_leaf':  [1, 5, 10, 20],

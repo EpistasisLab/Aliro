@@ -96,7 +96,9 @@ class TestLabApi:
                          "algorithm":"DecisionTreeRegressor", 
                          "algorithm_id":"5da8d68c4590b0868cbf574e", 
                          "category":"regression", 
-                         "parameters":{'criterion': 'mse', 
+                        #  "parameters":{'criterion': 'mse', 
+                        # Jay M.: names changed after scikit-learn 1.0
+                         "parameters":{'criterion': 'squared_error', 
                                        'max_depth': 10,
                                        'min_samples_split':2, 
                                        'min_samples_leaf':1, 
@@ -106,7 +108,10 @@ class TestLabApi:
                          "algorithm":"DecisionTreeRegressor", 
                          "algorithm_id":"5da8d68c4590b0868cbf574e", 
                          "category":"regression", 
-                         "parameters":{'criterion': 'mse', 
+                        #  "parameters":{'criterion': 'mse', 
+                        # Jay M.: names changed after scikit-learn 1.0
+                         "parameters":{'criterion': 'squared_error', 
+
                                        'max_depth': 10, 
                                        'min_samples_split':2, 
                                        'min_samples_leaf':1, 
@@ -116,7 +121,9 @@ class TestLabApi:
                          "algorithm":"DecisionTreeRegressor", 
                          "algorithm_id":"5da8d68c4590b0868cbf574e", 
                          "category":"regression", 
-                         "parameters":{'criterion': 'mse', 
+                        #  "parameters":{'criterion': 'mse', 
+                        # Jay M.: names changed after scikit-learn 1.0
+                         "parameters":{'criterion': 'squared_error', 
                                        'max_depth': 10, 
                                        'min_samples_split':2, 
                                        'min_samples_leaf':5, 
@@ -126,7 +133,9 @@ class TestLabApi:
                          "algorithm":"DecisionTreeRegressor", 
                          "algorithm_id":"5da8d68c4590b0868cbf574e", 
                          "category":"regression", 
-                         "parameters":{'criterion': 'mae', 
+                        #  "parameters":{'criterion': 'mae', 
+                        # Jay M.: names changed after scikit-learn 1.0
+                          "parameters":{'criterion': 'absolute_error',
                                        'max_depth': 10, 
                                        'min_samples_split':2, 
                                        'min_samples_leaf':1, 

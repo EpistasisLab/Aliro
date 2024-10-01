@@ -655,7 +655,7 @@
         "criterion": {
             "description": "The function to measure the quality of a split. ",
             "type": "string",
-            "default": "mse",
+            "default": "squared_error",
             "ui": {
                 "style": "radio",
                 "choices": ["Mean Squared Error", "Mean Absolute Error"],
@@ -731,7 +731,7 @@
         "criterion": {
             "description": "The function to measure the quality of a split. ",
             "type": "string",
-            "default": "mse",
+            "default": "squared_error",
             "ui": {
                 "style": "radio",
                 "choices": ["Mean Squared Error", "Mean Absolute Error"],

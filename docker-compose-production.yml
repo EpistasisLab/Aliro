@@ -1,6 +1,4 @@
 # Build production images
-version: '3'
-
 services:
   lab:
     build:
