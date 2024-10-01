@@ -294,9 +294,14 @@ class AI():
 
             # use _id to index the metafeatures, and
             # keep only metafeatures with results
-            self.dataset_mf_cache.append(
+            # self.dataset_mf_cache.append(
+            #     all_df_mf.loc[kb['resultsData'][pred_type]['_id'].unique()]
+            #         )
+            self.dataset_mf_cache = pd.concat([
+                self.dataset_mf_cache,
                 all_df_mf.loc[kb['resultsData'][pred_type]['_id'].unique()]
-                    )
+            ])
+
 
             logger.info(f"updating AI with {pred_type} knowledgebase ("
                 f"{len(kb['resultsData'][pred_type])} results)")
@@ -337,7 +342,8 @@ class AI():
                 self.dataset_mf_cache_id_hash_lookup.update({d:df['_id']})
         if dataset_metafeatures:
             df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
-            self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
+            # self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
+            self.dataset_mf_cache = pd.concat([self.dataset_mf_cache, df_mf])
 
 
         logger.debug(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')

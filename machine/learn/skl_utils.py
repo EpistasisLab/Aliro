@@ -39,7 +39,8 @@ from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, RepeatedStratifiedKFold, KFold
-from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
+# from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
+from sklearn.metrics import get_scorer, roc_curve, auc, make_scorer, confusion_matrix
 import itertools
 import json
 import os
@@ -54,6 +55,8 @@ import matplotlib.colors as mcolors
 from matplotlib.patches import Patch
 from sklearn.manifold import TSNE
 from sklearn.model_selection import learning_curve
+
+SCORERS = {}
 
 mpl.use('Agg')
 
@@ -830,9 +833,11 @@ def get_example_subset(y_predictions, y_true, select_class):
 
     examples = pd.Series([], dtype='int')
     if num_positive != 0:
-        examples = examples.append(y_pos.sample(n=num_positive))
+        # examples = examples.append(y_pos.sample(n=num_positive))
+        examples = pd.concat([examples, y_pos.sample(n=num_positive)], ignore_index=True)
     if num_negative != 0:
-        examples = examples.append(y_neg.sample(n=num_negative))
+        # examples = examples.append(y_neg.sample(n=num_negative))
+        examples = pd.concat([examples, y_neg.sample(n=num_negative)], ignore_index=True)
     y_predictions_subset = y_predictions[examples.index]
     y_true_subset = y_true[examples.index]
     misclassified = y_predictions_subset != y_true_subset
@@ -1207,8 +1212,18 @@ def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=T
     target = np.array(target)
     target[target == -1] = 0
 
+    # train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(
+    #     model, features, target, None, np.linspace(0.1, 1.0, 5), cv, return_times=True)
+    
     train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(
-        model, features, target, None, np.linspace(0.1, 1.0, 5), cv, return_times=True)
+        estimator=model,
+        X=features,
+        y=target,
+        train_sizes=np.linspace(0.1, 1.0, 5),  # Adjust this based on your need
+        cv=5,  # Cross-validation folds
+        n_jobs=-1,  # Use all processors
+        return_times=True
+)
 
     plt.xlabel("Training examples")
     plt.ylabel("Score")

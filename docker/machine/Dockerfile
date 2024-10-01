@@ -1,5 +1,5 @@
 # Stage 1: Build and install Python and NodeJS dependencies
-FROM python:3.7.16-slim-buster as base
+FROM python:3.10-slim-bullseye AS base
 
 ARG USE_WHEELS
 ARG wheel_directory=docker/wheels
@@ -23,7 +23,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
       i386) ARCH='x86';; \
       *) echo "unsupported architecture"; exit 1 ;; \
     esac \
-    && wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-$ARCH.tar.xz -O ~/node.tar.xz && \
+    && wget --quiet https://nodejs.org/dist/v14.21.3/node-v14.21.3-linux-$ARCH.tar.xz -O ~/node.tar.xz && \
     tar -xvf ~/node.tar.xz -C /usr/local/ --strip-components=1 --no-same-owner && \
     rm ~/node.tar.xz && \
     ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
@@ -49,7 +49,7 @@ RUN pip install --no-cache-dir -r /root/requirements-build.txt
 RUN npm install -g pm2 --silent --progress=false
 
 # Stage 2a: Build dev version of machine
-FROM python:3.7.16-slim-buster as dev
+FROM python:3.10-slim-bullseye AS dev
 ARG docker_filepath=docker/machine/files
 
 COPY --from=base /usr/local /usr/local
@@ -74,7 +74,7 @@ RUN apt-get update && apt-get install -y graphviz dos2unix && \
 CMD ["/bin/bash", "/root/entrypoint.sh"]
 
 # Stage 2b: Build prod version of machine
-FROM python:3.7.16-slim-buster as prod
+FROM python:3.10-slim-bullseye AS prod
 ARG docker_filepath=docker/machine/files
 
 # copy src for machine

@@ -1,1 +1,1 @@
--e git+https://github.com/lacava/surprise.git@1.1.1.1#egg=scikit-surprise
+-e git+https://github.com/jay-m-dev/Surprise.git@aliro#egg=scikit-surprise

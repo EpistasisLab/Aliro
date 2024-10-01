@@ -1,5 +1,5 @@
 # Stage 1: Build and compile dependencies
-FROM python:3.7.16-slim-buster as base
+FROM python:3.10-slim-bullseye AS base
 
 ARG USE_WHEELS
 ARG wheel_directory=docker/wheels
@@ -24,7 +24,7 @@ RUN apt-get update --fix-missing && \
   i386) ARCH='x86';; \
   *) echo "unsupported architecture"; exit 1 ;; \
   esac \
-  && wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-$ARCH.tar.xz -O ~/node.tar.xz && \
+  && wget --quiet https://nodejs.org/dist/v14.21.3/node-v14.21.3-linux-$ARCH.tar.xz -O ~/node.tar.xz && \
   tar -xvf ~/node.tar.xz -C /usr/local/ --strip-components=1 --no-same-owner && \
   rm ~/node.tar.xz && \
   ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
@@ -55,7 +55,7 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
   && cp /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
 # Setup node environment
-RUN npm install -g pm2 --silent --progress=false
+RUN npm install -g pm2 --silent --progress=false --legacy-peer-deps
 
 # Install lab/webapp/node_modules to an anonymous volume
 WORKDIR /appsrc/lab/webapp
@@ -69,10 +69,10 @@ WORKDIR /appsrc/lab
 COPY lab/package.json /appsrc/lab/
 COPY lab/package-lock.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/*.json
-RUN npm install --silent --progress=false
+RUN npm install --silent --progress=false --legacy-peer-deps
 
 # Stage 2a: build dev version of lab
-FROM python:3.7.16-slim-buster as dev
+FROM python:3.10-slim-bullseye AS dev
 
 ARG docker_filepath=docker/lab/files
 
@@ -121,7 +121,7 @@ CMD ["/bin/bash", "/root/start.sh"]
 ENTRYPOINT ["/root/entrypoint.sh"]
 
 # Stage 2b: build prod version of lab
-FROM python:3.7.16-slim-buster as prod
+FROM python:3.10-slim-bullseye AS prod
 ARG docker_filepath=docker/lab/files
 
 # Copy src for lab

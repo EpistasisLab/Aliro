@@ -35,7 +35,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import numpy as np
-from sklearn.metrics import make_scorer, SCORERS
+from sklearn.metrics import make_scorer, get_scorer
+
+SCORERS = {}
 
 
 def balanced_accuracy(y_true, y_pred):
