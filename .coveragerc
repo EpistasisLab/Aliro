@@ -9,6 +9,10 @@ relative_files = True
 ; regardless of whether it runs locally or within a Docker container.
 parallel = True
 
+; omit scikit-surprise (custom package) GH runner tests Coveralls on python3.12?
+omit = 
+  /src/scikit-surprise/surprise/*
+
 [paths]
 ; the first path is the path on the local (travis) filesystem
 ; the second path is the path as it appears within the Docker container
