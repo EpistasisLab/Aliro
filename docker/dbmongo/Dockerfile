@@ -1,5 +1,5 @@
 # Stage 1: Build stage with all necessary files
-FROM mongo:4.4.18 AS builder
+FROM mongo:5.0.29 AS builder
 
 WORKDIR /opt/
 
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y dos2unix && \
     apt-get clean
 
 # Stage 2: Final runtime image
-FROM mongo:4.4.18
+FROM mongo:5.0.29
 
 # Copy required configurations and scripts from the builder stage
 COPY --from=builder /etc/mongod.conf /etc/
